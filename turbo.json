@@ -3,7 +3,16 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"]
+      "outputs": ["dist/**", ".next/**"],
+      "env": [
+        "PIZZA_SERVER_PORT",
+        "MORGAN",
+        "MONGODB",
+        "SECRET_KEY",
+        "refreshTokenKey",
+        "REDIS_HOST",
+        "REDIS_PORT"
+      ]
     },
     "lint": {
       "outputs": []
