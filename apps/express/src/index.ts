@@ -1,10 +1,10 @@
 import cookieParser from 'cookie-parser'
 import cors, { CorsOptions } from 'cors'
-import express, { Handler } from 'express'
+import express, { Application, Handler } from 'express'
 import { createServer, Server } from 'http'
 import morgan from 'morgan'
 import routerV1 from './api'
-import { connectDb, MORGAN, PORT } from './config'
+import { client, connectDb, MORGAN, PORT } from './config'
 
 const CORS_WHITELIST = [
   'http://localhost:5001/',
@@ -12,43 +12,47 @@ const CORS_WHITELIST = [
   'https://pizza-api-nomorechokedboy.cloud.okteto.net'
 ]
 
-const app = express()
+const setup = async (app: Application) => {
+  await client.connect()
+  app.set('redisClient', client)
+  app.use(cors(CORS_WHITELIST as CorsOptions))
+  app.use(express.json({}))
+  app.use(cookieParser())
+  app.use(
+    express.urlencoded({
+      extended: true
+    })
+  )
 
-connectDb()
+  morgan.format(
+    'myformat',
+    '[:date[clf]] ":method :url" :status :res[content-length] - :response-time ms'
+  )
 
-app.use(cors(CORS_WHITELIST as CorsOptions))
-app.use(express.json({}))
-app.use(cookieParser())
-app.use(
-  express.urlencoded({
-    extended: true
+  if (MORGAN === '1') {
+    app.use('/api/*', morgan('myformat') as Handler)
+  }
+
+  app.use('/api/v1', routerV1)
+  app.use('/healthcheck', (_, res) => {
+    const healthcheck = {
+      uptime: process.uptime(),
+      message: 'I am fine!!!',
+      timestamp: Date.now()
+    }
+
+    try {
+      res.json(healthcheck)
+    } catch (e) {
+      // if (e instanceof Error) next(new HttpException(e.message, 503));
+      console.log(e)
+    }
   })
-)
-
-morgan.format(
-  'myformat',
-  '[:date[clf]] ":method :url" :status :res[content-length] - :response-time ms'
-)
-
-if (MORGAN === '1') {
-  app.use('/api/*', morgan('myformat') as Handler)
 }
 
-app.use('/api/v1', routerV1)
-app.use('/healthcheck', (_, res) => {
-  const healthcheck = {
-    uptime: process.uptime(),
-    message: 'I am fine!!!',
-    timestamp: Date.now()
-  }
-
-  try {
-    res.json(healthcheck)
-  } catch (e) {
-    // if (e instanceof Error) next(new HttpException(e.message, 503));
-    console.log(e)
-  }
-})
+const app = express()
+setup(app)
+connectDb()
 
 if (import.meta.env.PROD) {
   const server: Server = createServer(app)

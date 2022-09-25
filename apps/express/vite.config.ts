@@ -5,7 +5,7 @@ import { resolve } from 'path'
 
 export default defineConfig({
   server: {
-    port: process.env.PIZZA_SERVER_PORT,
+    port: parseInt(process.env.PIZZA_SERVER_PORT),
     host: true
   },
   resolve: {

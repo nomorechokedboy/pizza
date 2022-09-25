@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express'
+import { RedisClient } from '../config'
 import { serverError } from '../constants/messages'
 import { productModel } from './model'
 // import { Product } from '@pizza/core';
 // import { faker } from '@faker-js/faker';
-import { client } from '../config'
 
 // const ProductType = ['pizza', 'starter', 'drink', 'combo'];
 
@@ -24,10 +24,11 @@ export const paging = async (
   const pageSize = parseInt(req.query.pageSize) || 20
   const { search } = req.query
   const cacheKey = `products:paging:page=${page}:pageSize=${pageSize}:search=${search}`
+  const client: RedisClient = req.app.get('redisClient')
 
   try {
-    // const hit = await client.get(cacheKey);
-    // if (hit) return res.json({ data: JSON.parse(hit) });
+    const hit = await client.get(cacheKey)
+    if (hit) return res.json({ data: JSON.parse(hit) })
 
     const products = await productModel
       .find(search ? { $text: { $search: search } } : {})
@@ -92,8 +93,9 @@ export const getDetail = async (req: Request, res: Response) => {
 //   }
 // };
 
-export const getAll = async (_: Request, res: Response) => {
+export const getAll = async (req: Request, res: Response) => {
   const cacheKey = 'products:getAll'
+  const client: RedisClient = req.app.get('redisClient')
 
   try {
     const hit = await client.get(cacheKey)

@@ -1,0 +1,6 @@
+build:
+  pizza-prod:
+    image: nomorechokedboy/web-project:pizza-api-prod
+    context: .
+deploy:
+  - kubectl apply -f k8s.yml
