@@ -38,7 +38,7 @@ export default function viteConfig({
 
         // Optional, default: 'viteNodeApp'
         // the name of named export of you app from the appPath file
-        exportName: 'pizzaApi',
+        exportName: 'viteNodeApp',
 
         // Optional, default: 'esbuild'
         // The TypeScript compiler you want to use
@@ -67,7 +67,10 @@ export default function viteConfig({
       TypeCheck({
         enableBuild: false,
         overlay: true,
-        terminal: true
+        terminal: true,
+        eslint: {
+          lintCommand: 'eslint --ignore-path .eslintignore --ext .ts .'
+        }
       })
     ],
     optimizeDeps: {
