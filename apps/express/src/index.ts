@@ -3,7 +3,7 @@ import cors, { CorsOptions } from 'cors'
 import express, { Handler } from 'express'
 import { createServer, Server } from 'http'
 import morgan from 'morgan'
-// import routerV1 from './api'
+import routerV1 from './api'
 import { connectDb, MORGAN, PORT } from './config'
 
 const CORS_WHITELIST = [
@@ -34,11 +34,11 @@ if (MORGAN === '1') {
   app.use('/api/*', morgan('myformat') as Handler)
 }
 
-// app.use('/api/v1', routerV1)
+app.use('/api/v1', routerV1)
 app.use('/healthcheck', (_, res) => {
   const healthcheck = {
     uptime: process.uptime(),
-    message: 'I am fine',
+    message: 'I am fine!!!',
     timestamp: Date.now()
   }
 
