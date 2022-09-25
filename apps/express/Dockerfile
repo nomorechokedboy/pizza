@@ -3,7 +3,7 @@ WORKDIR /usr/src/app
 
 RUN yarn global add pnpm turbo
 COPY . .
-RUN turbo prune --scope=api --docker
+RUN turbo prune --scope=express --docker
 
 FROM node:14-alpine AS installer
 ARG env
@@ -17,7 +17,7 @@ RUN pnpm i
 
 COPY --from=starter /usr/src/app/out/full/ .
 COPY turbo.json .
-RUN if [ "$env" = "prod" ] ; then pnpm build --filter=api... && pnpm i --prod --frozen-lockfile --offline --filter=api ; fi
+RUN if [ "$env" = "prod" ] ; then pnpm build --filter=express... && pnpm i --prod --frozen-lockfile --offline ; fi
 # RUN  pnpm build --filter=api... && pnpm i --prod --frozen-lockfile --offline --filter=api
 
 FROM node:14-alpine as runner

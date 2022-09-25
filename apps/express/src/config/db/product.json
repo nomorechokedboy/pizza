@@ -1,0 +1,317 @@
+[
+  {
+    "name": "Aquafina",
+    "description": "AQUAFINA 500ml",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Aquafina_400x275.jpg",
+    "price": 0.83,
+    "type": "drink"
+  },
+  {
+    "name": "Pepsi Can 320Ml",
+    "description": "Pepsi Lon 320ml",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pepsi_Can_400x275.jpg",
+    "price": 1.26,
+    "type": "drink"
+  },
+  {
+    "name": "Pepsi No Calories Can 320Ml",
+    "description": "Pepsi No Calories Lon 320ml",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pepsi_NoCalo_Can_400x275.jpg",
+    "price": 1.26,
+    "type": "drink"
+  },
+  {
+    "name": "Pepsi Lemon Can 320Ml",
+    "description": "Pepsi Lemon Lon 320ml",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pepsi_Lemon_Can_400x275.jpg",
+    "price": 1.26,
+    "type": "drink"
+  },
+  {
+    "name": "7Up Can 320Ml",
+    "description": "7Up Can 320ml",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/7Up_Can_400x275.jpg",
+    "price": 1.26,
+    "type": "drink"
+  },
+  {
+    "name": "Mirinda Orange Can 320Ml",
+    "description": "Mirinda Orange Lon 320ml",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Mirinda_Orange_Can_400x275.jpg",
+    "price": 1.26,
+    "type": "drink"
+  },
+  {
+    "name": "Mirinda Soda Can 320Ml",
+    "description": "Mirinda Soda Lon 320ml",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Mirinda_Soda_Can_400x275.jpg",
+    "price": 1.26,
+    "type": "drink"
+  },
+  {
+    "name": "ALL-FREE",
+    "description": "ALL-FREE CAN 330ml",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/All_free_can.jpg",
+    "price": 1.26,
+    "type": "drink"
+  },
+  {
+    "name": "Pepsi 1.5L",
+    "description": "PEPSI Chai 1.5L",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pepsi_1.5L_400x275.jpg",
+    "price": 1.78,
+    "type": "drink"
+  },
+  {
+    "name": "7Up 1.5L",
+    "description": "7UP Chai 1.5L",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/7Up_1.5L_400x275.jpg",
+    "price": 1.78,
+    "type": "drink"
+  },
+  {
+    "name": "Mirinda 1.5L",
+    "description": "MIRINDA  Chai 1.5L",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Mirinda_1.5L_400x275.jpg",
+    "price": 1.78,
+    "type": "drink"
+  },
+  {
+    "name": "Spaghetti Bolognese",
+    "description": "Spaghetti with classic beef Bolognese sauce",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Mi_Y_Thit_Bam_Xot_Ca_Chua_400x275.jpg",
+    "price": 5.09,
+    "type": "pasta"
+  },
+  {
+    "name": "Marinara Seafood Spaghetti",
+    "description": "Spaghetti in a delicious tomato sauce with shrimps, squids, onions and capsicums",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Mi_Y_Hai_San_Xot_Ca_Chua_400x275.jpg",
+    "price": 5.48,
+    "type": "pasta"
+  },
+  {
+    "name": "Veggie Supreme (Garlic-Parsley Butter Sauce)",
+    "description": "Black olives, fresh cherry tomatoes, mushrooms, pineapples, sweet corns, onions and Mozzarella cheese",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Rau_Cu_400x275.jpg",
+    "price": 3.9130434782608696,
+    "type": "pizza"
+  },
+  {
+    "name": "Double Topping Seafood Pesto Pizza",
+    "description": "Double topping of seafood (shrimp, squids) with sliced mushrooms, our signature Pesto sauce, perfectly melted Mozzarella cheese from New Zealand, topped with fresh basil.",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Gap_Doi_Nhan_Phu_Hai_San_Xot_Pesto_400x275.jpg",
+    "price": 1.3043478260869565,
+    "type": "pizza"
+  },
+  {
+    "name": "Double Topping Ocean Delight Pizza",
+    "description": "Double topping of seafood (squid, crabsticks) with pineapple & green capsicum, with Cheesy Mayonnaise sauce and perfectly melted Mozzarella cheese from New Zealand.",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Gap_Doi_Nhan_Phu_Con_Loc_Hai_San_400x275.jpg",
+    "price": 3.4782608695652173,
+    "type": "pizza"
+  },
+  {
+    "name": "Double Topping Seafood Black Pepper Pizza",
+    "description": "Double topping of seafood (shrimp, squids, crabsticks) combined with pineapple and sliced onions, Black pepper Spicy sauce and perfectly melted Mozzarella cheese from New Zealand.",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Gap_Doi_Nhan_Phu_Hai_San_Xot_Tieu_Den_400x275.jpg",
+    "price": 0.8695652173913043,
+    "type": "pizza"
+  },
+  {
+    "name": "Cheese Crust Half & Half Pizza (Regular)",
+    "description": "Choose your 2 types of pizza toppings",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Hai_Vi_400x275.jpg",
+    "price": 0.8695652173913043,
+    "type": "pizza"
+  },
+  {
+    "name": "Cheese Crust Half & Half Pizza (Large)",
+    "description": "Choose your 2 types of pizza toppings",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Hai_Vi_400x275.jpg",
+    "price": 1.3043478260869565,
+    "type": "pizza"
+  },
+  {
+    "name": "Seafood Pesto",
+    "description": "Shrimp, squid and mushrooms on a bed of signature Pesto sauce, topped with Mozzarella cheese",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Hai_San_Xot_Pesto_400x275.jpg",
+    "price": 0.8695652173913043,
+    "type": "pizza"
+  },
+  {
+    "name": "Supreme Meat Lover's",
+    "description": "Enjoy a tasty, protein-packed serving of bacon, sausage, beef, ham and pepperoni",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Thit_Va_Xuc_Xich_400x275.jpg",
+    "price": 1.3043478260869565,
+    "type": "pizza"
+  },
+  {
+    "name": "Seafood Black Pepper",
+    "description": "Shrimps, squids, pineapples, crabsticks, onions on a bed of hot black pepper sauce and topped with Mozzarella cheese",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Hai_San_Xot_Tieu_Den_400x275.jpg",
+    "price": 4.3478260869565215,
+    "type": "pizza"
+  },
+  {
+    "name": "Supreme",
+    "description": "Traditional pizza with beef, bacon, pepperoni, capsicums, mushrooms, onions and Mozzarella cheese",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Thap_Cam_400x275.jpg",
+    "price": 2.1739130434782608,
+    "type": "pizza"
+  },
+  {
+    "name": "Pepperoni",
+    "description": "Pepperoni with Mozzarella cheese",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Xuc_Xich_Nuong_400x275.jpg",
+    "price": 1.7391304347826086,
+    "type": "pizza"
+  },
+  {
+    "name": "Ocean Delight",
+    "description": "Squids, crab sticks, pineapples, capsicums on top of Cheesy Mayo sauce and Mozzarella cheese",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Con_Loc_Hai_San_400x275.jpg",
+    "price": 4.3478260869565215,
+    "type": "pizza"
+  },
+  {
+    "name": "Chicken Deluxe",
+    "description": "Chicken Deluxe Pizza with chicken breast, mushroom, pineapple, carrot and cress layered on top of our black pepper sauce",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Ga_Nuong_Nam_400x275.jpg",
+    "price": 4.3478260869565215,
+    "type": "pizza"
+  },
+  {
+    "name": "Fisherman's Tuna",
+    "description": "Fisherman's Tuna Pizza bring you the dedicate taste of the ocean with tuna, crab sticks, onions, pineapples on top of Pesto sauce",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Ca_Ngu_400x275.jpg",
+    "price": 3.9130434782608696,
+    "type": "pizza"
+  },
+  {
+    "name": "Hawaiian Paradise",
+    "description": "Hawaiian-flavored pizza with hams and pineapples",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Hawaiian_400x275.jpg",
+    "price": 4.3478260869565215,
+    "type": "pizza"
+  },
+  {
+    "name": "Cheese Lover",
+    "description": "A triple-layer of Mozzarella cheese on top of tomato sauce",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Pho_Mai_Cao_Cap_400x275.jpg",
+    "price": 4.3478260869565215,
+    "type": "pizza"
+  },
+  {
+    "name": "Shrimp Scampi",
+    "description": "Shrimps, onions, capsicums on top of Garlic-parsley Butter sauce",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Tom_Xot_Bo_Toi_400x275.jpg",
+    "price": 4.3478260869565215,
+    "type": "pizza"
+  },
+  {
+    "name": "Veggie Supreme (Tomato Sauce)",
+    "description": "Black olives, fresh cherry tomatoes, mushrooms, pineapples, sweet corns, zucchini on top of Mozzarella cheese",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Rau_Cu_400x275.jpg",
+    "price": 2.1739130434782608,
+    "type": "pizza"
+  },
+  {
+    "name": "Korean BBQ Spicy Beef",
+    "description": "Beef, pineapples, sprouts, sesames in Korean spicy sauce base\nPersonal: 106,000vnd\nRegular: 164,000vnd\n(+ Upgrade Cheese/Sausage Stuffed Crust: +67,000vnd)\nLarge: 242,000vnd\n(+ Upgrade Cheese/Sausage Stuffed Crust: +87,000vnd)",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Bo_BBQ_Xot_Cay_Han_Quoc_400x275.jpg",
+    "price": 4.3478260869565215,
+    "type": "pizza"
+  },
+  {
+    "name": "Pizza Go Black Pepper Beef",
+    "description": "Grilled beef combined with onions, bell peppers on black pepper sauce, topped with mozzarella cheese and fresh basil leaves, rolled in Pizza Hut's signature pizza dough",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Go_Bo_Xot_Tieu_Den_400x275.jpg",
+    "price": 2.608695652173913,
+    "type": "pizza"
+  },
+  {
+    "name": "Pizza Go Bacon",
+    "description": "Crispy bacon, oven-baked onions and sweet&sour pineapple on bed of signature Cheesy Sauce, topped with mozzarella cheese then rolled in Pizza Hut's signature pizza dough.",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Go_Thit_Xong_Khoi_400x275.jpg",
+    "price": 0.8695652173913043,
+    "type": "pizza"
+  },
+  {
+    "name": "Pizza Go Creamy Pesto Chicken",
+    "description": "Grilled chicken, oven-baked onions, mushroom and sweet corn on a Pesto sauce base mixed with black pepper, covered by melted mozzarella cheese then rolled in Pizza Hut's signature pizza dough.",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Pizza_Go_Ga_Xot_Pesto_400x275.jpg",
+    "price": 1.7391304347826086,
+    "type": "pizza"
+  },
+  {
+    "name": "Garlic Bread",
+    "description": "Deliciously crusty grilled bread covered with savory garlic-butter sauce",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Banh_Mi_Bo_Toi_400x275.jpg",
+    "price": 1.22,
+    "type": "starter"
+  },
+  {
+    "name": "Crinkle-Cut French Fries",
+    "description": "Crinkle cut fries with in house tomato sauce",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Khoai_Tay_Chien_400x275.jpg",
+    "price": 2.48,
+    "type": "starter"
+  },
+  {
+    "name": "Cheesy Pops",
+    "description": "Filled with 2 types of cheese",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Banh_Cuon_Pho_Mai_400x275.jpg",
+    "price": 2.91,
+    "type": "starter"
+  },
+  {
+    "name": "Tuna Bacon Salad",
+    "description": "Pizza Hut best-seller mixed greens with tuna, bacon, French beans, Cherry tomato, corns in a bed of  with classic Mayonnaise",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Xa_Lach_Ca_Ngu_400x275.jpg",
+    "price": 3.35,
+    "type": "starter"
+  },
+  {
+    "name": "Italian Sausages",
+    "description": "A Pizza Hut Lover's must-have: grilled juicy Italian sausage",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Xuc_Xich_Y_Nuong_400x275.jpg",
+    "price": 4.17,
+    "type": "starter"
+  },
+  {
+    "name": "Calamari",
+    "description": "Crispy fried calamari",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Muc_Chien_Gion_400x275.jpg",
+    "price": 4.17,
+    "type": "starter"
+  },
+  {
+    "name": "BBQ Chicken Wings (4 Pcs)",
+    "description": "Mesmertizing grilled chicken wings with BBQ flavor",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Canh_Ga_Nuong_BBQ_400x275.jpg",
+    "price": 4.61,
+    "type": "starter"
+  },
+  {
+    "name": "CK WINGS W/KOREAN SAUCE (4PCS)",
+    "description": "Fried Chicken Wings with Korean spicy sauce",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Canh_Ga_Chien_Xot_Cay_Han_Quoc_400x275.jpg",
+    "price": 5.04,
+    "type": "starter"
+  },
+  {
+    "name": "BBQ Chicken Wings (6 Pcs)",
+    "description": "Mesmertizing grilled chicken wings with BBQ flavor",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Canh_Ga_Nuong_BBQ_400x275.jpg",
+    "price": 5.87,
+    "type": "starter"
+  },
+  {
+    "name": "CK WINGS W/KOREAN SAUCE (6PCS)",
+    "description": "Fried Chicken Wings with Korean spicy sauce",
+    "img": "https://cdn.pizzahut.vn/images/Web_V3/Products/Canh_Ga_Chien_Xot_Cay_Han_Quoc_400x275.jpg",
+    "price": 6.3,
+    "type": "starter"
+  }
+]

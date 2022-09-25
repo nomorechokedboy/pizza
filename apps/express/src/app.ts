@@ -1,10 +1,8 @@
 import cookieParser from 'cookie-parser'
-import cors, { CorsOptions } from 'cors'
-import express, { Handler } from 'express'
+import cors, { CorsOpt./apiom 'cors'
+import express, { Handler }./configss'
 import { createServer, Server } from 'http'
 import morgan from 'morgan'
-// import routerV1 from './api'
-import { connectDb, MORGAN, PORT } from './config'
 
 const CORS_WHITELIST = [
   'http://localhost:5001/',
