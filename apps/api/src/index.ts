@@ -3,7 +3,7 @@ import cors, { CorsOptions } from 'cors'
 import express, { Handler } from 'express'
 import { createServer, Server } from 'http'
 import morgan from 'morgan'
-// import routerV1 from './api'
+import routerV1 from './api'
 import { connectDb, MORGAN, PORT } from './config'
 
 const CORS_WHITELIST = [
@@ -34,7 +34,7 @@ if (MORGAN === '1') {
   app.use('/api/*', morgan('myformat') as Handler)
 }
 
-// app.use('/api/v1', routerV1)
+app.use('/api/v1', routerV1)
 app.use('/healthcheck', (_, res) => {
   const healthcheck = {
     uptime: process.uptime(),
@@ -57,8 +57,8 @@ if (import.meta.env.PROD) {
   })
 
   server.listen(PORT || 5000, () => {
-    console.log(`Pizza api on http://localhost:${PORT}`)
+    console.log(`Stikinote api on http://localhost:${PORT}`)
   })
 }
 
-export const pizzaApi = app
+export const viteNodeApp = app

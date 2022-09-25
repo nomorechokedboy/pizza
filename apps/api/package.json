@@ -1,23 +1,26 @@
 {
-  "name": "api",
+  "name": "api-template",
   "version": "1.0.0",
   "description": "template for express restful api of myself",
+  "main": "./build/index.mjs",
   "author": "Duong Le",
   "license": "MIT",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite",
+    "dev": "script/compose-start.sh dev",
     "start": "node ./build",
     "lint": "eslint --ignore-path .eslintignore --ext .ts .",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "gen-doc": "node swagger.js"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "grpc": "^1.24.11",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.5.1",
     "mongoose-delete": "^0.5.4",
