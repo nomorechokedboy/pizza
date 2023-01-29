@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: pizza-svc
-  namespace: pizza-prod
+  # namespace: pizza-prod
 spec:
   replicas: 1
   selector:
@@ -21,8 +21,8 @@ spec:
               memory: '128Mi'
               cpu: '1'
           ports:
-            - containerPort: 8000
+            - containerPort: 5001
           envFrom:
             - secretRef:
-                name: pizza-prod-env
+                name: pizza-env
           imagePullPolicy: Always
