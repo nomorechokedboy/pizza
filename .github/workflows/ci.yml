@@ -51,5 +51,6 @@ jobs:
                                   cd apps/api
                                   go install github.com/swaggo/swag/cmd/swag
                                   ls ${GOPATH}/bin
+                                  echo ${GOPATH}
                           #   $GOPATH/bin/swag init
                           #   go test -v ./...
