@@ -50,6 +50,6 @@ jobs:
                           run: |
                                   cd apps/api
                                   go install github.com/swaggo/swag/cmd/swag
-                                  ls /home/runner/go/bin
+                                  ls ${GOPATH}/bin
                           #   $GOPATH/bin/swag init
                           #   go test -v ./...
