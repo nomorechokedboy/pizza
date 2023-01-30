@@ -7,6 +7,7 @@ services:
       - .docker/redis:/data
     networks:
       - redis-network
+    restart: unless-stopped
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 30s
@@ -14,6 +15,7 @@ services:
       retries: 5
 
   pizza-api:
+    image: nomorechokedboy/web-project:pizza-api-prod
     env_file:
       - .env
     ports:

@@ -13,3 +13,6 @@ dev
 Dockerfile
 project.json
 script
+.commitlintrc.js
+!.npmrc
+out
