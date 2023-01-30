@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pizza-svc
+  # namespace: pizza-prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pizza-api
+  template:
+    metadata:
+      labels:
+        app: pizza-api
+    spec:
+      containers:
+        - name: pizza-api
+          image: nomorechokedboy/web-project:pizza-api-prod
+          resources:
+            limits:
+              memory: '128Mi'
+              cpu: '1'
+          ports:
+            - containerPort: 5001
+          envFrom:
+            - secretRef:
+                name: pizza-env
+          imagePullPolicy: Always
