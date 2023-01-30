@@ -5,7 +5,7 @@ on:
                         - dev
 
 jobs:
-        build-test:
+        build-test-node:
                 runs-on: ubuntu-latest
 
                 strategy:
@@ -22,6 +22,39 @@ jobs:
                                   node-version: ${{ matrix.node-version }}
                         - name: ci, build and test
                           run: |
+                                  yarn global add pnpm
                                   pnpm i
                                   pnpm lint
                                   pnpm t
+
+        golangci:
+                name: lint
+                runs-on: ubuntu-latest
+                steps:
+                        - uses: actions/setup-go@v3
+                          with:
+                                  go-version: 1.19
+                        - uses: actions/checkout@v3
+                        - name: golangci-lint
+                          uses: golangci/golangci-lint-action@v3
+                          with:
+                                  version: v1.29
+                                  working-directory: apps/api
+
+                                  # Optional: golangci-lint command line arguments.
+                                  # args: --issues-exit-code=0
+
+                                  # Optional: show only new issues if it's a pull request. The default value is `false`.
+                                  # only-new-issues: true
+
+                                  # Optional: if set to true then the all caching functionality will be complete disabled,
+                                  #           takes precedence over all other caching options.
+                                  # skip-cache: true
+
+                                  # Optional: if set to true then the action don't cache or restore ~/go/pkg.
+                                  # skip-pkg-cache: true
+
+                                  # Optional: if set to true then the action don't cache or restore ~/.cache/go-build.
+                                  # skip-build-cache: true
+                        - name: Test
+                          run: cd apps/api && go test -v ./...
