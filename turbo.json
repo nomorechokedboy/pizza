@@ -12,7 +12,8 @@
 				"refreshTokenKey",
 				"REDIS_HOST",
 				"REDIS_PORT"
-			]
+			],
+			"cache": false
 		},
 		"lint": {
 			"outputs": []
