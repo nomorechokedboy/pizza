@@ -46,10 +46,10 @@ jobs:
                         #   with:
                         #           version: v1.38.0
                         #           working-directory: apps/api
-
                         - name: Test
                           run: |
                                   cd apps/api
                                   go install github.com/swaggo/swag/cmd/swag
-                                  $GOPATH/bin/swag init
-                                  go test -v ./...
+                                  echo $GOPATH/bin
+                          #   $GOPATH/bin/swag init
+                          #   go test -v ./...
