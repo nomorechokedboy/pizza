@@ -51,4 +51,5 @@ jobs:
 
                         - name: Test
                           run: |
+                                  cd apps/api
                                   go test -v ./...
