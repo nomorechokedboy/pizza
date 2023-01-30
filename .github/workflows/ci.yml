@@ -1,0 +1,54 @@
+name: CI workflows
+on:
+        pull_request:
+                branches:
+                        - dev
+
+jobs:
+        build-test-node:
+                runs-on: ubuntu-latest
+
+                strategy:
+                        matrix:
+                                node-version: [16.x]
+
+                steps:
+                        - name: Checkout
+                          uses: actions/checkout@v2
+
+                        - name: Use Node.js ${{ matrix.node-version }}
+                          uses: actions/setup-node@v2
+                          with:
+                                  node-version: ${{ matrix.node-version }}
+                        - name: Cache dependencies
+                          uses: actions/cache@v2
+                          with:
+                                  path: ~/.npm
+                                  key: npm-${{ hashFiles('package-lock.json') }}
+                                  restore-keys: npm-
+                        - name: ci, build and test
+                          run: |
+                                  yarn global add pnpm
+                                  pnpm i
+                                  pnpm lint
+                                  pnpm t
+
+        golangci:
+                name: lint-test
+                runs-on: ubuntu-latest
+                steps:
+                        - uses: actions/setup-go@v3
+                          with:
+                                  go-version: 1.19
+                        - uses: actions/checkout@v3
+                        # - name: golangci-lint
+                        #   uses: golangci/golangci-lint-action@v3
+                        #   with:
+                        #           version: v1.38.0
+                        #           working-directory: apps/api
+                        - name: Test
+                          run: |
+                                  cd apps/api
+                                  go install github.com/swaggo/swag/cmd/swag
+                                  /home/runner/go/bin/swag init
+                                  go test -v ./...

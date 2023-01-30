@@ -1,0 +1,38 @@
+name: CD workflows
+on:
+        push:
+                branches:
+                        - main
+
+jobs:
+        deploy:
+                runs-on: ubuntu-latest
+
+                steps:
+                        - name: Checkout
+                          uses: actions/checkout@v2
+
+                        - uses: okteto/context@latest
+                          with:
+                                  token: ${{secrets.OKTETO_TOKEN}}
+
+                        - name: 'Activate Namespace'
+                          uses: okteto/namespace@latest
+                          with:
+                                  namespace: nomorechokedboy
+
+                        - name: 'Trigger deploy stack'
+                          uses: okteto/deploy-stack@latest
+                          with:
+                                  build: 'true'
+
+                        - name: Sleep for 120 seconds
+                          uses: jakejarvis/wait-action@v0.1.0
+                          with:
+                                  time: '120s'
+
+                        - name: Verify deploy
+                          uses: srt32/uptime@master
+                          with:
+                                  url-to-hit: 'https://api-nomorechokedboy.cloud.okteto.net/v1/api/product'
+                                  expected-statuses: '200'

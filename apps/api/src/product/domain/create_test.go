@@ -35,7 +35,8 @@ func TestCreateProductUseCaseWithUnknownError(t *testing.T) {
 func TestCreateProductUseCaseWithDuplicateError(t *testing.T) {
 	assert := assert.New(t)
 	productMemRepo := product.ProductInMemoryRepo{ProductList: make([]domain.Product, 0), IsErr: false}
-	productMemRepo.Insert(&domain.ProductReq{Description: "Another description", Name: "Lmao", SKU: "The duplicate SKU", Price: 101010})
+	_, err := productMemRepo.Insert(&domain.ProductReq{Description: "Another description", Name: "Lmao", SKU: "The duplicate SKU", Price: 101010})
+	assert.Nil(err)
 	createProductUseCase := domain.CreateProductUseCase{Repo: &productMemRepo}
 
 	req := domain.ProductReq{Description: "Test Description", Name: "Should ok", SKU: "The duplicate SKU", Price: 10000}
