@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "api/docs"
+	"log"
 
 	"api/src/product"
 	"api/src/product/domain"
@@ -44,5 +45,5 @@ func main() {
 	app.Get("/swagger/*", swagger.HandlerDefault)
 	app.Get("/", HealthCheck)
 
-	app.Listen(":3001")
+	log.Fatal(app.Listen(":3001"))
 }
