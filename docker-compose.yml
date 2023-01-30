@@ -1,5 +1,15 @@
 version: '3.8'
 services:
+        api:
+                build:
+                        context: .
+                        dockerfile: apps/api/Dockerfile
+                ports:
+                        - '3001:3001'
+                networks:
+                        - db-network
+                        - storage-network
+
         postgres:
                 image: postgres:14.1-alpine
                 restart: always
