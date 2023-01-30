@@ -1,0 +1,9 @@
+{
+  "_hash": "KZ7XRiJdnp",
+  "project": {
+    "rootDir": "/home/hadius/Workspace/monorepo/turborepo/pizza/apps/web-nuxt"
+  },
+  "versions": {
+    "nuxt": "3.1.1"
+  }
+}

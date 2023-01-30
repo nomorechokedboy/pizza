@@ -1,0 +1,14 @@
+version: '3.0'
+services:
+  pizza-api:
+    build:
+      args:
+        - env=dev
+      cache_from:
+        - 'nomorechokedboy/web-project:pizza-api-prod'
+      target: dev
+    command: yarn vite
+    volumes:
+      - ./src:/usr/src/app/src
+      - ./tsconfig.json:/usr/src/app/tsconfig.json
+      - ./vite.config.ts:/usr/src/app/vite.config.ts

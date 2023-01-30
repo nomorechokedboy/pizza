@@ -1,5 +1,5 @@
-.*
 .git
+.gitignore
 .dockerignore
 node_modules
 docker-compose*.yml
@@ -10,7 +10,7 @@ build
 yarn-error.log*
 dist
 dev
-**/Dockerfile
+Dockerfile
 project.json
 script
 .commitlintrc.js
