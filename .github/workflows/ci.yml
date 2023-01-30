@@ -46,6 +46,7 @@ jobs:
                           with:
                                   version: v1.38.0
                                   working-directory: apps/api
+                                  skip-go-installation: true
 
                         - name: Test
                           run: cd apps/api && go test -v ./...
