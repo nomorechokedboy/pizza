@@ -48,4 +48,7 @@ jobs:
                         #           working-directory: apps/api
 
                         - name: Test
-                          run: cd apps/api && go test -v ./...
+                          run: cd apps/api && \
+                                  go install github.com/swaggo/swag/cmd/swag && \
+                                  $GOPATH/bin/swag init && \
+                                  go test -v ./...
