@@ -1,0 +1,39 @@
+syntax = "proto3";
+package houseService;
+
+message House {
+    int32 id = 1;
+    string street = 2;
+    string number = 3;
+    int32 square = 4;
+}
+
+service HouseService {
+    rpc GetBySize(HousesBySizeReq) returns (HousesBySizeRes) {}
+    rpc GetHouse(HouseReq) returns (HouseRes) {}
+    rpc GetHouses(HousesReq) returns (HousesRes) {}
+}
+
+message HousesBySizeReq {
+    int32 minSquare = 1;
+}
+
+message HousesBySizeRes {
+    repeated int32 ids = 1;
+}
+
+message HouseReq {
+    int32 id = 1;
+}
+
+message HouseRes {
+    House house = 1;
+}
+
+message HousesReq {
+    repeated int32 id = 1;
+}
+
+message HousesRes {
+    repeated House houses = 1;
+}

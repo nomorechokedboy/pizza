@@ -20,7 +20,7 @@ services:
       - .env
     ports:
       - '${PIZZA_SERVER_PORT}:${PIZZA_SERVER_PORT}'
-    restart: unless-stopped
+    # restart: unless-stopped
     depends_on:
       - redis
     networks:
