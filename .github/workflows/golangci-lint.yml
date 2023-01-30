@@ -19,6 +19,11 @@ jobs:
                           with:
                                   go-version: 1.17
                         - uses: actions/checkout@v3
+                        - name: Generate swagger docs
+                          run: |
+                                  cd apps/api
+                                  go install github.com/swaggo/swag/cmd/swag
+                                  /home/runner/go/bin/swag init
                         - name: golangci-lint
                           uses: golangci/golangci-lint-action@v3
                           with:
@@ -43,3 +48,7 @@ jobs:
 
                                   # Optional: if set to true then the action don't cache or restore ~/.cache/go-build.
                                   # skip-build-cache: true
+
+                        - name: Test
+                          run: |
+                                  go test -v ./...
