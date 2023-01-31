@@ -3,6 +3,7 @@ package repository
 import (
 	"api/src/inventory/domain"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -40,7 +41,31 @@ func (repo *InventoryInMemoryRepo) Update(id *int, req *domain.WriteInventoryBod
 }
 
 func (repo *InventoryInMemoryRepo) Delete(req *int) (*domain.Inventory, error) {
-	return nil, nil
+	if repo.IsErr {
+		return nil, errors.New("unknown error")
+	}
+
+	inventoryListLen := len(repo.InventoryList)
+
+	if *req > inventoryListLen {
+		return nil, nil
+	}
+
+	var res domain.Inventory = domain.Inventory{Id: 12, Quantity: 1, CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	filteredList := make([]domain.Inventory, 0)
+
+	for _, inventory := range repo.InventoryList {
+		if inventory.Id == *req {
+			res = inventory
+			fmt.Println(res)
+			continue
+		}
+
+		filteredList = append(filteredList, inventory)
+	}
+	repo.InventoryList = filteredList
+
+	return &res, nil
 }
 
 func (repo *InventoryInMemoryRepo) Find() (*[]domain.Inventory, error) {

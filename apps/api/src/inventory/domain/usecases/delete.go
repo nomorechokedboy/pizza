@@ -1,11 +1,19 @@
 package usecases
 
-import "api/src/inventory/domain"
+import (
+	"api/src/inventory/domain"
+	"errors"
+)
 
 type DeleteInventoryUseCase struct {
 	Repo InventoryRepository
 }
 
-func (useCase *DeleteInventoryUseCase) Execute(req *domain.WriteInventoryBody) (*domain.Inventory, error) {
-	return nil, nil
+func (useCase *DeleteInventoryUseCase) Execute(req *int) (*domain.Inventory, error) {
+	deletedInventory, err := useCase.Repo.Delete(req)
+	if deletedInventory == nil && err == nil {
+		return deletedInventory, errors.New("not found")
+	}
+
+	return deletedInventory, err
 }
