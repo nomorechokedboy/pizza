@@ -39,7 +39,7 @@ func (repo *InventoryInMemoryRepo) Update(id *int, req *domain.WriteInventoryBod
 	return nil, nil
 }
 
-func (repo *InventoryInMemoryRepo) Delete(req *string) (*domain.Inventory, error) {
+func (repo *InventoryInMemoryRepo) Delete(req *int) (*domain.Inventory, error) {
 	return nil, nil
 }
 
@@ -47,6 +47,6 @@ func (repo *InventoryInMemoryRepo) Find() (*[]domain.Inventory, error) {
 	return nil, nil
 }
 
-func (repo *InventoryInMemoryRepo) FindOne(req *string) (*domain.Inventory, error) {
+func (repo *InventoryInMemoryRepo) FindOne(req *int) (*domain.Inventory, error) {
 	return nil, nil
 }

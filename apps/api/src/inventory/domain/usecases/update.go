@@ -11,11 +11,7 @@ type UpdateInventoryUseCase struct {
 
 func (useCase *UpdateInventoryUseCase) Execute(id *int, req *domain.WriteInventoryBody) (*domain.Inventory, error) {
 	inventory, err := useCase.Repo.Update(id, req)
-	if err != nil {
-		return nil, err
-	}
-
-	if inventory == nil {
+	if inventory == nil && err == nil {
 		return inventory, errors.New("not found")
 	}
 
