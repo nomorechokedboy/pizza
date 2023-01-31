@@ -39,7 +39,6 @@
 		],
 		"*.go": [
 			"gofmt",
-			"golangci-lint run -v",
 			"git add"
 		]
 	}
