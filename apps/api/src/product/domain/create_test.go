@@ -9,17 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreateProductUseCaseHappyCase(t *testing.T) {
-	assert := assert.New(t)
-	productMemRepo := product.ProductInMemoryRepo{ProductList: make([]domain.Product, 0), IsErr: false}
-	createProductUseCase := domain.CreateProductUseCase{Repo: &productMemRepo}
-	req := domain.ProductReq{Description: "Test Description", Name: "Should ok", SKU: "Success", Price: 10000}
-	product, err := createProductUseCase.Execute(&req)
-
-	assert.Nil(err)
-	t.Logf("Type of product is %v\n", reflect.TypeOf(product))
-}
-
 func TestCreateProductUseCaseWithUnknownError(t *testing.T) {
 	assert := assert.New(t)
 	productMemRepo := product.ProductInMemoryRepo{ProductList: make([]domain.Product, 0), IsErr: false}
@@ -28,7 +17,7 @@ func TestCreateProductUseCaseWithUnknownError(t *testing.T) {
 	req := domain.ProductReq{Description: "Test Description", Name: "Should ok", SKU: "Success", Price: 10000}
 	product, err := createProductUseCase.Execute(&req)
 
-	assert.EqualError(err, "connection error")
+	assert.EqualError(err, "unknown error")
 	assert.Nil(product)
 }
 
@@ -44,4 +33,20 @@ func TestCreateProductUseCaseWithDuplicateError(t *testing.T) {
 
 	assert.EqualError(err, "resource exist")
 	assert.Nil(product)
+}
+
+func TestCreateProductUseCaseHappyCase(t *testing.T) {
+	assert := assert.New(t)
+	productMemRepo := product.ProductInMemoryRepo{ProductList: make([]domain.Product, 0), IsErr: false}
+	createProductUseCase := domain.CreateProductUseCase{Repo: &productMemRepo}
+	req := domain.ProductReq{Description: "Test Description", Name: "Should ok", SKU: "Success", Price: 10000}
+	product, err := createProductUseCase.Execute(&req)
+
+	assert.Nil(err)
+	assert.NotNil(product)
+	assert.Equal(product.Description, req.Description)
+	assert.Equal(product.Name, req.Name)
+	assert.Equal(product.Price, req.Price)
+	assert.Equal(product.SKU, req.SKU)
+	t.Logf("Type of product is %v\n", reflect.TypeOf(product))
 }
