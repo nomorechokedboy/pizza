@@ -7,5 +7,5 @@ type FindCategoryUseCase struct {
 }
 
 func (useCase *FindCategoryUseCase) Execute(req *domain.CategoryQuery) (*[]domain.Category, error) {
-	return nil, nil
+	return useCase.Repo.Find(req)
 }

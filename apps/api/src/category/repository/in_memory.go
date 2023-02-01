@@ -3,6 +3,7 @@ package repository
 import (
 	"api/src/category/domain"
 	"errors"
+	"strings"
 )
 
 type CategoryInMemoryRepo struct {
@@ -86,4 +87,30 @@ func (repo *CategoryInMemoryRepo) FindOne(id *int) (*domain.Category, error) {
 	}
 
 	return res, nil
+}
+
+func (repo *CategoryInMemoryRepo) Find(req *domain.CategoryQuery) (*[]domain.Category, error) {
+	if repo.IsErr {
+		return nil, errors.New("unknown error")
+	}
+
+	res := repo.Data
+	if req.Q != "" {
+		res = make([]domain.Category, 0)
+		for _, category := range repo.Data {
+			q := strings.ToLower(req.Q)
+			if strings.Contains(strings.ToLower(category.Description), q) || strings.Contains(strings.ToLower(category.Name), q) {
+				res = append(res, category)
+			}
+		}
+	}
+
+	if req.PageSize == 0 {
+		req.PageSize = len(res)
+	}
+	start := req.Page * req.PageSize
+	end := start + req.PageSize
+	res = res[start:end]
+
+	return &res, nil
 }
