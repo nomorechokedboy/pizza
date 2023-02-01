@@ -3,7 +3,6 @@ package repository
 import (
 	"api/src/category/domain"
 	"errors"
-	"fmt"
 	"strings"
 )
 
@@ -40,12 +39,10 @@ func (repo *CategoryInMemoryRepo) Update(id *int, req *domain.WriteCategoryBody)
 		if category.Id == *id {
 			category.Description = req.Description
 			category.Name = req.Name
-			fmt.Println("Debug happy case", repo.Data, category)
 			return category, nil
 		}
 	}
 
-	fmt.Println("Debug", repo.Data)
 	return nil, nil
 }
 
