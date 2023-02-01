@@ -1,7 +1,6 @@
 package usecases_test
 
 import (
-	"reflect"
 	"testing"
 
 	"api/src/inventory/domain"
@@ -33,5 +32,4 @@ func TestInsertInventoryHappyCase(t *testing.T) {
 	assert.Nil(err)
 	assert.NotNil(inventory)
 	assert.Equal(inventory.Quantity, 5)
-	t.Logf("Type of inventory is %v\n", reflect.TypeOf(inventory))
 }

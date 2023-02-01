@@ -3,7 +3,6 @@ package domain_test
 import (
 	"api/src/product"
 	"api/src/product/domain"
-	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -48,5 +47,4 @@ func TestCreateProductUseCaseHappyCase(t *testing.T) {
 	assert.Equal(product.Name, req.Name)
 	assert.Equal(product.Price, req.Price)
 	assert.Equal(product.SKU, req.SKU)
-	t.Logf("Type of product is %v\n", reflect.TypeOf(product))
 }

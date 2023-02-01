@@ -3,7 +3,6 @@ package usecases_test
 import (
 	"api/src/inventory/domain"
 	"api/src/inventory/domain/usecases"
-	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -41,5 +40,4 @@ func TestUpdateInventoryHappyCase(t *testing.T) {
 
 	assert.Nil(err)
 	assert.Equal(updatedInventory.Quantity, req.Quantity)
-	t.Logf("Type of inventory is %v\n", reflect.TypeOf(updatedInventory))
 }
