@@ -66,10 +66,6 @@ func (repo *InventoryInMemoryRepo) Delete(req *int) (*domain.Inventory, error) {
 	return &res, nil
 }
 
-func (repo *InventoryInMemoryRepo) Find() (*[]domain.Inventory, error) {
-	return nil, nil
-}
-
 func (repo *InventoryInMemoryRepo) FindOne(req *int) (*domain.Inventory, error) {
 	if repo.IsErr {
 		return nil, errors.New("unknown error")
