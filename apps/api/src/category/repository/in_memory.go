@@ -50,24 +50,24 @@ func (repo *CategoryInMemoryRepo) Delete(req *int) (*domain.Category, error) {
 		return nil, errors.New("unknown error")
 	}
 
-	inventoryListLen := len(repo.Data)
-
-	if *req > inventoryListLen {
-		return nil, nil
-	}
-
 	var res domain.Category
+	pos := -1
 	filteredList := make([]domain.Category, 0)
 
-	for _, inventory := range repo.Data {
+	for i, inventory := range repo.Data {
 		if inventory.Id == *req {
 			res = inventory
+			pos = i
 			continue
 		}
 
 		filteredList = append(filteredList, inventory)
 	}
 	repo.Data = filteredList
+
+	if pos < 0 {
+		return nil, nil
+	}
 
 	return &res, nil
 }
