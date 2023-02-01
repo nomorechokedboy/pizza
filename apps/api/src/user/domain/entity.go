@@ -2,22 +2,25 @@ package domain
 
 import "time"
 
-//SKU - stock keeping unit
 type User struct {
-	Id        int32
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	FirstName string
-	LastName  string
-	UserName  string
-	Email     string
-	Password  string
+	Id          int32
+	Identifier  string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	FullName    string
+	Gender      bool
+	BirthDate   time.Time
+	PhoneNumber string
+	Email       string
+	Password    string
 }
 
 type CreateUserReq struct {
-	FirstName string `json:"FirstName"`
-	LastName  string `json:"LastName"`
-	UserName  string `json:"UserName"`
-	Email     string `json:"Email"`
-	Password  string `json:"Password"`
+	Identifier  string    `json:"Identifier"`
+	FullName    string    `json:"FullName"`
+	Email       string    `json:"Email"`
+	Password    string    `json:"Password"`
+	PhoneNumber string    `json:"PhoneNumber"`
+	Gender      bool      `json:"Gender"`
+	BirthDate   time.Time `json:"BirthDate"`
 }
