@@ -28,6 +28,6 @@ func (repo *CategoryInMemoryRepo) Insert(req *domain.WriteCategoryBody) (*domain
 	return &newCategory, nil
 }
 
-func (repo *CategoryInMemoryRepo) Update(req *domain.WriteCategoryBody) (*domain.Category, error) {
+func (repo *CategoryInMemoryRepo) Update(id *int, req *domain.WriteCategoryBody) (*domain.Category, error) {
 	return nil, nil
 }
