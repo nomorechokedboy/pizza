@@ -24,12 +24,6 @@ import (
 var createProductUseCase = domain.CreateProductUseCase{Repo: &product.ProductMemRepo}
 var DeleteInventoryUseCase = usecases.DeleteInventoryUseCase{Repo: &inventory.InventoryMemRepo}
 
-// HealthCheck godoc
-// @Summary healthcheck api
-// @Description Get uptime and application status
-// @Accept json
-// @Produce json
-// @Router / [get]
 func HealthCheck(c *fiber.Ctx) error {
 	return c.SendString("Hello, World!")
 }
