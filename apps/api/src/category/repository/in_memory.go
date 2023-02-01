@@ -70,3 +70,20 @@ func (repo *CategoryInMemoryRepo) Delete(req *int) (*domain.Category, error) {
 
 	return &res, nil
 }
+
+func (repo *CategoryInMemoryRepo) FindOne(id *int) (*domain.Category, error) {
+	if repo.IsErr {
+		return nil, errors.New("unknown error")
+	}
+
+	var res *domain.Category
+
+	for _, inventory := range repo.Data {
+		if inventory.Id == *id {
+			res = &inventory
+			break
+		}
+	}
+
+	return res, nil
+}
