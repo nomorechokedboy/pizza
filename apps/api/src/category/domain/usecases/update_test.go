@@ -10,7 +10,7 @@ import (
 
 var usecase = usecases.UpdateCategoryUseCase{Repo: &categoryRepo}
 var req = domain.WriteCategoryBody{Name: "Updated category", Description: "Updated description"}
-var id = 1
+var id = 0
 
 func TestUpdateCategoryUseCaseWithUnknownError(t *testing.T) {
 	assert := assert.New(t)
@@ -24,6 +24,7 @@ func TestUpdateCategoryUseCaseWithUnknownError(t *testing.T) {
 
 func TestUpdateCategoryUseCaseWithNotFoundError(t *testing.T) {
 	assert := assert.New(t)
+	categoryRepo.Data = make([]domain.Category, 0)
 	updatedCategory, err := usecase.Execute(&id, &req)
 
 	assert.Nil(updatedCategory)
