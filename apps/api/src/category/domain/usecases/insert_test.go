@@ -11,11 +11,11 @@ import (
 
 var categoryRepo = repository.CategoryInMemoryRepo{Data: make([]domain.Category, 0), IsErr: false}
 var insertUseCase = usecases.InsertCategoryUseCase{Repo: &categoryRepo}
-var req = domain.WriteCategoryBody{Name: "Comedy", Description: "Funny stuffs"}
 
 func TestInsertCategoryWithUnknownError(t *testing.T) {
 	assert := assert.New(t)
 	categoryRepo.IsErr = true
+	req := domain.WriteCategoryBody{Name: "Comedy", Description: "Funny stuffs"}
 	category, err := insertUseCase.Execute(&req)
 
 	assert.EqualError(err, "unknown error")
@@ -25,6 +25,8 @@ func TestInsertCategoryWithUnknownError(t *testing.T) {
 
 func TestInsertCategoryWithDuplicateError(t *testing.T) {
 	assert := assert.New(t)
+	categoryRepo.Data = append(categoryRepo.Data, domain.Category{Id: 1, Name: "Comedy", Description: "Another description"})
+	req := domain.WriteCategoryBody{Name: "Comedy", Description: "Funny stuffs"}
 	category, err := insertUseCase.Execute(&req)
 
 	assert.EqualError(err, "resource exist")
@@ -33,6 +35,7 @@ func TestInsertCategoryWithDuplicateError(t *testing.T) {
 
 func TestInsertCategoryHappyCase(t *testing.T) {
 	assert := assert.New(t)
+	req := domain.WriteCategoryBody{Name: "Happy case", Description: "Funny stuffs"}
 	category, err := insertUseCase.Execute(&req)
 
 	assert.Nil(err)
