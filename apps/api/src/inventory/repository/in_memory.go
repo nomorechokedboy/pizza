@@ -28,11 +28,12 @@ func (repo *InventoryInMemoryRepo) Update(id *int, req *domain.WriteInventoryBod
 		return nil, errors.New("unknown error")
 	}
 
-	for _, inventory := range repo.InventoryList {
+	for i := range repo.InventoryList {
+		inventory := &repo.InventoryList[i]
 		if inventory.Id == *id {
 			inventory.Quantity = req.Quantity
 			inventory.UpdatedAt = time.Now()
-			return &inventory, nil
+			return inventory, nil
 		}
 	}
 
