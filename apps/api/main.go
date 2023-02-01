@@ -4,6 +4,8 @@ import (
 	_ "api/docs"
 	"log"
 
+	"api/src/inventory"
+	"api/src/inventory/domain/usecases"
 	"api/src/product"
 	"api/src/product/domain"
 
@@ -11,8 +13,8 @@ import (
 	"github.com/gofiber/swagger"
 )
 
-var productMemRepo = product.ProductInMemoryRepo{ProductList: make([]domain.Product, 0), IsErr: false}
-var createProductUseCase = domain.CreateProductUseCase{Repo: &productMemRepo}
+var createProductUseCase = domain.CreateProductUseCase{Repo: &product.ProductMemRepo}
+var DeleteInventoryUseCase = usecases.DeleteInventoryUseCase{Repo: &inventory.InventoryMemRepo}
 
 // HealthCheck godoc
 // @Summary healthcheck api
