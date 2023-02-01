@@ -29,5 +29,21 @@ func (repo *CategoryInMemoryRepo) Insert(req *domain.WriteCategoryBody) (*domain
 }
 
 func (repo *CategoryInMemoryRepo) Update(id *int, req *domain.WriteCategoryBody) (*domain.Category, error) {
+	if repo.IsErr {
+		return nil, errors.New("unknown error")
+	}
+
+	for _, category := range repo.Data {
+		if category.Id == *id {
+			category.Description = req.Description
+			category.Name = req.Name
+			return &category, nil
+		}
+	}
+
+	return nil, nil
+}
+
+func (repo *CategoryInMemoryRepo) Delete(id *int) (*domain.Category, error) {
 	return nil, nil
 }
