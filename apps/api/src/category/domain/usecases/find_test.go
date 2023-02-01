@@ -12,10 +12,13 @@ var findUseCase = usecases.FindCategoryUseCase{Repo: &categoryRepo}
 
 func TestFindCategoryUseCaseWithUnknownError(t *testing.T) {
 	assert := assert.New(t)
+	categoryRepo.IsErr = true
 	category, err := findUseCase.Execute(nil)
+	t.Log("Help me", category, err)
 
 	assert.Nil(category)
 	assert.EqualError(err, "unknown error")
+	categoryRepo.IsErr = false
 }
 
 func TestFindCategoryUseCaseHappyCase(t *testing.T) {
