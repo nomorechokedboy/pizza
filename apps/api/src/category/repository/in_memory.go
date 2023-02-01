@@ -44,6 +44,29 @@ func (repo *CategoryInMemoryRepo) Update(id *int, req *domain.WriteCategoryBody)
 	return nil, nil
 }
 
-func (repo *CategoryInMemoryRepo) Delete(id *int) (*domain.Category, error) {
-	return nil, nil
+func (repo *CategoryInMemoryRepo) Delete(req *int) (*domain.Category, error) {
+	if repo.IsErr {
+		return nil, errors.New("unknown error")
+	}
+
+	inventoryListLen := len(repo.Data)
+
+	if *req > inventoryListLen {
+		return nil, nil
+	}
+
+	var res domain.Category
+	filteredList := make([]domain.Category, 0)
+
+	for _, inventory := range repo.Data {
+		if inventory.Id == *req {
+			res = inventory
+			continue
+		}
+
+		filteredList = append(filteredList, inventory)
+	}
+	repo.Data = filteredList
+
+	return &res, nil
 }
