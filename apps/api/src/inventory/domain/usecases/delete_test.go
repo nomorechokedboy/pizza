@@ -8,13 +8,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var deletedInventoryUseCase = usecases.DeleteInventoryUseCase{Repo: &inventoryRepo}
+var deleteInventoryUseCase = usecases.DeleteInventoryUseCase{Repo: &inventoryRepo}
 
 func TestDeleteInventoryUseCaseWithUnknownError(t *testing.T) {
 	assert := assert.New(t)
 	id := 10
 	inventoryRepo.IsErr = true
-	deletedInventory, err := deletedInventoryUseCase.Execute(&id)
+	deletedInventory, err := deleteInventoryUseCase.Execute(&id)
 
 	assert.EqualError(err, "unknown error")
 	assert.Nil(deletedInventory)
@@ -24,7 +24,7 @@ func TestDeleteInventoryUseCaseWithUnknownError(t *testing.T) {
 func TestDeleteInventoryUseCaseWithNotFoundError(t *testing.T) {
 	assert := assert.New(t)
 	id := 10
-	deletedInventory, err := deletedInventoryUseCase.Execute(&id)
+	deletedInventory, err := deleteInventoryUseCase.Execute(&id)
 
 	assert.EqualError(err, "not found")
 	assert.Nil(deletedInventory)
@@ -35,7 +35,7 @@ func TestDeleteInventoryUseCaseHappyCase(t *testing.T) {
 	id := 1
 	_, err := insertInventoryUseCase.Execute(&domain.WriteInventoryBody{Quantity: 5})
 	assert.Nil(err)
-	deletedInventory, err := deletedInventoryUseCase.Execute(&id)
+	deletedInventory, err := deleteInventoryUseCase.Execute(&id)
 
 	assert.NotNil(deletedInventory)
 	assert.Nil(err)
