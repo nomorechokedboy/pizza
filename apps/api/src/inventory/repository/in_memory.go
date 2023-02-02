@@ -28,11 +28,12 @@ func (repo *InventoryInMemoryRepo) Update(id *int, req *domain.WriteInventoryBod
 		return nil, errors.New("unknown error")
 	}
 
-	for _, inventory := range repo.InventoryList {
+	for i := range repo.InventoryList {
+		inventory := &repo.InventoryList[i]
 		if inventory.Id == *id {
 			inventory.Quantity = req.Quantity
 			inventory.UpdatedAt = time.Now()
-			return &inventory, nil
+			return inventory, nil
 		}
 	}
 
@@ -44,24 +45,24 @@ func (repo *InventoryInMemoryRepo) Delete(req *int) (*domain.Inventory, error) {
 		return nil, errors.New("unknown error")
 	}
 
-	inventoryListLen := len(repo.InventoryList)
-
-	if *req > inventoryListLen {
-		return nil, nil
-	}
-
 	var res domain.Inventory
+	pos := -1
 	filteredList := make([]domain.Inventory, 0)
 
-	for _, inventory := range repo.InventoryList {
+	for i, inventory := range repo.InventoryList {
 		if inventory.Id == *req {
 			res = inventory
+			pos = i
 			continue
 		}
 
 		filteredList = append(filteredList, inventory)
 	}
 	repo.InventoryList = filteredList
+
+	if pos < 0 {
+		return nil, nil
+	}
 
 	return &res, nil
 }
