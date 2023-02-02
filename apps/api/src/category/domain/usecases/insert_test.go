@@ -4,13 +4,14 @@ import (
 	"api/src/category/domain"
 	"api/src/category/domain/usecases"
 	"api/src/category/repository"
+	"api/src/common"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 var categoryRepo = repository.CategoryInMemoryRepo{Data: make([]domain.Category, 0), IsErr: false}
-var insertUseCase = usecases.InsertCategoryUseCase{Repo: &categoryRepo}
+var insertUseCase = usecases.InsertCategoryUseCase{Repo: &categoryRepo, Validator: &common.ValidatorAdapter}
 
 func TestInsertCategoryWithUnknownError(t *testing.T) {
 	assert := assert.New(t)
@@ -42,4 +43,13 @@ func TestInsertCategoryHappyCase(t *testing.T) {
 	assert.NotNil(category)
 	assert.Equal(req.Description, category.Description)
 	assert.Equal(req.Name, category.Name)
+}
+
+func TestInsertCategoryWithInvalidData(t *testing.T) {
+	assert := assert.New(t)
+	req := domain.WriteCategoryBody{Name: "A", Description: "Funny stuffs"}
+	category, err := insertUseCase.Execute(&req)
+
+	assert.EqualError(err, "invalid data")
+	assert.Nil(category)
 }
