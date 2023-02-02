@@ -12,7 +12,7 @@ import (
 // @Description Create a category with coresponding body
 // @Accept json
 // @Produce json
-// @Param todo body domain.WriteCategoryBody true "New Product"
+// @Param body body domain.WriteCategoryBody true "New Category"
 // @Success 201 {object} domain.Category
 // @Failure 400
 // @Router /category/insert [post]
@@ -94,7 +94,7 @@ func DeleteCategory(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param page query int false "Category page number"
 // @Param pageSize query int false "Category page size return"
-// @Param q path string false "Category query"
+// @Param q query string false "Category query"
 // @Success 201 {object} []domain.Category
 // @Failure 400
 // @Router /category/find [get]

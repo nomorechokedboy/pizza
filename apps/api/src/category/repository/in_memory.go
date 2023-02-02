@@ -100,18 +100,27 @@ func (repo *CategoryInMemoryRepo) Find(req *domain.CategoryQuery) (*[]domain.Cat
 		res = make([]domain.Category, 0)
 		for _, category := range repo.Data {
 			q := strings.ToLower(req.Q)
-			if strings.Contains(strings.ToLower(category.Description), q) || strings.Contains(strings.ToLower(category.Name), q) {
+			entityContainsQ := strings.Contains(strings.ToLower(category.Description), q) || strings.Contains(strings.ToLower(category.Name), q)
+
+			if entityContainsQ {
 				res = append(res, category)
 			}
 		}
 	}
 
 	if req.PageSize == 0 {
-		req.PageSize = len(res)
+		req.PageSize = 10
 	}
 	start := req.Page * req.PageSize
 	end := start + req.PageSize
-	res = res[start:end]
+	res = res[min(start, len(res)):min(end, len(res))]
 
 	return &res, nil
+}
+
+func min(x, y int) int {
+	if y < x {
+		return y
+	}
+	return x
 }
