@@ -13,6 +13,6 @@ type CategoryQuery struct {
 }
 
 type WriteCategoryBody struct {
-	Name        string
-	Description string
+	Name        string `validate:"required,min=3,max=20"`
+	Description string `validate:"required,max=1000"`
 }
