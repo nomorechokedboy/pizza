@@ -12,7 +12,8 @@
 		"lint": "turbo run lint",
 		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
 		"prepare": "husky install",
-		"test": "turbo run coverage"
+		"test": "turbo run coverage",
+		"api:dev": "(cd apps/api; air; cd ..; cd ..)"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^17.1.2",
