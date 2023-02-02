@@ -5,12 +5,13 @@ import (
 	"api/src/category/domain/usecases"
 	"api/src/category/infrastructure"
 	"api/src/category/repository"
+	"api/src/common"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 var CategoryMemRepo = repository.CategoryInMemoryRepo{Data: make([]domain.Category, 0), IsErr: false}
-var InsertCategoryUseCase = usecases.InsertCategoryUseCase{Repo: &CategoryMemRepo}
+var InsertCategoryUseCase = usecases.InsertCategoryUseCase{Repo: &CategoryMemRepo, Validator: &common.ValidatorAdapter}
 var UpdateCategoryUseCase = usecases.UpdateCategoryUseCase{Repo: &CategoryMemRepo}
 var DeleteCategoryUseCase = usecases.DeleteCategoryUseCase{Repo: &CategoryMemRepo}
 var FindCategoryUseCase = usecases.FindCategoryUseCase{Repo: &CategoryMemRepo}
