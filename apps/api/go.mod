@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/gofiber/fiber/v2 v2.41.0
 	github.com/gofiber/swagger v0.1.8
-	github.com/swaggo/swag v1.8.8
+	github.com/swaggo/swag v1.8.10
 )
 
 require (
@@ -35,7 +35,7 @@ require (
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/stretchr/testify v1.8.1
 	github.com/swaggo/files v0.0.0-20220728132757-551d4a08d97a // indirect
-	github.com/urfave/cli/v2 v2.24.1 // indirect
+	github.com/urfave/cli/v2 v2.24.2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.43.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
