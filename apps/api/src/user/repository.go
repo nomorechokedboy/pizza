@@ -27,3 +27,23 @@ func (repo *UserInMemoryRepo) Insert(req *domain.CreateUserReq) (*domain.User, e
 	repo.UserList = append(repo.UserList, newUser)
 	return &newUser, nil
 }
+
+func (repo *UserInMemoryRepo) Update(id *int32, req *domain.CreateUserReq) (*domain.User, error) {
+	if repo.IsErr {
+		return nil, errors.New("Unknown error")
+	}
+
+	for i := range repo.UserList {
+		userUpdate := &repo.UserList[i]
+		if userUpdate.Id == *id {
+			userUpdate.FullName = req.FullName
+			userUpdate.BirthDate = req.BirthDate
+			userUpdate.Gender = req.Gender
+			userUpdate.Identifier = req.Identifier
+			userUpdate.PhoneNumber = req.PhoneNumber
+			userUpdate.Password = req.Password
+			return userUpdate, nil
+		}
+	}
+	return nil, nil
+}
