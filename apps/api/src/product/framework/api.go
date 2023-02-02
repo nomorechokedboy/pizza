@@ -1,7 +1,8 @@
-package product
+package framework
 
 import (
 	"api/src/product/domain"
+	"api/src/product/domain/usecases"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -21,7 +22,7 @@ func CreateProduct(ctx *fiber.Ctx) error {
 		return ctx.Status(500).JSON(nil)
 	}
 
-	useCase := ctx.Locals("createProductUseCase").(domain.CreateProductUseCase)
+	useCase := ctx.Locals("createProductUseCase").(usecases.CreateProductUseCase)
 	product, err := useCase.Execute(&req)
 	if err != nil {
 		return ctx.Status(409).JSON(nil)
