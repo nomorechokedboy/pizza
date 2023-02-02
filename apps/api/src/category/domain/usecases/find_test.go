@@ -52,11 +52,13 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 	}
 
 	for _, c := range testCases {
-		s.repo.Data = c.initData
-		categories, err := s.useCase.Execute(&c.input)
+		s.T().Run(c.TestName, func(t *testing.T) {
+			s.repo.Data = c.initData
+			categories, err := s.useCase.Execute(&c.input)
 
-		s.Assertions.Nil(err)
-		s.Assertions.Equal(c.expected, *categories)
+			s.Assertions.Nil(err)
+			s.Assertions.Equal(c.expected, *categories)
+		})
 	}
 }
 
