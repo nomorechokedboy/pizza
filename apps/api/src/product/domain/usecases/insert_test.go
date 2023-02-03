@@ -7,13 +7,20 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
+
+type InsertProductTestSuite struct {
+	suite.Suite
+	UseCase usecases.InsertProductUseCase
+	Repo    repository.ProductInMemoryRepo
+}
 
 func TestCreateProductUseCaseWithUnknownError(t *testing.T) {
 	assert := assert.New(t)
-	productMemRepo := repository.ProductInMemoryRepo{ProductList: make([]domain.Product, 0), IsErr: false}
+	productMemRepo := repository.ProductInMemoryRepo{DataStore: make([]domain.Product, 0), IsErr: false}
 	productMemRepo.IsErr = true
-	createProductUseCase := usecases.CreateProductUseCase{Repo: &productMemRepo}
+	createProductUseCase := usecases.InsertProductUseCase{Repo: &productMemRepo}
 	req := domain.ProductReq{Description: "Test Description", Name: "Should ok", SKU: "Success", Price: 10000}
 	product, err := createProductUseCase.Execute(&req)
 
@@ -23,10 +30,10 @@ func TestCreateProductUseCaseWithUnknownError(t *testing.T) {
 
 func TestCreateProductUseCaseWithDuplicateError(t *testing.T) {
 	assert := assert.New(t)
-	productMemRepo := repository.ProductInMemoryRepo{ProductList: make([]domain.Product, 0), IsErr: false}
+	productMemRepo := repository.ProductInMemoryRepo{DataStore: make([]domain.Product, 0), IsErr: false}
 	_, err := productMemRepo.Insert(&domain.ProductReq{Description: "Another description", Name: "Lmao", SKU: "The duplicate SKU", Price: 101010})
 	assert.Nil(err)
-	createProductUseCase := usecases.CreateProductUseCase{Repo: &productMemRepo}
+	createProductUseCase := usecases.InsertProductUseCase{Repo: &productMemRepo}
 
 	req := domain.ProductReq{Description: "Test Description", Name: "Should ok", SKU: "The duplicate SKU", Price: 10000}
 	product, err := createProductUseCase.Execute(&req)
@@ -37,8 +44,8 @@ func TestCreateProductUseCaseWithDuplicateError(t *testing.T) {
 
 func TestCreateProductUseCaseHappyCase(t *testing.T) {
 	assert := assert.New(t)
-	productMemRepo := repository.ProductInMemoryRepo{ProductList: make([]domain.Product, 0), IsErr: false}
-	createProductUseCase := usecases.CreateProductUseCase{Repo: &productMemRepo}
+	productMemRepo := repository.ProductInMemoryRepo{DataStore: make([]domain.Product, 0), IsErr: false}
+	createProductUseCase := usecases.InsertProductUseCase{Repo: &productMemRepo}
 	req := domain.ProductReq{Description: "Test Description", Name: "Should ok", SKU: "Success", Price: 10000}
 	product, err := createProductUseCase.Execute(&req)
 

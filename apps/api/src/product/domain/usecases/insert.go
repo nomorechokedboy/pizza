@@ -6,10 +6,10 @@ type ProductRepository interface {
 	Insert(req *domain.ProductReq) (*domain.Product, error)
 }
 
-type CreateProductUseCase struct {
+type InsertProductUseCase struct {
 	Repo ProductRepository
 }
 
-func (useCase *CreateProductUseCase) Execute(req *domain.ProductReq) (*domain.Product, error) {
+func (useCase *InsertProductUseCase) Execute(req *domain.ProductReq) (*domain.Product, error) {
 	return useCase.Repo.Insert(req)
 }
