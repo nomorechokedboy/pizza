@@ -35,8 +35,8 @@ func TestCreateUserUseCaseUnknown(t *testing.T) {
 
 func TestCreateUserUseCaseWithDuplicateError(t *testing.T) {
 	assert := assert.New(t)
-	userMemRepo.Insert(&domain.CreateUserReq{Identifier: "079201017973", FullName: "Shelby", Gender: true, BirthDate: time.Date(2001, 4, 12, 0, 0, 0, 0, time.UTC), PhoneNumber: "0561013932", Email: "shelby@gmail.com", Password: "shelby123123"})
-	req := domain.CreateUserReq{Identifier: "079201017973", FullName: "Shelby", Gender: true, BirthDate: time.Date(2001, 4, 12, 0, 0, 0, 0, time.UTC), PhoneNumber: "0561013932", Email: "shelby@gmail.com", Password: "shelby123123"}
+	userMemRepo.UserList = append(userMemRepo.UserList, domain.User{Identifier: "079201017971", FullName: "Shelby", Gender: true, BirthDate: time.Date(2001, 4, 12, 0, 0, 0, 0, time.UTC), PhoneNumber: "0561013932", Email: "shelby@gmail.com", Password: "shelby123123"})
+	req := domain.CreateUserReq{Identifier: "079201017971", FullName: "Shelby", Gender: true, BirthDate: time.Date(2001, 4, 12, 0, 0, 0, 0, time.UTC), PhoneNumber: "0561013932", Email: "shelby@gmail.com", Password: "shelby123123"}
 	user, err := createUserUseCase.Execute(&req)
 	assert.EqualError(err, "user account has already exist")
 	assert.Nil(user)

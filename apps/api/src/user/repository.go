@@ -17,20 +17,20 @@ func (repo *UserInMemoryRepo) Insert(req *domain.CreateUserReq) (*domain.User, e
 	}
 
 	for _, user := range repo.UserList {
-		if user.Email == req.Email {
-			return nil, errors.New("user email already exist")
+		if user.Identifier == req.Identifier {
+			return nil, errors.New("user account has already exist")
 		}
 	}
 
 	Id := len(repo.UserList) + 1
-	newUser := domain.User{Id: int32(Id), CreatedAt: time.Now(), UpdatedAt: time.Now(), FullName: req.FullName, Email: req.Email, Password: req.Password, BirthDate: req.BirthDate, Gender: req.Gender, PhoneNumber: req.PhoneNumber, Identifier: req.Identifier}
+	newUser := domain.User{Id: int(Id), CreatedAt: time.Now(), UpdatedAt: time.Now(), FullName: req.FullName, Email: req.Email, Password: req.Password, BirthDate: req.BirthDate, Gender: req.Gender, PhoneNumber: req.PhoneNumber, Identifier: req.Identifier}
 	repo.UserList = append(repo.UserList, newUser)
 	return &newUser, nil
 }
 
-func (repo *UserInMemoryRepo) Update(id *int32, req *domain.CreateUserReq) (*domain.User, error) {
+func (repo *UserInMemoryRepo) Update(id *int, req *domain.CreateUserReq) (*domain.User, error) {
 	if repo.IsErr {
-		return nil, errors.New("Unknown error")
+		return nil, errors.New("unknown error")
 	}
 
 	for i := range repo.UserList {

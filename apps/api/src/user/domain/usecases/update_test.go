@@ -36,3 +36,18 @@ func TestUpdateUserWithUnknownError(t *testing.T) {
 	assert.EqualError(err, "unknown error")
 	userMemRepo.IsErr = false
 }
+
+func TestUpdateUserUseCaseWithNotFoundError(t *testing.T) {
+	assert := assert.New(t)
+	userMemRepo.UserList = make([]domain.User, 0)
+	updatedUser, err := updateUserMemRepo.Execute(&id, &req)
+
+	assert.Nil(updatedUser)
+	assert.EqualError(err, "not found")
+
+}
+
+func TestUpdateUserUseCaseDuplicateUniqueField(t *testing.T) {
+	// assert := assert.New(t)
+
+}

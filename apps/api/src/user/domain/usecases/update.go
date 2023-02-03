@@ -12,7 +12,7 @@ type UpdateUserUseCase struct {
 func (useCase *UpdateUserUseCase) Execute(id *int, req *domain.CreateUserReq) (*domain.User, error) {
 	updateUser, err := useCase.Repo.Update(id, req)
 	if updateUser == nil && err == nil {
-		return updateUser, errors.New("Not found")
+		return updateUser, errors.New("not found")
 	}
 
 	return updateUser, err
