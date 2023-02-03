@@ -2,23 +2,28 @@ package main
 
 import (
 	_ "api/docs"
+	"log"
 
+	"api/src/category"
+	"api/src/inventory"
+	"api/src/inventory/domain/usecases"
 	"api/src/product"
 	"api/src/product/domain"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/compress"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/etag"
+	"github.com/gofiber/fiber/v2/middleware/favicon"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/monitor"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/swagger"
 )
 
-var productMemRepo = product.ProductInMemoryRepo{ProductList: make([]domain.Product, 0), IsErr: false}
-var createProductUseCase = domain.CreateProductUseCase{Repo: &productMemRepo}
+var createProductUseCase = domain.CreateProductUseCase{Repo: &product.ProductMemRepo}
+var DeleteInventoryUseCase = usecases.DeleteInventoryUseCase{Repo: &inventory.InventoryMemRepo}
 
-// HealthCheck godoc
-// @Summary healthcheck api
-// @Description Get uptime and application status
-// @Accept json
-// @Produce json
-// @Router / [get]
 func HealthCheck(c *fiber.Ctx) error {
 	return c.SendString("Hello, World!")
 }
@@ -31,18 +36,38 @@ func HealthCheck(c *fiber.Ctx) error {
 // @contact.email fiber@swagger.io
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-// @host localhost:3001
-// @BasePath /
+// @BasePath /api/v1
 func main() {
 	app := fiber.New()
+	api := app.Group("/api")
+	v1 := api.Group("/v1")
 
+	app.Use(cors.New())
 	app.Use(func(c *fiber.Ctx) error {
 		c.Locals("createProductUseCase", createProductUseCase)
+		c.Locals("insertCategoryUseCase", category.InsertCategoryUseCase)
+		c.Locals("updateProductUseCase", category.UpdateCategoryUseCase)
+		c.Locals("deleteCategoryUseCase", category.DeleteCategoryUseCase)
+		c.Locals("findCategoryUseCase", category.FindCategoryUseCase)
+		c.Locals("findOneCategoryUseCase", category.FindOneCategoryUseCase)
 		return c.Next()
 	})
-	app.Post("/create-product", product.CreateProduct)
-	app.Get("/swagger/*", swagger.HandlerDefault)
-	app.Get("/", HealthCheck)
+	app.Use(recover.New())
+	app.Use(logger.New(logger.Config{
+		Format: "[${time}] ${ip}  ${status} - ${latency} ${method} ${path}\n",
+	}))
+	app.Get("/metrics", monitor.New(monitor.Config{Title: "MyService Metrics Page"}))
+	app.Use(compress.New())
+	app.Use(etag.New())
+	app.Use(favicon.New())
 
-	app.Listen(":3001")
+	category.New(v1)
+	app.Post("/create-product", product.CreateProduct)
+	app.Get("healthz", HealthCheck)
+	app.Get("/docs/*", swagger.HandlerDefault)
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.Redirect("/docs")
+	})
+
+	log.Fatal(app.Listen(":3001"))
 }

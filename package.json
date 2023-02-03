@@ -1,40 +1,46 @@
 {
-  "name": "pizza",
-  "version": "0.0.0",
-  "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev --parallel",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "prepare": "husky install"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "^17.1.2",
-    "@commitlint/config-conventional": "^17.1.0",
-    "eslint-config-custom": "workspace:*",
-    "husky": "^7.0.4",
-    "lint-staged": "^12.1.2",
-    "prettier": "latest",
-    "turbo": "1.5.5"
-  },
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "packageManager": "pnpm@7.8.0",
-  "lint-staged": {
-    "*.{ts,tsx,js,jsx,vue,svelte}": [
-      "prettier --write",
-      "eslint -fix",
-      "git add"
-    ],
-    "*.{json,yaml,yml}": [
-      "prettier --write",
-      "git add"
-    ]
-  }
+	"name": "pizza",
+	"version": "0.0.0",
+	"private": true,
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"scripts": {
+		"build": "turbo run build",
+		"dev": "turbo run dev --parallel",
+		"lint": "turbo run lint",
+		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
+		"prepare": "husky install",
+		"test": "turbo run coverage",
+		"api:dev": "(cd apps/api; air; cd ..; cd ..)"
+	},
+	"devDependencies": {
+		"@commitlint/cli": "^17.1.2",
+		"@commitlint/config-conventional": "^17.1.0",
+		"eslint-config-custom": "workspace:*",
+		"husky": "^7.0.4",
+		"lint-staged": "^12.1.2",
+		"prettier": "latest",
+		"turbo": "1.5.5"
+	},
+	"engines": {
+		"node": ">=14.0.0"
+	},
+	"packageManager": "pnpm@7.8.0",
+	"lint-staged": {
+		"*.{ts,tsx,js,jsx,vue,svelte}": [
+			"prettier --write",
+			"eslint --fix",
+			"git add"
+		],
+		"*.{json,yaml,yml}": [
+			"prettier --write",
+			"git add"
+		],
+		"*.go": [
+			"gofmt",
+			"git add"
+		]
+	}
 }

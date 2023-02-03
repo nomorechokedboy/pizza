@@ -3,7 +3,7 @@ package domain
 import "time"
 
 type User struct {
-	Id          int32
+	Id          int
 	Identifier  string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

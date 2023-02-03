@@ -13,7 +13,7 @@ type ProductInMemoryRepo struct {
 
 func (repo *ProductInMemoryRepo) Insert(req *domain.ProductReq) (*domain.Product, error) {
 	if repo.IsErr {
-		return nil, errors.New("connection error")
+		return nil, errors.New("unknown error")
 	}
 
 	for _, product := range repo.ProductList {

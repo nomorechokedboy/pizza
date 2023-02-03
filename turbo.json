@@ -1,24 +1,31 @@
 {
-  "$schema": "https://turborepo.org/schema.json",
-  "pipeline": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"],
-      "env": [
-        "PIZZA_SERVER_PORT",
-        "MORGAN",
-        "MONGODB",
-        "SECRET_KEY",
-        "refreshTokenKey",
-        "REDIS_HOST",
-        "REDIS_PORT"
-      ]
-    },
-    "lint": {
-      "outputs": []
-    },
-    "dev": {
-      "cache": false
-    }
-  }
+	"$schema": "https://turborepo.org/schema.json",
+	"pipeline": {
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": ["dist/**", ".next/**"],
+			"env": [
+				"PIZZA_SERVER_PORT",
+				"MORGAN",
+				"MONGODB",
+				"SECRET_KEY",
+				"refreshTokenKey",
+				"REDIS_HOST",
+				"REDIS_PORT"
+			],
+			"cache": false
+		},
+		"lint": {
+			"outputs": []
+		},
+		"dev": {
+			"cache": false
+		},
+		"test": {
+			"outputs": []
+		},
+		"coverage": {
+			"outputs": ["coverage/**"]
+		}
+	}
 }

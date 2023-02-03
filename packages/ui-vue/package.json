@@ -1,0 +1,22 @@
+{
+	"name": "ui-vue",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.ts",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 0",
+		"lint": "eslint **/*.vue"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@nuxt/kit": "^3.1.1"
+	},
+	"devDependencies": {
+		"@nuxtjs/tailwindcss": "^6.3.0",
+		"eslint": "^7.32.0",
+		"eslint-config-custom": "workspace:*",
+		"tsconfig": "workspace:*"
+	}
+}
