@@ -42,13 +42,69 @@ func (s *FindCategoryTestSuite) TestFindUnknownError() {
 func (s *FindCategoryTestSuite) TestFindUseCases() {
 	initData := []domain.Category{{Id: 1, Name: "Test", Description: "123"}, {Id: 2, Name: "Test123", Description: "Traitor's requiem"}}
 	testCases := []FindCategoryTestCase{
-		{input: domain.CategoryQuery{Page: 3, PageSize: 2}, expected: make([]domain.Category, 0), TestName: "Exceed Page Number", initData: initData},
-		{input: domain.CategoryQuery{}, expected: []domain.Category{{Id: 1, Name: "Test", Description: "123"}, {Id: 2, Name: "Test123", Description: "Traitor's requiem"}}, TestName: "Happy Case", initData: initData},
-		{input: domain.CategoryQuery{Page: 0, PageSize: 1}, expected: []domain.Category{initData[0]}, initData: initData, TestName: "Pagination"},
-		{input: domain.CategoryQuery{Page: 1, PageSize: 1}, expected: []domain.Category{initData[1]}, initData: initData, TestName: "Pagination"},
-		{input: domain.CategoryQuery{Q: "requiem"}, expected: []domain.Category{initData[1]}, initData: initData, TestName: "Search Query Happy Case"},
-		{input: domain.CategoryQuery{Page: 1, PageSize: 1, Q: "requiem"}, expected: []domain.Category{}, initData: initData, TestName: "Search Query With Other Param"},
-		{input: domain.CategoryQuery{Q: "You never gonna get me lalalalala"}, expected: []domain.Category{}, initData: initData, TestName: "Not Found Search Query"},
+		{
+			input: domain.CategoryQuery{
+				Page:     3,
+				PageSize: 2,
+			},
+			expected: make([]domain.Category, 0),
+			TestName: "Exceed Page Number",
+			initData: initData,
+		},
+		{
+			input: domain.CategoryQuery{},
+			expected: []domain.Category{
+				{
+					Id: 1, Name: "Test", Description: "123",
+				},
+				{
+					Id: 2, Name: "Test123", Description: "Traitor's requiem",
+				},
+			},
+			TestName: "Happy Case",
+			initData: initData,
+		},
+		{
+			input: domain.CategoryQuery{
+				Page: 0, PageSize: 1,
+			},
+			expected: []domain.Category{initData[0]},
+			initData: initData,
+			TestName: "Pagination",
+		},
+		{
+			input: domain.CategoryQuery{
+				Page:     1,
+				PageSize: 1,
+			},
+			expected: []domain.Category{initData[1]},
+			initData: initData,
+			TestName: "Pagination",
+		},
+		{
+			input:    domain.CategoryQuery{Q: "requiem"},
+			expected: []domain.Category{initData[1]},
+			initData: initData,
+			TestName: "Search Query Happy Case",
+		},
+		{
+			input: domain.CategoryQuery{
+				Page:     1,
+				PageSize: 1,
+				Q:        "requiem",
+			},
+			expected: []domain.Category{},
+			initData: initData,
+			TestName: "Search Query With Other Param",
+		},
+		{
+			input: domain.CategoryQuery{
+				Q: "You never gonna get me lalalalala",
+			},
+			expected: []domain.Category{},
+			initData: initData,
+			TestName: "Not Found Search Query",
+		},
 	}
 
 	for _, c := range testCases {

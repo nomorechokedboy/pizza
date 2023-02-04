@@ -26,7 +26,7 @@ type UpdateCategoryTestCase struct {
 }
 
 func (s *UpdateProductTestSuite) SetupTest() {
-	s.repo = repository.ProductInMemoryRepo{DataStore: make([]domain.Product, 0), IsErr: false}
+	s.repo = repository.ProductInMemoryRepo{DataStore: []domain.Product{{Id: 1, CreatedAt: time.Now(), UpdatedAt: time.Now(), Slug: "slug", Description: "Desc", Name: "Lmao", SKU: "123ABC", Price: 1000, Category: category.Category{}, Inventory: inventory.Inventory{}}}, IsErr: false}
 	s.useCase = usecases.UpdateProductUseCase{Repo: &s.repo}
 }
 
@@ -36,35 +36,35 @@ func (s *UpdateProductTestSuite) TearDownTest() {
 
 func (s *UpdateProductTestSuite) TestUpdateUnknownError() {
 	s.repo.IsErr = true
-	category, err := s.useCase.Execute(nil)
+	id := 1
+	product, err := s.useCase.Execute(&id, nil)
 
-	s.Assertions.Nil(category)
+	s.Assertions.Nil(product)
 	s.Assertions.EqualError(err, "unknown error")
 }
 
 func (s *UpdateProductTestSuite) TestUpdateDuplicateError() {
-	s.repo.DataStore = append(s.repo.DataStore, domain.Product{Id: 1, CreatedAt: time.Now(), UpdatedAt: time.Now(), Slug: "slug", Description: "Desc", Name: "Lmao", SKU: "123ABC", Price: 1000, Category: category.Category{}, Inventory: inventory.Inventory{}})
+	id := 1
 	req := domain.ProductReq{Description: "Lalalala", Name: "Updated name", SKU: "Updated SKU", Price: 100, CategoryId: 1, InventoryId: 2}
-	product, err := s.useCase.Execute(&req)
+	product, err := s.useCase.Execute(&id, &req)
 
 	s.Assertions.Nil(product)
 	s.Assertions.EqualError(err, "resource exist")
 }
 
 func (s *UpdateProductTestSuite) TestUpdateNotFoundError() {
+	id := 2
 	req := domain.ProductReq{Description: "Lalalala", Name: "Updated name", SKU: "Updated SKU", Price: 100, CategoryId: 1, InventoryId: 2}
-	product, err := s.useCase.Execute(&req)
+	product, err := s.useCase.Execute(&id, &req)
 
 	s.Assertions.Nil(product)
 	s.Assertions.EqualError(err, "not found")
 }
 
 func (s *UpdateProductTestSuite) TestUpdateHappyCase() {
-	s.repo.DataStore = append(s.repo.DataStore, domain.Product{Id: 1, CreatedAt: time.Now(), UpdatedAt: time.Now(), Slug: "slug", Description: "Desc", Name: "Lmao", SKU: "123ABC", Price: 1000, Category: category.Category{}, Inventory: inventory.Inventory{}})
-
 	id := 1
 	req := domain.ProductReq{Description: "Lalalala", Name: "Updated name", SKU: "Updated SKU", Price: 100, CategoryId: 1, InventoryId: 2}
-	product, err := s.useCase.Execute(&req)
+	product, err := s.useCase.Execute(&id, &req)
 
 	s.Assertions.Nil(err)
 	s.Assertions.Equal(product.Id, id)
@@ -74,6 +74,7 @@ func (s *UpdateProductTestSuite) TestUpdateHappyCase() {
 	s.Assertions.Equal(product.Name, req.Name)
 	s.Assertions.Equal(product.Price, req.Price)
 	s.Assertions.Equal(product.SKU, req.SKU)
+	s.Assertions.Equal(product, s.repo.DataStore[0])
 }
 
 func TestUpdateProductTestSuite(t *testing.T) {
