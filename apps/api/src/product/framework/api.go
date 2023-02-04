@@ -22,7 +22,7 @@ func CreateProduct(ctx *fiber.Ctx) error {
 		return ctx.Status(500).JSON(nil)
 	}
 
-	useCase := ctx.Locals("createProductUseCase").(usecases.CreateProductUseCase)
+	useCase := ctx.Locals("createProductUseCase").(usecases.InsertProductUseCase)
 	product, err := useCase.Execute(&req)
 	if err != nil {
 		return ctx.Status(409).JSON(nil)

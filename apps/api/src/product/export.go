@@ -6,6 +6,6 @@ import (
 	"api/src/product/repository"
 )
 
-var ProductMemRepo = repository.ProductInMemoryRepo{ProductList: make([]domain.Product, 0), IsErr: false}
+var ProductMemRepo = repository.ProductInMemoryRepo{DataStore: make([]domain.Product, 0), IsErr: false}
 
-var CreateProductUseCase = usecases.CreateProductUseCase{Repo: &ProductMemRepo}
+var CreateProductUseCase = usecases.InsertProductUseCase{Repo: &ProductMemRepo}

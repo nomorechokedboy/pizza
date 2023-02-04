@@ -1,6 +1,11 @@
 package domain
 
-import "time"
+import (
+	category "api/src/category/domain"
+	"api/src/common"
+	inventory "api/src/inventory/domain"
+	"time"
+)
 
 type Product struct {
 	Id          int32
@@ -11,6 +16,8 @@ type Product struct {
 	Name        string
 	SKU         string
 	Price       float32
+	Category    category.Category
+	Inventory   inventory.Inventory
 }
 
 type ProductReq struct {
@@ -18,4 +25,11 @@ type ProductReq struct {
 	Name        string  `js:"name"`
 	SKU         string  `js:"sku"`
 	Price       float32 `js:"price"`
+	CategoryId  int     `js:"categoryId"`
+	InventoryId int     `js:"inventoryId"`
+}
+
+type ProductQuery struct {
+	Base        common.BaseQuery
+	InventoryId *int `query:"inventoryId"`
 }
