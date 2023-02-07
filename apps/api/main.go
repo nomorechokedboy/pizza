@@ -3,11 +3,10 @@ package main
 import (
 	_ "api/docs"
 	"log"
+	"os"
 
 	"api/src/category"
 	CategoryInfrastructure "api/src/category/infrastructure"
-	"api/src/inventory"
-	"api/src/inventory/domain/usecases"
 	"api/src/product"
 	"api/src/product/domain"
 
@@ -25,10 +24,17 @@ import (
 )
 
 var createProductUseCase = domain.CreateProductUseCase{Repo: &product.ProductMemRepo}
-var DeleteInventoryUseCase = usecases.DeleteInventoryUseCase{Repo: &inventory.InventoryMemRepo}
 
 func HealthCheck(c *fiber.Ctx) error {
 	return c.SendString("Hello, World!")
+}
+
+func getEnv(name, fallback string) string {
+	if env, ok := os.LookupEnv(name); ok {
+		return env
+	}
+
+	return fallback
 }
 
 // @title Fiber Pizza API
@@ -41,12 +47,14 @@ func HealthCheck(c *fiber.Ctx) error {
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @BasePath /api/v1
 func main() {
-	dsn := "host=localhost user=postgres password=postgres dbname=pizza port=5432 sslmode=disable"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	DB_DNS := getEnv("DB_DNS", "host=localhost user=postgres password=postgres dbname=pizza port=5432 sslmode=disable")
+	db, err := gorm.Open(postgres.Open(DB_DNS), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
-	log.Fatal(db.AutoMigrate(&CategoryInfrastructure.Category{}))
+	if err = db.AutoMigrate(&CategoryInfrastructure.Category{}); err != nil {
+		panic("failed to migrate database")
+	}
 
 	app := fiber.New()
 	api := app.Group("/api")
