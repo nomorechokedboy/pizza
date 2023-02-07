@@ -35,6 +35,9 @@ func (repo *UserInMemoryRepo) Update(id *int, req *domain.CreateUserReq) (*domai
 
 	for i := range repo.UserList {
 		userUpdate := &repo.UserList[i]
+		// if userUpdate.Identifier == req.Identifier {
+		// 	errors.New("Identifier already exist")
+		// }
 		if userUpdate.Id == *id {
 			userUpdate.FullName = req.FullName
 			userUpdate.BirthDate = req.BirthDate
@@ -46,4 +49,30 @@ func (repo *UserInMemoryRepo) Update(id *int, req *domain.CreateUserReq) (*domai
 		}
 	}
 	return nil, nil
+}
+
+func (repo *UserInMemoryRepo) Delete(req *int) (*domain.User, error) {
+	if repo.IsErr {
+		return nil, errors.New("unknown error")
+	}
+
+	var res domain.User
+	pos := -1
+	filteredList := make([]domain.User, 0)
+
+	for i, user := range repo.UserList {
+		if user.Id == *req {
+			res = user
+			pos = i
+			continue
+		}
+		filteredList = append(filteredList, user)
+	}
+	repo.UserList = filteredList
+
+	if pos < 0 {
+		return nil, nil
+
+	}
+	return &res, nil
 }
