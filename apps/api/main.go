@@ -7,8 +7,6 @@ import (
 
 	"api/src/category"
 	CategoryInfrastructure "api/src/category/infrastructure"
-	"api/src/product"
-	"api/src/product/domain"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
@@ -22,8 +20,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
-
-var createProductUseCase = domain.CreateProductUseCase{Repo: &product.ProductMemRepo}
 
 func HealthCheck(c *fiber.Ctx) error {
 	return c.SendString("Hello, World!")
@@ -62,7 +58,6 @@ func main() {
 
 	app.Use(cors.New())
 	app.Use(func(c *fiber.Ctx) error {
-		c.Locals("createProductUseCase", createProductUseCase)
 		category.RegisterUseCases(c, db)
 		return c.Next()
 	})
@@ -76,7 +71,6 @@ func main() {
 	app.Use(favicon.New())
 
 	category.New(v1)
-	app.Post("/create-product", product.CreateProduct)
 	app.Get("healthz", HealthCheck)
 	app.Get("/docs/*", swagger.HandlerDefault)
 	app.Get("/", func(c *fiber.Ctx) error {
