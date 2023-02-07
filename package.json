@@ -31,16 +31,13 @@
 	"lint-staged": {
 		"*.{ts,tsx,js,jsx,vue,svelte}": [
 			"prettier --write",
-			"eslint --fix",
-			"git add"
+			"eslint --fix"
 		],
 		"*.{json,yaml,yml}": [
-			"prettier --write",
-			"git add"
+			"prettier --write"
 		],
 		"*.go": [
-			"gofmt",
-			"git add"
+			"gofmt"
 		]
 	}
 }

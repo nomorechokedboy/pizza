@@ -1,14 +1,14 @@
 package domain
 
 type Category struct {
-	Id          int
+	Id          uint
 	Name        string
 	Description string
 }
 
 type CategoryQuery struct {
-	Page     int    `query:"page"`
-	PageSize int    `query:"pageSize"`
+	Page     uint   `query:"page"`
+	PageSize uint   `query:"pageSize"`
 	Q        string `query:"q"`
 }
 
