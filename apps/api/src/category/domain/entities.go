@@ -7,9 +7,9 @@ type Category struct {
 }
 
 type CategoryQuery struct {
-	Page     uint   `query:"page"`
-	PageSize uint   `query:"pageSize"`
-	Q        string `query:"q"`
+	Page     uint    `query:"page"`
+	PageSize uint    `query:"pageSize"`
+	Q        *string `query:"q"`
 }
 
 type WriteCategoryBody struct {

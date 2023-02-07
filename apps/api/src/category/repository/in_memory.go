@@ -96,10 +96,10 @@ func (repo *CategoryInMemoryRepo) Find(req *domain.CategoryQuery) (*[]domain.Cat
 	}
 
 	res := repo.Data
-	if req.Q != "" {
+	if req.Q != nil {
 		res = make([]domain.Category, 0)
 		for _, category := range repo.Data {
-			q := strings.ToLower(req.Q)
+			q := strings.ToLower(*req.Q)
 			entityContainsQ := strings.Contains(strings.ToLower(category.Description), q) || strings.Contains(strings.ToLower(category.Name), q)
 
 			if entityContainsQ {

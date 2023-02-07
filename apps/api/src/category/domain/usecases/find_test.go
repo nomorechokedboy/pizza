@@ -82,7 +82,7 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 			TestName: "Pagination",
 		},
 		{
-			input:    domain.CategoryQuery{Q: "requiem"},
+			input:    domain.CategoryQuery{Q: &[]string{"requiem"}[0]},
 			expected: []domain.Category{initData[1]},
 			initData: initData,
 			TestName: "Search Query Happy Case",
@@ -91,7 +91,7 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 			input: domain.CategoryQuery{
 				Page:     1,
 				PageSize: 1,
-				Q:        "requiem",
+				Q:        &[]string{"requiem"}[0],
 			},
 			expected: []domain.Category{},
 			initData: initData,
@@ -99,7 +99,7 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 		},
 		{
 			input: domain.CategoryQuery{
-				Q: "You never gonna get me lalalalala",
+				Q: &[]string{"You never gonna get me lalalalala"}[0],
 			},
 			expected: []domain.Category{},
 			initData: initData,
