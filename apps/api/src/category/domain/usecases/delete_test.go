@@ -38,6 +38,6 @@ func TestDeleteCategoryHappyCase(t *testing.T) {
 
 	assert.Nil(err)
 	assert.NotNil(deletedCategory)
-	assert.Equal(id, deletedCategory.Id)
+	assert.Equal(uint(id), deletedCategory.Id)
 	assert.Equal(len(categoryRepo.Data), 0)
 }
