@@ -22,7 +22,7 @@ func (repo *CategoryInMemoryRepo) Insert(req *domain.WriteCategoryBody) (*domain
 		}
 	}
 
-	Id := len(repo.Data) + 1
+	Id := uint(len(repo.Data) + 1)
 	newCategory := domain.Category{Id: Id, Description: req.Description, Name: req.Name}
 	repo.Data = append(repo.Data, newCategory)
 
@@ -36,7 +36,7 @@ func (repo *CategoryInMemoryRepo) Update(id *int, req *domain.WriteCategoryBody)
 
 	for i := range repo.Data {
 		category := &repo.Data[i]
-		if category.Id == *id {
+		if category.Id == uint(*id) {
 			category.Description = req.Description
 			category.Name = req.Name
 			return category, nil
@@ -56,7 +56,7 @@ func (repo *CategoryInMemoryRepo) Delete(req *int) (*domain.Category, error) {
 	filteredList := make([]domain.Category, 0)
 
 	for i, inventory := range repo.Data {
-		if inventory.Id == *req {
+		if inventory.Id == uint(*req) {
 			res = inventory
 			pos = i
 			continue
@@ -81,7 +81,7 @@ func (repo *CategoryInMemoryRepo) FindOne(id *int) (*domain.Category, error) {
 	var res *domain.Category
 
 	for _, inventory := range repo.Data {
-		if inventory.Id == *id {
+		if inventory.Id == uint(*id) {
 			res = &inventory
 			break
 		}
@@ -111,14 +111,14 @@ func (repo *CategoryInMemoryRepo) Find(req *domain.CategoryQuery) (*[]domain.Cat
 	if req.PageSize == 0 {
 		req.PageSize = 10
 	}
-	start := req.Page * req.PageSize
-	end := start + req.PageSize
-	res = res[min(start, len(res)):min(end, len(res))]
+	start := uint(req.Page * req.PageSize)
+	end := uint(start + req.PageSize)
+	res = res[min(start, uint(len(res))):min(end, uint(len(res)))]
 
 	return &res, nil
 }
 
-func min(x, y int) int {
+func min(x, y uint) uint {
 	if y < x {
 		return y
 	}

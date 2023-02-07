@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"api/src/category"
+	CategoryInfrastructure "api/src/category/infrastructure"
 	"api/src/inventory"
 	"api/src/inventory/domain/usecases"
 	"api/src/product"
@@ -19,6 +20,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/swagger"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 var createProductUseCase = domain.CreateProductUseCase{Repo: &product.ProductMemRepo}
@@ -38,6 +41,13 @@ func HealthCheck(c *fiber.Ctx) error {
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @BasePath /api/v1
 func main() {
+	dsn := "host=localhost user=postgres password=postgres dbname=pizza port=5432 sslmode=disable"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+	log.Fatal(db.AutoMigrate(&CategoryInfrastructure.Category{}))
+
 	app := fiber.New()
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
@@ -45,11 +55,7 @@ func main() {
 	app.Use(cors.New())
 	app.Use(func(c *fiber.Ctx) error {
 		c.Locals("createProductUseCase", createProductUseCase)
-		c.Locals("insertCategoryUseCase", category.InsertCategoryUseCase)
-		c.Locals("updateProductUseCase", category.UpdateCategoryUseCase)
-		c.Locals("deleteCategoryUseCase", category.DeleteCategoryUseCase)
-		c.Locals("findCategoryUseCase", category.FindCategoryUseCase)
-		c.Locals("findOneCategoryUseCase", category.FindOneCategoryUseCase)
+		category.RegisterUseCases(c, db)
 		return c.Next()
 	})
 	app.Use(recover.New())

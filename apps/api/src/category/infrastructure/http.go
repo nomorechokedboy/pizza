@@ -23,7 +23,10 @@ func InsertCategory(ctx *fiber.Ctx) error {
 		return ctx.Status(500).JSON(nil)
 	}
 
-	useCase := ctx.Locals("insertCategoryUseCase").(usecases.InsertCategoryUseCase)
+	useCase := ctx.Locals("insertCategoryUseCase").(*usecases.InsertCategoryUseCase)
+	if useCase == nil {
+		return ctx.Status(500).SendString("Internal error")
+	}
 	category, err := useCase.Execute(&req)
 	if err != nil {
 		return ctx.Status(409).JSON(nil)
@@ -53,7 +56,7 @@ func UpdateCategory(ctx *fiber.Ctx) error {
 		return ctx.Status(500).JSON(nil)
 	}
 
-	useCase := ctx.Locals("updateProductUseCase").(usecases.UpdateCategoryUseCase)
+	useCase := ctx.Locals("updateCategoryUseCase").(*usecases.UpdateCategoryUseCase)
 	category, err := useCase.Execute(&id, &req)
 	if err != nil {
 		return ctx.Status(409).JSON(nil)
@@ -78,7 +81,7 @@ func DeleteCategory(ctx *fiber.Ctx) error {
 		return ctx.Status(409).JSON(nil)
 	}
 
-	useCase := ctx.Locals("deleteCategoryUseCase").(usecases.DeleteCategoryUseCase)
+	useCase := ctx.Locals("deleteCategoryUseCase").(*usecases.DeleteCategoryUseCase)
 	category, err := useCase.Execute(&id)
 	if err != nil {
 		return ctx.Status(409).JSON(nil)
@@ -105,7 +108,7 @@ func FindCategory(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	useCase := ctx.Locals("findCategoryUseCase").(usecases.FindCategoryUseCase)
+	useCase := ctx.Locals("findCategoryUseCase").(*usecases.FindCategoryUseCase)
 	categories, err := useCase.Execute(queries)
 
 	if err != nil {
@@ -131,7 +134,7 @@ func FindOneCategory(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	useCase := ctx.Locals("findOneCategoryUseCase").(usecases.FindOneCategoryUseCase)
+	useCase := ctx.Locals("findOneCategoryUseCase").(*usecases.FindOneCategoryUseCase)
 	category, err := useCase.Execute(&id)
 	if err != nil {
 		return err
