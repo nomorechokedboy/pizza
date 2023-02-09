@@ -12,3 +12,7 @@ func GetDbURI(cfg *config.Config) string {
 func GetServerAddress(cfg *config.Config) string {
 	return fmt.Sprintf("%s:%s", cfg.Server.Host, cfg.Server.Port)
 }
+
+func GetDataTypeAddress[T any](data T) *T {
+	return &data
+}

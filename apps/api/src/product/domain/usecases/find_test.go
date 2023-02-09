@@ -7,6 +7,7 @@ import (
 	"api/src/product/domain"
 	"api/src/product/domain/usecases"
 	"api/src/product/repository"
+	"api/src/utils"
 	"testing"
 	"time"
 
@@ -167,8 +168,8 @@ func (s *FindProductTestSuite) TestFindUseCases() {
 		{
 			Queries: &domain.ProductQuery{
 				Base: common.BaseQuery{
-					Page:     &[]int{0}[0],
-					PageSize: &[]int{5}[0],
+					Page:     utils.GetDataTypeAddress(0),
+					PageSize: utils.GetDataTypeAddress(5),
 					Q:        &Q,
 				},
 			},
@@ -179,14 +180,14 @@ func (s *FindProductTestSuite) TestFindUseCases() {
 		},
 		{
 			Queries: &domain.ProductQuery{
-				InventoryId: &[]int{10}[0],
+				InventoryId: utils.GetDataTypeAddress(10),
 			},
 			Expected:    &[]domain.Product{},
 			Description: "Query By Inventory Id Not Found",
 		},
 		{
 			Queries: &domain.ProductQuery{
-				InventoryId: &[]int{1}[0],
+				InventoryId: utils.GetDataTypeAddress(1),
 			},
 			Expected:    &[]domain.Product{initData[0], initData[1]},
 			Description: "Query By Inventory Id Happy Case",
@@ -194,11 +195,11 @@ func (s *FindProductTestSuite) TestFindUseCases() {
 		{
 			Queries: &domain.ProductQuery{
 				Base: common.BaseQuery{
-					Page:     &[]int{1}[0],
-					PageSize: &[]int{2}[0],
-					Q:        &[]string{"free"}[0],
+					Page:     utils.GetDataTypeAddress(1),
+					PageSize: utils.GetDataTypeAddress(2),
+					Q:        utils.GetDataTypeAddress("free"),
 				},
-				InventoryId: &[]int{2}[0],
+				InventoryId: utils.GetDataTypeAddress(2),
 			},
 			Expected:    &[]domain.Product{initData[2]},
 			Description: "Query By Inventory Id All Params",

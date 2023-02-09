@@ -4,6 +4,7 @@ import (
 	"api/src/category/domain"
 	"api/src/category/domain/usecases"
 	"api/src/category/repository"
+	"api/src/utils"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -40,7 +41,7 @@ func (s *FindCategoryTestSuite) TestFindUnknownError() {
 }
 
 func (s *FindCategoryTestSuite) TestFindUseCases() {
-	initData := []domain.Category{{ID: 1, Name: "Test", Description: &[]string{"123"}[0]}, {ID: 2, Name: "Test123", Description: &[]string{"Traitor's requiem"}[0]}}
+	initData := []domain.Category{{ID: 1, Name: "Test", Description: utils.GetDataTypeAddress("123")}, {ID: 2, Name: "Test123", Description: utils.GetDataTypeAddress("Traitor's requiem")}}
 	testCases := []FindCategoryTestCase{
 		{
 			input: domain.CategoryQuery{
@@ -57,10 +58,10 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 				{
 					ID:          1,
 					Name:        "Test",
-					Description: &[]string{"123"}[0],
+					Description: utils.GetDataTypeAddress("123"),
 				},
 				{
-					ID: 2, Name: "Test123", Description: &[]string{"Traitor's requiem"}[0],
+					ID: 2, Name: "Test123", Description: utils.GetDataTypeAddress("Traitor's requiem"),
 				},
 			},
 			TestName: "Happy Case",
@@ -84,7 +85,7 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 			TestName: "Pagination",
 		},
 		{
-			input:    domain.CategoryQuery{Q: &[]string{"requiem"}[0]},
+			input:    domain.CategoryQuery{Q: utils.GetDataTypeAddress("requiem")},
 			expected: []domain.Category{initData[1]},
 			initData: initData,
 			TestName: "Search Query Happy Case",
@@ -93,7 +94,7 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 			input: domain.CategoryQuery{
 				Page:     1,
 				PageSize: 1,
-				Q:        &[]string{"requiem"}[0],
+				Q:        utils.GetDataTypeAddress("requiem"),
 			},
 			expected: []domain.Category{},
 			initData: initData,
@@ -101,7 +102,7 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 		},
 		{
 			input: domain.CategoryQuery{
-				Q: &[]string{"You never gonna get me lalalalala"}[0],
+				Q: utils.GetDataTypeAddress("You never gonna get me lalalalala"),
 			},
 			expected: []domain.Category{},
 			initData: initData,

@@ -3,6 +3,7 @@ package usecases_test
 import (
 	"api/src/category/domain"
 	"api/src/category/domain/usecases"
+	"api/src/utils"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -33,7 +34,7 @@ func TestUpdateCategoryUseCaseWithNotFoundError(t *testing.T) {
 
 func TestUpdateCategoryHappyCase(t *testing.T) {
 	assert := assert.New(t)
-	categoryRepo.Data = append(categoryRepo.Data, domain.Category{Name: "Shounen", Description: &[]string{"Blah blah, bloh bloh description"}[0]})
+	categoryRepo.Data = append(categoryRepo.Data, domain.Category{Name: "Shounen", Description: utils.GetDataTypeAddress("Blah blah, bloh bloh description")})
 	updatedCategory, err := usecase.Execute(&id, &req)
 
 	assert.Nil(err)

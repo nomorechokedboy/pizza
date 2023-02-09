@@ -5,6 +5,7 @@ import (
 	"api/src/category/domain/usecases"
 	"api/src/category/repository"
 	"api/src/common"
+	"api/src/utils"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -26,7 +27,7 @@ func TestInsertCategoryWithUnknownError(t *testing.T) {
 
 func TestInsertCategoryWithDuplicateError(t *testing.T) {
 	assert := assert.New(t)
-	categoryRepo.Data = append(categoryRepo.Data, domain.Category{ID: 1, Name: "Comedy", Description: &[]string{"Another description"}[0]})
+	categoryRepo.Data = append(categoryRepo.Data, domain.Category{ID: 1, Name: "Comedy", Description: utils.GetDataTypeAddress("Another description")})
 	req := domain.WriteCategoryBody{Name: "Comedy", Description: "Funny stuffs"}
 	category, err := insertUseCase.Execute(&req)
 
