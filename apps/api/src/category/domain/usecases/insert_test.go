@@ -41,7 +41,7 @@ func TestInsertCategoryHappyCase(t *testing.T) {
 
 	assert.Nil(err)
 	assert.NotNil(category)
-	assert.Equal(req.Description, category.Description)
+	assert.Equal(req.Description, *category.Description)
 	assert.Equal(req.Name, category.Name)
 }
 
