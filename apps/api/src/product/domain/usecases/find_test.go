@@ -29,7 +29,7 @@ var initData = []domain.Product{
 		Name:        "Lmao",
 		SKU:         "123ABC",
 		Price:       1000,
-		Category:    category.Category{Id: 1},
+		Category:    category.Category{ID: 1},
 		Inventory:   inventory.Inventory{},
 	},
 	{
@@ -41,7 +41,7 @@ var initData = []domain.Product{
 		Name:        "pizza morella",
 		SKU:         "p123",
 		Price:       1000,
-		Category:    category.Category{Id: 1},
+		Category:    category.Category{ID: 1},
 		Inventory:   inventory.Inventory{},
 	},
 	{
@@ -53,7 +53,7 @@ var initData = []domain.Product{
 		Name:        "pizza free",
 		SKU:         "1234",
 		Price:       1000,
-		Category:    category.Category{Id: 2},
+		Category:    category.Category{ID: 2},
 		Inventory:   inventory.Inventory{},
 	},
 }
@@ -116,7 +116,7 @@ func (s *FindProductTestSuite) TestFindUseCases() {
 					SKU:         "123ABC",
 					Price:       1000,
 					Category: category.Category{
-						Id: 1,
+						ID: 1,
 					},
 					Inventory: inventory.Inventory{},
 				},
@@ -135,7 +135,7 @@ func (s *FindProductTestSuite) TestFindUseCases() {
 					SKU:         "p123",
 					Price:       1000,
 					Category: category.Category{
-						Id: 1,
+						ID: 1,
 					},
 					Inventory: inventory.Inventory{},
 				},

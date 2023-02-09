@@ -1,9 +1,9 @@
 package domain
 
 type Category struct {
-	Id          uint
-	Name        string
-	Description string
+	ID          uint    `gorm:"primaryKey"`
+	Name        string  `gorm:"unique;not null;size:20"`
+	Description *string `gorm:"size:1000"`
 }
 
 type CategoryQuery struct {

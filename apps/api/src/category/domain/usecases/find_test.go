@@ -40,7 +40,7 @@ func (s *FindCategoryTestSuite) TestFindUnknownError() {
 }
 
 func (s *FindCategoryTestSuite) TestFindUseCases() {
-	initData := []domain.Category{{Id: 1, Name: "Test", Description: "123"}, {Id: 2, Name: "Test123", Description: "Traitor's requiem"}}
+	initData := []domain.Category{{ID: 1, Name: "Test", Description: &[]string{"123"}[0]}, {ID: 2, Name: "Test123", Description: &[]string{"Traitor's requiem"}[0]}}
 	testCases := []FindCategoryTestCase{
 		{
 			input: domain.CategoryQuery{
@@ -55,10 +55,12 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 			input: domain.CategoryQuery{},
 			expected: []domain.Category{
 				{
-					Id: 1, Name: "Test", Description: "123",
+					ID:          1,
+					Name:        "Test",
+					Description: &[]string{"123"}[0],
 				},
 				{
-					Id: 2, Name: "Test123", Description: "Traitor's requiem",
+					ID: 2, Name: "Test123", Description: &[]string{"Traitor's requiem"}[0],
 				},
 			},
 			TestName: "Happy Case",

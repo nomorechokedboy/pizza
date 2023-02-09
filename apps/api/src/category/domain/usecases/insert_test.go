@@ -26,7 +26,7 @@ func TestInsertCategoryWithUnknownError(t *testing.T) {
 
 func TestInsertCategoryWithDuplicateError(t *testing.T) {
 	assert := assert.New(t)
-	categoryRepo.Data = append(categoryRepo.Data, domain.Category{Id: 1, Name: "Comedy", Description: "Another description"})
+	categoryRepo.Data = append(categoryRepo.Data, domain.Category{ID: 1, Name: "Comedy", Description: &[]string{"Another description"}[0]})
 	req := domain.WriteCategoryBody{Name: "Comedy", Description: "Funny stuffs"}
 	category, err := insertUseCase.Execute(&req)
 

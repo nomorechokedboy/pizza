@@ -33,10 +33,10 @@ func TestFindOneCategoryUseCaseWithNotFoundError(t *testing.T) {
 func TestFindOneCategoryUseCaseHappyCase(t *testing.T) {
 	assert := assert.New(t)
 	id := 11
-	categoryRepo.Data = append(categoryRepo.Data, domain.Category{Id: 11, Name: "Test Category", Description: "Lalalalalalalala"})
+	categoryRepo.Data = append(categoryRepo.Data, domain.Category{ID: 11, Name: "Test Category", Description: &[]string{"Lalalalalalalala"}[0]})
 	category, err := findOneUseCase.Execute(&id)
 
 	assert.Nil(err)
 	assert.NotNil(category)
-	assert.Equal(category.Id, uint(id))
+	assert.Equal(category.ID, uint(id))
 }

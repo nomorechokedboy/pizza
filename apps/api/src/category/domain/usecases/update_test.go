@@ -33,11 +33,11 @@ func TestUpdateCategoryUseCaseWithNotFoundError(t *testing.T) {
 
 func TestUpdateCategoryHappyCase(t *testing.T) {
 	assert := assert.New(t)
-	categoryRepo.Data = append(categoryRepo.Data, domain.Category{Name: "Shounen", Description: "Blah blah, bloh bloh description"})
+	categoryRepo.Data = append(categoryRepo.Data, domain.Category{Name: "Shounen", Description: &[]string{"Blah blah, bloh bloh description"}[0]})
 	updatedCategory, err := usecase.Execute(&id, &req)
 
 	assert.Nil(err)
 	assert.Equal(updatedCategory.Description, req.Description)
 	assert.Equal(updatedCategory.Name, req.Name)
-	assert.Equal(updatedCategory.Id, uint(id))
+	assert.Equal(updatedCategory.ID, uint(id))
 }
