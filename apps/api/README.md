@@ -3,6 +3,8 @@
 First, run the development server:
 
 ```bash
+go mod download # install deps if run on local
+
 docker-compose up -d # run database and other service for local dev
 
 pn api:dev # run this at root level
