@@ -8,7 +8,11 @@ services:
                         - postgres
                         - minio
                 environment:
-                        - DB_DNS=host=postgres user=postgres password=postgres dbname=pizza port=5432 sslmode=disable
+                        - DB_PORT=5432
+                        - DB_HOST=postgres
+                        - DB_NAME=pizza
+                        - DB_USER=postgres
+                        - DB_PASSWORD=postgres
                 ports:
                         - '3001:3001'
                 networks:
