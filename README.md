@@ -41,6 +41,14 @@ After this, you are good to contribute to the golang repository
 
 This turborepo uses [pnpm](https://pnpm.io) as a package manager. It includes the following packages/apps:
 
+### Dev container
+
+This monorepo use dev containers for development, you could choose between local environment and dev containers environment for developing the project.
+
+Just install dev containers and run it in the container
+
+_Note_: dev containers is pretty new with me so the setup is not at its best so you might have some trouble with dev containers.
+
 ### Apps and Packages
 
 - `admin-nuxt`: a [Nuxt.js](https://nuxt.com) app
