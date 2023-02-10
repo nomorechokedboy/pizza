@@ -24,3 +24,9 @@ type CreateUserReq struct {
 	Gender      bool      `json:"Gender"`
 	BirthDate   time.Time `json:"BirthDate"`
 }
+
+type UserQuery struct {
+	Page     int    `query:"page"`
+	PageSize int    `query:"pageSize"`
+	Q        string `query:"q"`
+}

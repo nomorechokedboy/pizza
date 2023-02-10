@@ -3,6 +3,7 @@ package user
 import (
 	"api/src/user/domain"
 	"errors"
+	"strings"
 	"time"
 )
 
@@ -75,4 +76,42 @@ func (repo *UserInMemoryRepo) Delete(req *int) (*domain.User, error) {
 
 	}
 	return &res, nil
+}
+
+func (repo *UserInMemoryRepo) Find(req *domain.UserQuery) (*[]domain.User, error) {
+	if repo.IsErr {
+		return nil, errors.New("unknown error")
+	}
+
+	res := repo.UserList
+	if req.Q != "" {
+		res = make([]domain.User, 0)
+		for _, user := range repo.UserList {
+			q := strings.ToLower(req.Q)
+			entityContainsQ := strings.Contains(strings.ToLower(user.Email), q) || strings.Contains(strings.ToLower(user.FullName), q) || strings.Contains(strings.ToLower(user.Identifier), q) || strings.Contains(strings.ToLower(user.PhoneNumber), q) || strings.Contains(strings.ToLower(user.Password), q) || strings.Contains(strings.ToLower(user.BirthDate.Format("2006-01-02 15:04:05")), q)
+
+			if entityContainsQ {
+				res = append(res, user)
+			}
+
+		}
+	}
+
+	if req.PageSize == 0 {
+		req.PageSize = 10
+	}
+
+	start := req.Page * req.PageSize
+	end := start + req.PageSize
+
+	res = res[min(start, len(res)):min(end, len(res))]
+
+	return &res, nil
+}
+
+func min(x, y int) int {
+	if y < x {
+		return y
+	}
+	return x
 }
