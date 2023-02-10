@@ -39,5 +39,5 @@ func TestUpdateCategoryHappyCase(t *testing.T) {
 	assert.Nil(err)
 	assert.Equal(updatedCategory.Description, req.Description)
 	assert.Equal(updatedCategory.Name, req.Name)
-	assert.Equal(updatedCategory.Id, id)
+	assert.Equal(updatedCategory.Id, uint(id))
 }

@@ -3,12 +3,10 @@ package main
 import (
 	_ "api/docs"
 	"log"
+	"os"
 
 	"api/src/category"
-	"api/src/inventory"
-	"api/src/inventory/domain/usecases"
-	"api/src/product"
-	"api/src/product/domain"
+	CategoryInfrastructure "api/src/category/infrastructure"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
@@ -19,13 +17,20 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/swagger"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
-
-var createProductUseCase = domain.CreateProductUseCase{Repo: &product.ProductMemRepo}
-var DeleteInventoryUseCase = usecases.DeleteInventoryUseCase{Repo: &inventory.InventoryMemRepo}
 
 func HealthCheck(c *fiber.Ctx) error {
 	return c.SendString("Hello, World!")
+}
+
+func getEnv(name, fallback string) string {
+	if env, ok := os.LookupEnv(name); ok {
+		return env
+	}
+
+	return fallback
 }
 
 // @title Fiber Pizza API
@@ -38,18 +43,22 @@ func HealthCheck(c *fiber.Ctx) error {
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @BasePath /api/v1
 func main() {
+	DB_DNS := getEnv("DB_DNS", "host=localhost user=postgres password=postgres dbname=pizza port=5432 sslmode=disable")
+	db, err := gorm.Open(postgres.Open(DB_DNS), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
+	}
+	if err = db.AutoMigrate(&CategoryInfrastructure.Category{}); err != nil {
+		panic("failed to migrate database")
+	}
+
 	app := fiber.New()
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
 
 	app.Use(cors.New())
 	app.Use(func(c *fiber.Ctx) error {
-		c.Locals("createProductUseCase", createProductUseCase)
-		c.Locals("insertCategoryUseCase", category.InsertCategoryUseCase)
-		c.Locals("updateProductUseCase", category.UpdateCategoryUseCase)
-		c.Locals("deleteCategoryUseCase", category.DeleteCategoryUseCase)
-		c.Locals("findCategoryUseCase", category.FindCategoryUseCase)
-		c.Locals("findOneCategoryUseCase", category.FindOneCategoryUseCase)
+		category.RegisterUseCases(c, db)
 		return c.Next()
 	})
 	app.Use(recover.New())
@@ -62,7 +71,6 @@ func main() {
 	app.Use(favicon.New())
 
 	category.New(v1)
-	app.Post("/create-product", product.CreateProduct)
 	app.Get("healthz", HealthCheck)
 	app.Get("/docs/*", swagger.HandlerDefault)
 	app.Get("/", func(c *fiber.Ctx) error {

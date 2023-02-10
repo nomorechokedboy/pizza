@@ -8,6 +8,7 @@ import (
 	"api/src/common"
 
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
 var CategoryMemRepo = repository.CategoryInMemoryRepo{Data: make([]domain.Category, 0), IsErr: false}
@@ -25,4 +26,19 @@ func New(v1 fiber.Router) {
 	categoryRoute.Delete("/delete/:id<int>", infrastructure.DeleteCategory)
 	categoryRoute.Get("/find", infrastructure.FindCategory)
 	categoryRoute.Get("/details/:id<int>", infrastructure.FindOneCategory)
+}
+
+func RegisterUseCases(c *fiber.Ctx, db *gorm.DB) {
+	Repo := &repository.CategoryGormRepo{DB: db}
+	insertCategoryUseCase := usecases.InsertCategoryUseCase{Repo: Repo, Validator: &common.ValidatorAdapter}
+	updateCategoryUseCase := usecases.UpdateCategoryUseCase{Repo: Repo}
+	deleteCategoryUseCase := usecases.DeleteCategoryUseCase{Repo: Repo}
+	findOneCategoryUseCase := usecases.FindOneCategoryUseCase{Repo: Repo}
+	findCategoryUseCase := usecases.FindCategoryUseCase{Repo: Repo}
+
+	c.Locals("insertCategoryUseCase", &insertCategoryUseCase)
+	c.Locals("updateCategoryUseCase", &updateCategoryUseCase)
+	c.Locals("deleteCategoryUseCase", &deleteCategoryUseCase)
+	c.Locals("findCategoryUseCase", &findCategoryUseCase)
+	c.Locals("findOneCategoryUseCase", &findOneCategoryUseCase)
 }

@@ -38,5 +38,5 @@ func TestFindOneCategoryUseCaseHappyCase(t *testing.T) {
 
 	assert.Nil(err)
 	assert.NotNil(category)
-	assert.Equal(category.Id, id)
+	assert.Equal(category.Id, uint(id))
 }
