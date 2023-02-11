@@ -30,8 +30,11 @@ func (repo *CategoryGormRepo) Insert(req *domain.WriteCategoryBody) (*domain.Cat
 
 func (repo *CategoryGormRepo) Update(id *int, req *domain.WriteCategoryBody) (*domain.Category, error) {
 	updateReq := domain.Category{ID: uint(*id)}
-	result := repo.DB.Model(&updateReq).Clauses(clause.Returning{}).Updates(&domain.Category{Name: req.Name, Description: &req.Description})
+	result := repo.DB.Model(&updateReq).Debug().Clauses(clause.Returning{}).Updates(&domain.Category{Name: req.Name, Description: &req.Description})
 	if result.Error != nil {
+		if result.Error.(*pgconn.PgError).Code == "23505" {
+			return nil, errors.New("resource exist")
+		}
 		return nil, errors.New("unknown error")
 	}
 
