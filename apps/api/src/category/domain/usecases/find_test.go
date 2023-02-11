@@ -111,7 +111,7 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 	}
 
 	for _, c := range testCases {
-		s.T().Run(c.TestName, func(t *testing.T) {
+		s.Run(c.TestName, func() {
 			s.repo.Data = c.initData
 			categories, err := s.useCase.Execute(&c.input)
 

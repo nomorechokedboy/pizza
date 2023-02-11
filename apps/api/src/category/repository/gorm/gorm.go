@@ -1,4 +1,4 @@
-package repository
+package gorm
 
 import (
 	"api/src/category/domain"
@@ -18,7 +18,7 @@ func (repo *CategoryGormRepo) Insert(req *domain.WriteCategoryBody) (*domain.Cat
 	category := domain.Category{Name: req.Name, Description: &req.Description}
 	if result := repo.DB.Create(&category); result.Error != nil {
 		if result.Error.(*pgconn.PgError).Code == "23505" {
-			return nil, nil
+			return nil, errors.New("resource exist")
 		}
 
 		return nil, errors.New("unknown error")

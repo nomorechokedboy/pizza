@@ -5,6 +5,7 @@ import (
 	"api/src/category/domain/usecases"
 	"api/src/category/infrastructure"
 	"api/src/category/repository"
+	GormRepo "api/src/category/repository/gorm"
 	"api/src/common"
 
 	"github.com/gofiber/fiber/v2"
@@ -29,7 +30,7 @@ func New(v1 fiber.Router) {
 }
 
 func RegisterUseCases(c *fiber.Ctx, db *gorm.DB) {
-	Repo := &repository.CategoryGormRepo{DB: db}
+	Repo := &GormRepo.CategoryGormRepo{DB: db}
 	insertCategoryUseCase := usecases.InsertCategoryUseCase{Repo: Repo, Validator: &common.ValidatorAdapter}
 	updateCategoryUseCase := usecases.UpdateCategoryUseCase{Repo: Repo}
 	deleteCategoryUseCase := usecases.DeleteCategoryUseCase{Repo: Repo}
