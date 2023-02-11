@@ -2,7 +2,11 @@ package main
 
 import (
 	_ "api/docs"
+	"fmt"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"api/src/category"
 	"api/src/category/domain"
@@ -75,5 +79,23 @@ func main() {
 		return c.Redirect("/docs")
 	})
 
-	log.Fatal(app.Listen(serverAddr))
+	go func() {
+		if appErr := app.Listen(serverAddr); appErr != nil {
+			log.Panic(appErr)
+		}
+	}()
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM) // When an interrupt or termination signal is sent, notify the channel
+
+	<-c // This blocks the main thread until an interrupt is received
+	fmt.Println("Gracefully shutting down...")
+	_ = app.Shutdown()
+
+	fmt.Println("Running cleanup tasks...")
+
+	// Your cleanup tasks go here
+	// db.Close()
+	// redisConn.Close()
+	fmt.Println("Fiber was successful shutdown.")
 }
