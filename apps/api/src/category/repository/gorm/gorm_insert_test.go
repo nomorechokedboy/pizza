@@ -9,7 +9,7 @@ func (s *RepositoryIntegrationTestSuite) TestInsertCategoryRepository() {
 		req := domain.WriteCategoryBody{Name: seeds[0].Name, Description: "This must be conflict"}
 		category, err := s.Repo.Insert(&req)
 
-		s.Assertions.Error(err, "resource exist")
+		s.Assertions.EqualError(err, "resource exist")
 		s.Assertions.Nil(category)
 	})
 

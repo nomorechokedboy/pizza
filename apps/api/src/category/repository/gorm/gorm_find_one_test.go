@@ -6,7 +6,7 @@ func (s *RepositoryIntegrationTestSuite) TestFindOneCategoryRepository() {
 	s.Run("Record not found", func() {
 		category, err := s.Repo.FindOne(utils.GetDataTypeAddress(100))
 
-		s.Assertions.Error(err, "not found")
+		s.Assertions.EqualError(err, "not found")
 		s.Assertions.Nil(category)
 	})
 

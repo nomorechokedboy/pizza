@@ -8,7 +8,7 @@ func (s *RepositoryIntegrationTestSuite) TestDeleteCategoryRepository() {
 	s.Run("Record not found", func() {
 		category, err := s.Repo.Delete(utils.GetDataTypeAddress(100))
 
-		s.Assertions.Error(err, "not found")
+		s.Assertions.EqualError(err, "not found")
 		s.Assertions.Nil(category)
 	})
 
@@ -18,7 +18,7 @@ func (s *RepositoryIntegrationTestSuite) TestDeleteCategoryRepository() {
 
 		category, err := s.Repo.FindOne(utils.GetDataTypeAddress(1))
 
-		s.Assertions.Error(err, "not found")
+		s.Assertions.EqualError(err, "not found")
 		s.Assertions.Nil(category)
 	})
 }
