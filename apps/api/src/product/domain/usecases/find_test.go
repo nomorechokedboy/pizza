@@ -77,10 +77,10 @@ func (s *FindProductTestSuite) TestFindUnknownError() {
 }
 
 func (s *FindProductTestSuite) TestFindUseCases() {
-	ExceedPage := 3
-	ExceedPageSize := 3
-	Page := 0
-	PageSize := 1
+	ExceedPage := uint(3)
+	ExceedPageSize := uint(3)
+	Page := uint(0)
+	PageSize := uint(1)
 	Q := "lmao"
 	testCases := []struct {
 		Queries     *domain.ProductQuery
@@ -168,8 +168,8 @@ func (s *FindProductTestSuite) TestFindUseCases() {
 		{
 			Queries: &domain.ProductQuery{
 				Base: common.BaseQuery{
-					Page:     utils.GetDataTypeAddress(0),
-					PageSize: utils.GetDataTypeAddress(5),
+					Page:     utils.GetDataTypeAddress(uint(0)),
+					PageSize: utils.GetDataTypeAddress(uint(5)),
 					Q:        &Q,
 				},
 			},
@@ -195,8 +195,8 @@ func (s *FindProductTestSuite) TestFindUseCases() {
 		{
 			Queries: &domain.ProductQuery{
 				Base: common.BaseQuery{
-					Page:     utils.GetDataTypeAddress(1),
-					PageSize: utils.GetDataTypeAddress(2),
+					Page:     utils.GetDataTypeAddress(uint(1)),
+					PageSize: utils.GetDataTypeAddress(uint(2)),
 					Q:        utils.GetDataTypeAddress("free"),
 				},
 				InventoryId: utils.GetDataTypeAddress(2),

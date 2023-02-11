@@ -4,6 +4,7 @@ import (
 	"api/src/category/domain"
 	"api/src/category/domain/usecases"
 	"api/src/category/repository"
+	"api/src/common"
 	"api/src/utils"
 	"testing"
 
@@ -45,8 +46,10 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 	testCases := []FindCategoryTestCase{
 		{
 			input: domain.CategoryQuery{
-				Page:     3,
-				PageSize: 2,
+				BaseQuery: common.BaseQuery{
+					Page:     utils.GetDataTypeAddress(uint(3)),
+					PageSize: utils.GetDataTypeAddress(uint(2)),
+				},
 			},
 			expected: make([]domain.Category, 0),
 			TestName: "Exceed Page Number",
@@ -69,7 +72,10 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 		},
 		{
 			input: domain.CategoryQuery{
-				Page: 0, PageSize: 1,
+				BaseQuery: common.BaseQuery{
+					Page:     utils.GetDataTypeAddress(uint(0)),
+					PageSize: utils.GetDataTypeAddress(uint(1)),
+				},
 			},
 			expected: []domain.Category{initData[0]},
 			initData: initData,
@@ -77,24 +83,32 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 		},
 		{
 			input: domain.CategoryQuery{
-				Page:     1,
-				PageSize: 1,
+				BaseQuery: common.BaseQuery{
+					Page:     utils.GetDataTypeAddress(uint(1)),
+					PageSize: utils.GetDataTypeAddress(uint(1)),
+				},
 			},
 			expected: []domain.Category{initData[1]},
 			initData: initData,
 			TestName: "Pagination",
 		},
 		{
-			input:    domain.CategoryQuery{Q: utils.GetDataTypeAddress("requiem")},
+			input: domain.CategoryQuery{
+				BaseQuery: common.BaseQuery{
+					Q: utils.GetDataTypeAddress("requiem"),
+				},
+			},
 			expected: []domain.Category{initData[1]},
 			initData: initData,
 			TestName: "Search Query Happy Case",
 		},
 		{
 			input: domain.CategoryQuery{
-				Page:     1,
-				PageSize: 1,
-				Q:        utils.GetDataTypeAddress("requiem"),
+				BaseQuery: common.BaseQuery{
+					Page:     utils.GetDataTypeAddress(uint(1)),
+					PageSize: utils.GetDataTypeAddress(uint(1)),
+					Q:        utils.GetDataTypeAddress("requiem"),
+				},
 			},
 			expected: []domain.Category{},
 			initData: initData,
@@ -102,7 +116,9 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 		},
 		{
 			input: domain.CategoryQuery{
-				Q: utils.GetDataTypeAddress("You never gonna get me lalalalala"),
+				BaseQuery: common.BaseQuery{
+					Q: utils.GetDataTypeAddress("You never gonna get me lalalalala"),
+				},
 			},
 			expected: []domain.Category{},
 			initData: initData,

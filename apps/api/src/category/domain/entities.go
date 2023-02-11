@@ -1,5 +1,7 @@
 package domain
 
+import "api/src/common"
+
 type Category struct {
 	ID          uint    `gorm:"primaryKey"`
 	Name        string  `gorm:"unique;not null;size:20"`
@@ -7,9 +9,7 @@ type Category struct {
 }
 
 type CategoryQuery struct {
-	Page     uint    `query:"page"`
-	PageSize uint    `query:"pageSize"`
-	Q        *string `query:"q"`
+	common.BaseQuery
 }
 
 type WriteCategoryBody struct {
