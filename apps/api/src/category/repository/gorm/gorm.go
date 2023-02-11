@@ -2,8 +2,10 @@ package gorm
 
 import (
 	"api/src/category/domain"
+	"api/src/scopes"
 	apiUtils "api/src/utils"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/jackc/pgx/v5/pgconn"
@@ -74,7 +76,8 @@ func (repo *CategoryGormRepo) FindOne(id *int) (*domain.Category, error) {
 
 func (repo *CategoryGormRepo) Find(req *domain.CategoryQuery) (*[]domain.Category, error) {
 	var categories []domain.Category
-	queryBuilder := repo.DB.Limit(int(req.PageSize)).Offset(int(req.Page * req.PageSize))
+	fmt.Println("Test: ", *req)
+	queryBuilder := repo.DB.Scopes(scopes.Pagination(&req.BaseQuery))
 
 	if req.Q != nil {
 		queryBuilder = queryBuilder.Where("name ILIKE ?", apiUtils.EscapeLike("%", "%", strings.ToLower(*req.Q))).Or("description ILIKE ?", apiUtils.EscapeLike("%", "%", strings.ToLower(*req.Q)))
