@@ -24,14 +24,12 @@ func (repo *CategoryGormRepo) Insert(req *domain.WriteCategoryBody) (*domain.Cat
 		return nil, errors.New("unknown error")
 	}
 
-	returning := domain.Category{ID: category.ID, Name: category.Name, Description: category.Description}
-
-	return &returning, nil
+	return &category, nil
 }
 
 func (repo *CategoryGormRepo) Update(id *int, req *domain.WriteCategoryBody) (*domain.Category, error) {
-	updateReq := domain.Category{Name: req.Name, Description: &req.Description}
-	result := repo.DB.Model(&domain.Category{}).Where("id = ?", id).Updates(&updateReq)
+	updateReq := domain.Category{ID: uint(*id)}
+	result := repo.DB.Model(&updateReq).Clauses(clause.Returning{}).Updates(&domain.Category{Name: req.Name, Description: &req.Description})
 	if result.Error != nil {
 		return nil, errors.New("unknown error")
 	}
@@ -40,8 +38,7 @@ func (repo *CategoryGormRepo) Update(id *int, req *domain.WriteCategoryBody) (*d
 		return nil, errors.New("not found")
 	}
 
-	returning := domain.Category{ID: updateReq.ID, Description: updateReq.Description, Name: updateReq.Name}
-	return &returning, nil
+	return &updateReq, nil
 }
 
 func (repo *CategoryGormRepo) Delete(req *int) (*domain.Category, error) {
@@ -54,9 +51,7 @@ func (repo *CategoryGormRepo) Delete(req *int) (*domain.Category, error) {
 		return nil, errors.New("not found")
 	}
 
-	returning := domain.Category{ID: deleteReq.ID, Description: deleteReq.Description, Name: deleteReq.Name}
-
-	return &returning, nil
+	return &deleteReq, nil
 }
 
 func (repo *CategoryGormRepo) FindOne(id *int) (*domain.Category, error) {
@@ -70,9 +65,7 @@ func (repo *CategoryGormRepo) FindOne(id *int) (*domain.Category, error) {
 		return nil, errors.New("unknown error")
 	}
 
-	category := domain.Category{ID: dbCategory.ID, Description: dbCategory.Description, Name: dbCategory.Name}
-
-	return &category, nil
+	return &dbCategory, nil
 }
 
 func (repo *CategoryGormRepo) Find(req *domain.CategoryQuery) (*[]domain.Category, error) {
