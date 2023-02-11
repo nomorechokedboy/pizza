@@ -48,12 +48,16 @@ func (s *RepositoryIntegrationTestSuite) SetupTest() {
 	err = db.AutoMigrate(&domain.Category{})
 	s.Require().NoError(err)
 
-	db.Create(&seeds)
+	for _, seed := range seeds {
+		db.Create(&seed)
+	}
 	s.Repo = GormRepo.CategoryGormRepo{DB: db}
 }
 
 func (s *RepositoryIntegrationTestSuite) TearDownTest() {
 	s.Repo.DB.Exec("DELETE FROM categories")
+	err := s.Repo.DB.Migrator().DropTable(&domain.Category{})
+	s.Assertions.NoError(err)
 }
 
 func TestCategoryRepository(t *testing.T) {

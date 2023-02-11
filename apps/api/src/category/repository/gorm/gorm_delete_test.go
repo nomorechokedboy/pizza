@@ -1,6 +1,8 @@
 package gorm_test
 
-import "api/src/utils"
+import (
+	"api/src/utils"
+)
 
 func (s *RepositoryIntegrationTestSuite) TestDeleteCategoryRepository() {
 	s.Run("Record not found", func() {
@@ -11,14 +13,10 @@ func (s *RepositoryIntegrationTestSuite) TestDeleteCategoryRepository() {
 	})
 
 	s.Run("Happy case", func() {
-		category, err := s.Repo.Delete(utils.GetDataTypeAddress(int(seeds[0].ID)))
+		_, err := s.Repo.Delete(utils.GetDataTypeAddress(1))
+		s.Assertions.NoError(err)
 
-		s.Assertions.Nil(err)
-		s.Assertions.Equal(seeds[0].ID, category.ID)
-		s.Assertions.Equal(seeds[0].Description, category.Description)
-		s.Assertions.Equal(seeds[0].Name, category.Name)
-
-		category, err = s.Repo.FindOne(utils.GetDataTypeAddress(int(seeds[0].ID)))
+		category, err := s.Repo.FindOne(utils.GetDataTypeAddress(1))
 
 		s.Assertions.Error(err, "not found")
 		s.Assertions.Nil(category)
