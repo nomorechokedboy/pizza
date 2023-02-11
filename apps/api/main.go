@@ -46,7 +46,10 @@ func main() {
 	}
 	DB_DNS := utils.GetDbURI(config)
 	serverAddr := utils.GetServerAddress(config)
-	db, err := gorm.Open(postgres.Open(DB_DNS), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(DB_DNS), &gorm.Config{
+		SkipDefaultTransaction: true,
+		PrepareStmt:            true,
+	})
 	if err != nil {
 		panic("failed to connect database")
 	}

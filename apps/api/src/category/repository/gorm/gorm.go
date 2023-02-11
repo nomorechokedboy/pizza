@@ -71,7 +71,7 @@ func (repo *CategoryGormRepo) FindOne(id *int) (*domain.Category, error) {
 
 func (repo *CategoryGormRepo) Find(req *domain.CategoryQuery) (*[]domain.Category, error) {
 	var categories []domain.Category
-	queryBuilder := repo.DB.Debug().Limit(int(req.PageSize)).Offset(int(req.Page * req.PageSize))
+	queryBuilder := repo.DB.Limit(int(req.PageSize)).Offset(int(req.Page * req.PageSize))
 
 	if req.Q != nil {
 		queryBuilder = queryBuilder.Where("name ILIKE ?", apiUtils.EscapeLike("%", "%", strings.ToLower(*req.Q))).Or("description ILIKE ?", apiUtils.EscapeLike("%", "%", strings.ToLower(*req.Q)))
