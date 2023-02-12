@@ -7,4 +7,5 @@ type UserRepository interface {
 	Update(id *int, req *domain.CreateUserReq) (*domain.User, error)
 	Delete(id *int) (*domain.User, error)
 	Find(req *domain.UserQuery) (*[]domain.User, error)
+	FindOne(id *int) (*domain.User, error)
 }

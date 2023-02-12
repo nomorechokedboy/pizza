@@ -26,7 +26,7 @@ type CreateUserReq struct {
 }
 
 type UserQuery struct {
-	Page     int    `query:"page"`
-	PageSize int    `query:"pageSize"`
+	Page     uint   `query:"page"`
+	PageSize uint   `query:"pageSize"`
 	Q        string `query:"q"`
 }
