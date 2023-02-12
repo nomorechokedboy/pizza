@@ -6,6 +6,6 @@ type FindProductUseCase struct {
 	Repo ProductRepository
 }
 
-func (useCase *FindProductUseCase) Execute(queries *domain.ProductQuery) (*domain.Product, error) {
-	return nil, nil
+func (useCase *FindProductUseCase) Execute(queries *domain.ProductQuery) ([]*domain.Product, error) {
+	return useCase.Repo.Find(queries)
 }
