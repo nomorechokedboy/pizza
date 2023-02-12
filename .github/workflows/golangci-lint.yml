@@ -21,7 +21,7 @@ jobs:
                         - name: Run docker compose
                           run: |
                                   mkdir -p data/minio data/postgresql
-                                  docker compose up -d
+                                  docker compose up minio postgres -d
                         - name: Generate swagger docs
                           run: |
                                   cd apps/api
