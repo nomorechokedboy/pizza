@@ -1,9 +1,9 @@
 package usecases_test
 
 import (
-	"api/src/user"
 	"api/src/user/domain"
 	"api/src/user/domain/usecases"
+	"api/src/user/repository"
 	"reflect"
 	"testing"
 	"time"
@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var userMemRepo = user.UserInMemoryRepo{UserList: make([]domain.User, 0), IsErr: false}
+var userMemRepo = repository.UserInMemoryRepo{UserList: make([]domain.User, 0), IsErr: false}
 var createUserUseCase = usecases.CreateUserUseCase{Repo: &userMemRepo}
 
 func TestCreateUserUseCaseHappyCase(t *testing.T) {
