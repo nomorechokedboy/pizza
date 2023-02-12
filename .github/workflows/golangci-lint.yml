@@ -42,4 +42,4 @@ jobs:
                           with:
                                   fail_ci_if_error: true
                                   verbose: true
-                                  directory: apps/api
+                                  files: apps/api/coverage.out
