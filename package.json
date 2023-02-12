@@ -14,7 +14,8 @@
 		"prepare": "husky install",
 		"test": "turbo run coverage",
 		"api:dev": "(cd apps/api; air; cd ..; cd ..)",
-		"api:test": "(cd apps/api; go test ./... -v; cd ..; cd ..)"
+		"api:unit": "(cd apps/api; go test ./... -run UseCase -v; cd ..; cd ..)",
+		"api:integration": "(cd apps/api; go test ./... -run Repository -v; cd ..; cd ..)"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^17.1.2",
