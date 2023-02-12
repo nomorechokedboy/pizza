@@ -1,10 +1,16 @@
 # Turborepo starter
 
+[![codecov](https://codecov.io/github/nomorechokedboy/pizza/branch/main/graph/badge.svg?token=8USH85MRVT)](https://codecov.io/github/nomorechokedboy/pizza)
+[![CI workflows](https://github.com/nomorechokedboy/pizza/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/nomorechokedboy/pizza/actions/workflows/ci.yml)
+[![golangci-lint](https://github.com/nomorechokedboy/pizza/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/nomorechokedboy/pizza/actions/workflows/golangci-lint.yml)
+
 This is an official pnpm starter turborepo. The monorepo contains frontend, cms written in [VueJS](https://vuejs.org) and api written in [Go](https://go.dev/)
 
 ## Prerequire
 
-Because of the mix with typescript and golang, you will need to install go dependencies if you wish to run the api code
+Because of the mix with typescript and golang, you will need to install go dependencies if you wish to run the api code.
+
+And of course, please install [NodeJs](https://nodejs.dev/) and [Golang](https://go.dev/) locally for development.
 
 ### Set GOPATH to use go binary
 
