@@ -33,11 +33,9 @@ jobs:
                                   version: v1.50.1
                                   working-directory: apps/api
 
-                        - name: Run api unit test
+                        - name: Run api test
                           run: |
                                   cd apps/api
-                                  go test -v -run UseCase ./... | sed ''/PASS/s//$(printf "\033[32mPASS\033[0m")/'' | sed ''/FAIL/s//$(printf "\033[31mFAIL\033[0m")/''
-                        - name: Run api integration test
-                          run: |
-                                  cd apps/api
-                                  go test ./... -run Repository -v | sed ''/PASS/s//$(printf "\033[32mPASS\033[0m")/'' | sed ''/FAIL/s//$(printf "\033[31mFAIL\033[0m")/''
+                                  go test -v -race -coverprofile=coverage.out -covermode=atomic ./... | sed ''/PASS/s//$(printf "\033[32mPASS\033[0m")/'' | sed ''/FAIL/s//$(printf "\033[31mFAIL\033[0m")/''
+                        - name: Upload coverage to Codecov
+                          uses: codecov/codecov-action@v3
