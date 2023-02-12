@@ -1,4 +1,4 @@
-package user
+package infrastructure
 
 import (
 	"api/src/user/domain"
@@ -65,9 +65,24 @@ func FindUser(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	useCase := ctx.Locals("findUserUseCase").(usecases.FindUserUseCase)
+	useCase := ctx.Locals("findUserUseCase").(*usecases.FindUserUseCase)
 	user, err := useCase.Execute(queries)
 
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(user)
+}
+
+func FindOneUser(ctx *fiber.Ctx) error {
+	id, err := ctx.ParamsInt("id")
+	if err != nil {
+		return err
+	}
+
+	useCase := ctx.Locals("findOneUserUseCase").(*usecases.FindOneUserUseCase)
+	user, err := useCase.Execute(&id)
 	if err != nil {
 		return err
 	}

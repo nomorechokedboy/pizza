@@ -1,4 +1,4 @@
-package user
+package repository
 
 import (
 	"api/src/user/domain"
@@ -101,17 +101,33 @@ func (repo *UserInMemoryRepo) Find(req *domain.UserQuery) (*[]domain.User, error
 		req.PageSize = 10
 	}
 
-	start := req.Page * req.PageSize
-	end := start + req.PageSize
+	start := uint(req.Page * req.PageSize)
+	end := uint(start + req.PageSize)
 
-	res = res[min(start, len(res)):min(end, len(res))]
+	res = res[min(start, uint(len(res))):min(end, uint(len(res)))]
 
 	return &res, nil
 }
 
-func min(x, y int) int {
+func min(x, y uint) uint {
 	if y < x {
 		return y
 	}
 	return x
+}
+
+func (repo *UserInMemoryRepo) FindOne(id *int) (*domain.User, error) {
+	if repo.IsErr {
+		return nil, errors.New("unknown error")
+	}
+
+	var res *domain.User
+	for _, user := range repo.UserList {
+		if user.Id == int(*id) {
+			res = &user
+			break
+		}
+	}
+
+	return res, nil
 }
