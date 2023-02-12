@@ -18,6 +18,10 @@ jobs:
                           with:
                                   go-version: 1.19
                         - uses: actions/checkout@v3
+                        - name: Run docker compose
+                          run: |
+                                  mkdir -p data/minio data/postgresql
+                                  docker compose up -d
                         - name: Generate swagger docs
                           run: |
                                   cd apps/api
@@ -33,3 +37,7 @@ jobs:
                           run: |
                                   cd apps/api
                                   go test -v -run UseCase ./... | sed ''/PASS/s//$(printf "\033[32mPASS\033[0m")/'' | sed ''/FAIL/s//$(printf "\033[31mFAIL\033[0m")/''
+                        - name: Run api integration test
+                          run: |
+                                  cd apps/api
+                                  go test ./... -run Repository -v | sed ''/PASS/s//$(printf "\033[32mPASS\033[0m")/'' | sed ''/FAIL/s//$(printf "\033[31mFAIL\033[0m")/''
