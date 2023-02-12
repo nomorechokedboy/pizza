@@ -11,7 +11,7 @@ Because of the mix with typescript and golang, you will need to install go depen
 Running this command will set your environtment path with $GOPATH/bin so you can use golang binary commands
 
 ```sh
-echo 'export PATH=$(go env GOPATH)/bin:$PATH' >> ~/.zshrc #(or .bashrc)
+echo 'export PATH=$(go env GOPATH)/bin:$PATH' >> ~/.zshrc # (or .bashrc)
 ```
 
 ### Swaggo
@@ -22,6 +22,8 @@ Install swaggo with the below installation command [from fiber swagger repo](htt
 go get -u github.com/swaggo/swag/cmd/swag
 # 1.16 or newer
 go install github.com/swaggo/swag/cmd/swag@latest
+
+swag -v
 ```
 
 ### Golanglint-ci

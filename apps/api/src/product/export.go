@@ -1,5 +1,8 @@
 package product
 
-import "api/src/product/domain"
+import (
+	"api/src/product/domain"
+	"api/src/product/repository"
+)
 
-var ProductMemRepo = ProductInMemoryRepo{ProductList: make([]domain.Product, 0), IsErr: false}
+var ProductMemRepo = repository.ProductInMemoryRepo{DataStore: make([]domain.Product, 0), IsErr: false}

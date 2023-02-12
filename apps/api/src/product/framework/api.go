@@ -1,4 +1,4 @@
-package product
+package framework
 
 import (
 	"api/src/product/domain"
@@ -21,11 +21,11 @@ func CreateProduct(ctx *fiber.Ctx) error {
 		return ctx.Status(500).JSON(nil)
 	}
 
-	useCase := ctx.Locals("createProductUseCase").(domain.CreateProductUseCase)
-	product, err := useCase.Execute(&req)
-	if err != nil {
-		return ctx.Status(409).JSON(nil)
-	}
+	// useCase := ctx.Locals("createProductUseCase").(usecases.InsertProductUseCase)
+	// product, err := useCase.Execute(&req)
+	// if err != nil {
+	// 	return ctx.Status(409).JSON(nil)
+	// }
 
-	return ctx.Status(201).JSON(product)
+	return ctx.Status(201).JSON(nil)
 }

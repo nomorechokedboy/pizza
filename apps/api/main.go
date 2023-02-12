@@ -2,11 +2,16 @@ package main
 
 import (
 	_ "api/docs"
+	"fmt"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"api/src/category"
-	CategoryInfrastructure "api/src/category/infrastructure"
+	"api/src/category/domain"
+	"api/src/config"
+	"api/src/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
@@ -25,14 +30,6 @@ func HealthCheck(c *fiber.Ctx) error {
 	return c.SendString("Hello, World!")
 }
 
-func getEnv(name, fallback string) string {
-	if env, ok := os.LookupEnv(name); ok {
-		return env
-	}
-
-	return fallback
-}
-
 // @title Fiber Pizza API
 // @version 1.0.0
 // @description This is pizza api swagger for Fiber
@@ -43,12 +40,20 @@ func getEnv(name, fallback string) string {
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @BasePath /api/v1
 func main() {
-	DB_DNS := getEnv("DB_DNS", "host=localhost user=postgres password=postgres dbname=pizza port=5432 sslmode=disable")
-	db, err := gorm.Open(postgres.Open(DB_DNS), &gorm.Config{})
+	config, e := config.LoadEnv()
+	if e != nil {
+		log.Fatal(e)
+	}
+	DB_DNS := utils.GetDbURI(config)
+	serverAddr := utils.GetServerAddress(config)
+	db, err := gorm.Open(postgres.Open(DB_DNS), &gorm.Config{
+		SkipDefaultTransaction: true,
+		PrepareStmt:            true,
+	})
 	if err != nil {
 		panic("failed to connect database")
 	}
-	if err = db.AutoMigrate(&CategoryInfrastructure.Category{}); err != nil {
+	if err = db.AutoMigrate(&domain.Category{}); err != nil {
 		panic("failed to migrate database")
 	}
 
@@ -77,5 +82,23 @@ func main() {
 		return c.Redirect("/docs")
 	})
 
-	log.Fatal(app.Listen(":3001"))
+	go func() {
+		if appErr := app.Listen(serverAddr); appErr != nil {
+			log.Panic(appErr)
+		}
+	}()
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM) // When an interrupt or termination signal is sent, notify the channel
+
+	<-c // This blocks the main thread until an interrupt is received
+	fmt.Println("Gracefully shutting down...")
+	_ = app.Shutdown()
+
+	fmt.Println("Running cleanup tasks...")
+
+	// Your cleanup tasks go here
+	// db.Close()
+	// redisConn.Close()
+	fmt.Println("Fiber was successful shutdown.")
 }

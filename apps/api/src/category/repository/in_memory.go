@@ -23,7 +23,7 @@ func (repo *CategoryInMemoryRepo) Insert(req *domain.WriteCategoryBody) (*domain
 	}
 
 	Id := uint(len(repo.Data) + 1)
-	newCategory := domain.Category{Id: Id, Description: req.Description, Name: req.Name}
+	newCategory := domain.Category{ID: Id, Description: &req.Description, Name: req.Name}
 	repo.Data = append(repo.Data, newCategory)
 
 	return &newCategory, nil
@@ -36,8 +36,8 @@ func (repo *CategoryInMemoryRepo) Update(id *int, req *domain.WriteCategoryBody)
 
 	for i := range repo.Data {
 		category := &repo.Data[i]
-		if category.Id == uint(*id) {
-			category.Description = req.Description
+		if category.ID == uint(*id) {
+			category.Description = &req.Description
 			category.Name = req.Name
 			return category, nil
 		}
@@ -56,7 +56,7 @@ func (repo *CategoryInMemoryRepo) Delete(req *int) (*domain.Category, error) {
 	filteredList := make([]domain.Category, 0)
 
 	for i, inventory := range repo.Data {
-		if inventory.Id == uint(*req) {
+		if inventory.ID == uint(*req) {
 			res = inventory
 			pos = i
 			continue
@@ -81,7 +81,7 @@ func (repo *CategoryInMemoryRepo) FindOne(id *int) (*domain.Category, error) {
 	var res *domain.Category
 
 	for _, inventory := range repo.Data {
-		if inventory.Id == uint(*id) {
+		if inventory.ID == uint(*id) {
 			res = &inventory
 			break
 		}
@@ -96,11 +96,11 @@ func (repo *CategoryInMemoryRepo) Find(req *domain.CategoryQuery) (*[]domain.Cat
 	}
 
 	res := repo.Data
-	if req.Q != "" {
+	if req.Q != nil {
 		res = make([]domain.Category, 0)
 		for _, category := range repo.Data {
-			q := strings.ToLower(req.Q)
-			entityContainsQ := strings.Contains(strings.ToLower(category.Description), q) || strings.Contains(strings.ToLower(category.Name), q)
+			q := strings.ToLower(*req.Q)
+			entityContainsQ := strings.Contains(strings.ToLower(*category.Description), q) || strings.Contains(strings.ToLower(category.Name), q)
 
 			if entityContainsQ {
 				res = append(res, category)
@@ -108,11 +108,8 @@ func (repo *CategoryInMemoryRepo) Find(req *domain.CategoryQuery) (*[]domain.Cat
 		}
 	}
 
-	if req.PageSize == 0 {
-		req.PageSize = 10
-	}
-	start := uint(req.Page * req.PageSize)
-	end := uint(start + req.PageSize)
+	start := uint(req.GetPage() * req.GetPageSize())
+	end := uint(start + req.GetPageSize())
 	res = res[min(start, uint(len(res))):min(end, uint(len(res)))]
 
 	return &res, nil

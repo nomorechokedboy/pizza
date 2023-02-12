@@ -10,10 +10,10 @@ type FindOneCategoryUseCase struct {
 }
 
 func (useCase *FindOneCategoryUseCase) Execute(id *int) (*domain.Category, error) {
-	inventory, err := useCase.Repo.FindOne(id)
-	if inventory == nil && err == nil {
-		return inventory, errors.New("not found")
+	category, err := useCase.Repo.FindOne(id)
+	if category == nil && err == nil {
+		return category, errors.New("not found")
 	}
 
-	return inventory, err
+	return category, err
 }
