@@ -5,7 +5,7 @@ import (
 	inventory "api/src/inventory/domain"
 	"api/src/product/domain"
 	"api/src/product/domain/usecases"
-	"api/src/product/repository"
+	"errors"
 	"testing"
 	"time"
 
@@ -15,44 +15,61 @@ import (
 type FindOneProductTestSuite struct {
 	suite.Suite
 	UseCase *usecases.FindOneProductUseCase
-	Repo    *repository.ProductInMemoryRepo
+	Repo    *MockRepository
 }
 
 func (s *FindOneProductTestSuite) SetupTest() {
-	s.Repo = &repository.ProductInMemoryRepo{DataStore: []domain.Product{{Id: 1, CreatedAt: time.Now(), UpdatedAt: time.Now(), Slug: "slug", Description: "Desc", Name: "Lmao", SKU: "123ABC", Price: 1000, Category: category.Category{}, Inventory: inventory.Inventory{}}}, IsErr: false}
+	s.Repo = &MockRepository{}
 	s.UseCase = &usecases.FindOneProductUseCase{Repo: s.Repo}
 }
 
-func (s *FindOneProductTestSuite) TearDownTest() {
-	s.Repo = &repository.ProductInMemoryRepo{DataStore: []domain.Product{}, IsErr: false}
-}
-
 func (s *FindOneProductTestSuite) TestFindOneUnknownError() {
-	s.Repo.IsErr = true
-	id := 1
-	product, err := s.UseCase.Execute(&id)
+	id := uint(1)
+	table := []struct {
+		Description string
+		Error       string
+	}{
+		{
+			Description: "Unknown error",
+			Error:       "unknown error",
+		},
+		{
+			Description: "Not found error",
+			Error:       "not found",
+		},
+	}
 
-	s.Assertions.Nil(product)
-	s.Assertions.EqualError(err, "unknown error")
-}
+	for _, c := range table {
+		s.Run(c.Description, func() {
+			s.Repo.On("FindOne", id).Return(nil, errors.New(c.Error))
+			product, err := s.UseCase.Execute(id)
 
-func (s *FindOneProductTestSuite) TestFindOneNotFoundError() {
-	id := 1
-	product, err := s.UseCase.Execute(&id)
-
-	s.Assertions.Nil(product)
-	s.Assertions.EqualError(err, "not found")
+			s.Assertions.Nil(product)
+			s.Assertions.EqualError(err, "unknown error")
+		})
+	}
 }
 
 func (s *FindOneProductTestSuite) TestFindOneHappyCase() {
-	id := 1
-	product, err := s.UseCase.Execute(&id)
+	id := uint(1)
+	s.Repo.On("FindOne", id).Return(&domain.Product{
+		Id:          1,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+		Slug:        "slug",
+		Description: "Description",
+		Name:        "Name",
+		SKU:         "Sku",
+		Price:       1000,
+		Category:    category.Category{ID: 1, Name: "Test", Description: nil},
+		Inventory:   inventory.Inventory{Id: 1, Quantity: 1, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+	}, nil)
+	product, err := s.UseCase.Execute(id)
 
-	s.Assertions.Nil(err)
-	s.Assertions.Equal(id, product.Id)
-	s.Assertions.Equal(s.Repo.DataStore[0], product)
+	s.Assertions.NoError(err)
+	s.Assertions.Equal(id, uint(product.Id))
 }
 
-func TestFindOneProductTestSuite(t *testing.T) {
+func TestFindOneProductUseCaseTestSuite(t *testing.T) {
 	suite.Run(t, new(FindOneProductTestSuite))
 }
