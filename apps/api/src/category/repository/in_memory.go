@@ -2,7 +2,6 @@ package repository
 
 import (
 	"api/src/category/domain"
-	"api/src/utils"
 	"errors"
 	"strings"
 )
@@ -109,11 +108,8 @@ func (repo *CategoryInMemoryRepo) Find(req *domain.CategoryQuery) (*[]domain.Cat
 		}
 	}
 
-	if *req.PageSize == uint(0) {
-		req.PageSize = utils.GetDataTypeAddress(uint(10))
-	}
-	start := uint(*req.Page * *req.PageSize)
-	end := uint(start + *req.PageSize)
+	start := uint(req.GetPage() * req.GetPageSize())
+	end := uint(start + req.GetPageSize())
 	res = res[min(start, uint(len(res))):min(end, uint(len(res)))]
 
 	return &res, nil

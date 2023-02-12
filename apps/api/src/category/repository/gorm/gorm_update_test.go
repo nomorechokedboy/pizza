@@ -3,7 +3,6 @@ package gorm_test
 import (
 	"api/src/category/domain"
 	"api/src/utils"
-	"fmt"
 )
 
 func (s *RepositoryIntegrationTestSuite) TestUpdateCategoryRepository() {
@@ -17,11 +16,10 @@ func (s *RepositoryIntegrationTestSuite) TestUpdateCategoryRepository() {
 	})
 
 	s.Run("Test unique constraint when update", func() {
-		firstUpdate, err := s.Repo.Update(utils.GetDataTypeAddress(3), &req)
+		_, err := s.Repo.Update(utils.GetDataTypeAddress(3), &req)
 		s.Assertions.NoError(err)
 
-		category, err := s.Repo.Update(utils.GetDataTypeAddress(4), &req)
-		fmt.Println(category, err, firstUpdate)
+		_, err = s.Repo.Update(utils.GetDataTypeAddress(4), &req)
 		s.Assertions.EqualError(err, "resource exist")
 	})
 

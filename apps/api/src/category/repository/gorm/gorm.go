@@ -5,7 +5,6 @@ import (
 	"api/src/scopes"
 	apiUtils "api/src/utils"
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/jackc/pgx/v5/pgconn"
@@ -76,7 +75,6 @@ func (repo *CategoryGormRepo) FindOne(id *int) (*domain.Category, error) {
 
 func (repo *CategoryGormRepo) Find(req *domain.CategoryQuery) (*[]domain.Category, error) {
 	var categories []domain.Category
-	fmt.Println("Test: ", *req)
 	queryBuilder := repo.DB.Scopes(scopes.Pagination(&req.BaseQuery))
 
 	if req.Q != nil {
