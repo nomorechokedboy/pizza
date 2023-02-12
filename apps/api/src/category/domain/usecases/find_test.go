@@ -4,6 +4,8 @@ import (
 	"api/src/category/domain"
 	"api/src/category/domain/usecases"
 	"api/src/category/repository"
+	"api/src/common"
+	"api/src/utils"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -39,20 +41,95 @@ func (s *FindCategoryTestSuite) TestFindUnknownError() {
 	s.Assertions.EqualError(err, "unknown error")
 }
 
-func (s *FindCategoryTestSuite) TestFindUseCases() {
-	initData := []domain.Category{{Id: 1, Name: "Test", Description: "123"}, {Id: 2, Name: "Test123", Description: "Traitor's requiem"}}
+func (s *FindCategoryTestSuite) TestFindQuery() {
+	initData := []domain.Category{{ID: 1, Name: "Test", Description: utils.GetDataTypeAddress("123")}, {ID: 2, Name: "Test123", Description: utils.GetDataTypeAddress("Traitor's requiem")}}
 	testCases := []FindCategoryTestCase{
-		{input: domain.CategoryQuery{Page: 3, PageSize: 2}, expected: make([]domain.Category, 0), TestName: "Exceed Page Number", initData: initData},
-		{input: domain.CategoryQuery{}, expected: []domain.Category{{Id: 1, Name: "Test", Description: "123"}, {Id: 2, Name: "Test123", Description: "Traitor's requiem"}}, TestName: "Happy Case", initData: initData},
-		{input: domain.CategoryQuery{Page: 0, PageSize: 1}, expected: []domain.Category{initData[0]}, initData: initData, TestName: "Pagination"},
-		{input: domain.CategoryQuery{Page: 1, PageSize: 1}, expected: []domain.Category{initData[1]}, initData: initData, TestName: "Pagination"},
-		{input: domain.CategoryQuery{Q: "requiem"}, expected: []domain.Category{initData[1]}, initData: initData, TestName: "Search Query Happy Case"},
-		{input: domain.CategoryQuery{Page: 1, PageSize: 1, Q: "requiem"}, expected: []domain.Category{}, initData: initData, TestName: "Search Query With Other Param"},
-		{input: domain.CategoryQuery{Q: "You never gonna get me lalalalala"}, expected: []domain.Category{}, initData: initData, TestName: "Not Found Search Query"},
+		{
+			input: domain.CategoryQuery{
+				BaseQuery: common.BaseQuery{
+					Page:     utils.GetDataTypeAddress(uint(3)),
+					PageSize: utils.GetDataTypeAddress(uint(2)),
+				},
+			},
+			expected: make([]domain.Category, 0),
+			TestName: "Exceed Page Number",
+			initData: initData,
+		},
+		{
+			input: domain.CategoryQuery{BaseQuery: common.BaseQuery{Page: utils.GetDataTypeAddress(uint(0))}},
+			expected: []domain.Category{
+				{
+					ID:          1,
+					Name:        "Test",
+					Description: utils.GetDataTypeAddress("123"),
+				},
+				{
+					ID: 2, Name: "Test123", Description: utils.GetDataTypeAddress("Traitor's requiem"),
+				},
+			},
+			TestName: "Happy Case",
+			initData: initData,
+		},
+		{
+			input: domain.CategoryQuery{
+				BaseQuery: common.BaseQuery{
+					Page:     utils.GetDataTypeAddress(uint(0)),
+					PageSize: utils.GetDataTypeAddress(uint(1)),
+				},
+			},
+			expected: []domain.Category{initData[0]},
+			initData: initData,
+			TestName: "Pagination",
+		},
+		{
+			input: domain.CategoryQuery{
+				BaseQuery: common.BaseQuery{
+					Page:     utils.GetDataTypeAddress(uint(1)),
+					PageSize: utils.GetDataTypeAddress(uint(1)),
+				},
+			},
+			expected: []domain.Category{initData[1]},
+			initData: initData,
+			TestName: "Pagination",
+		},
+		{
+			input: domain.CategoryQuery{
+				BaseQuery: common.BaseQuery{
+					Page: utils.GetDataTypeAddress(uint(0)),
+					Q:    utils.GetDataTypeAddress("requiem"),
+				},
+			},
+			expected: []domain.Category{initData[1]},
+			initData: initData,
+			TestName: "Search Query Happy Case",
+		},
+		{
+			input: domain.CategoryQuery{
+				BaseQuery: common.BaseQuery{
+					Page:     utils.GetDataTypeAddress(uint(1)),
+					PageSize: utils.GetDataTypeAddress(uint(1)),
+					Q:        utils.GetDataTypeAddress("requiem"),
+				},
+			},
+			expected: []domain.Category{},
+			initData: initData,
+			TestName: "Search Query With Other Param",
+		},
+		{
+			input: domain.CategoryQuery{
+				BaseQuery: common.BaseQuery{
+					Page: utils.GetDataTypeAddress(uint(0)),
+					Q:    utils.GetDataTypeAddress("You never gonna get me lalalalala"),
+				},
+			},
+			expected: []domain.Category{},
+			initData: initData,
+			TestName: "Not Found Search Query",
+		},
 	}
 
 	for _, c := range testCases {
-		s.T().Run(c.TestName, func(t *testing.T) {
+		s.Run(c.TestName, func() {
 			s.repo.Data = c.initData
 			categories, err := s.useCase.Execute(&c.input)
 
@@ -62,6 +139,6 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 	}
 }
 
-func TestFindCategoryTestSuite(t *testing.T) {
+func TestFindCategoryUseCaseTestSuite(t *testing.T) {
 	suite.Run(t, new(FindCategoryTestSuite))
 }

@@ -1,4 +1,4 @@
-package product
+package repository
 
 import (
 	"api/src/product/domain"
@@ -7,8 +7,8 @@ import (
 )
 
 type ProductInMemoryRepo struct {
-	ProductList []domain.Product
-	IsErr       bool
+	DataStore []domain.Product
+	IsErr     bool
 }
 
 func (repo *ProductInMemoryRepo) Insert(req *domain.ProductReq) (*domain.Product, error) {
@@ -16,15 +16,15 @@ func (repo *ProductInMemoryRepo) Insert(req *domain.ProductReq) (*domain.Product
 		return nil, errors.New("unknown error")
 	}
 
-	for _, product := range repo.ProductList {
+	for _, product := range repo.DataStore {
 		if product.SKU == req.SKU {
 			return nil, errors.New("resource exist")
 		}
 	}
 
-	Id := len(repo.ProductList) + 1
+	Id := len(repo.DataStore) + 1
 	newProduct := domain.Product{Id: int32(Id), CreatedAt: time.Now(), UpdatedAt: time.Now(), Slug: "Not implemented", Description: req.Description, Name: req.Name, SKU: req.SKU, Price: req.Price}
-	repo.ProductList = append(repo.ProductList, newProduct)
+	repo.DataStore = append(repo.DataStore, newProduct)
 
 	return &newProduct, nil
 }

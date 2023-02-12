@@ -10,7 +10,7 @@ import (
 
 var updateInventoryUseCase = usecases.UpdateInventoryUseCase{Repo: &inventoryRepo}
 
-func TestUpdateInventoryWithNotFoundError(t *testing.T) {
+func TestUpdateInventoryUseCaseWithNotFoundError(t *testing.T) {
 	assert := assert.New(t)
 	req := domain.WriteInventoryBody{Quantity: 3}
 	id := 10
@@ -20,7 +20,7 @@ func TestUpdateInventoryWithNotFoundError(t *testing.T) {
 	assert.Nil(updatedInventory)
 }
 
-func TestUpdateInventoryWhenUnexpectedError(t *testing.T) {
+func TestUpdateInventoryUseCaseWhenUnexpectedError(t *testing.T) {
 	assert := assert.New(t)
 	inventoryRepo.IsErr = true
 	req := domain.WriteInventoryBody{Quantity: 3}
@@ -32,7 +32,7 @@ func TestUpdateInventoryWhenUnexpectedError(t *testing.T) {
 	inventoryRepo.IsErr = false
 }
 
-func TestUpdateInventoryHappyCase(t *testing.T) {
+func TestUpdateInventoryUseCaseHappyCase(t *testing.T) {
 	assert := assert.New(t)
 	req := domain.WriteInventoryBody{Quantity: 5}
 	id := 1

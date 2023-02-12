@@ -28,7 +28,6 @@
 	// "shutdownAction": "none",
 
 	// Uncomment the next line to run commands after the container is created.
-	"postCreateCommand": "apk add git",
 
 	// Configure tool-specific properties.
 	"customizations": {
