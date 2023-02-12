@@ -31,7 +31,7 @@ func TestDeleteCategoryUseCaseWithNotFoundError(t *testing.T) {
 	assert.EqualError(err, "not found")
 }
 
-func TestDeleteCategoryHappyCase(t *testing.T) {
+func TestDeleteCategoryUseCaseHappyCase(t *testing.T) {
 	assert := assert.New(t)
 	id := 1
 	categoryRepo.Data = append(categoryRepo.Data, domain.Category{Name: "Shounen", Description: utils.GetDataTypeAddress("Blah blah, bloh bloh description"), ID: 1})

@@ -32,7 +32,7 @@ func TestUpdateCategoryUseCaseWithNotFoundError(t *testing.T) {
 	assert.EqualError(err, "not found")
 }
 
-func TestUpdateCategoryHappyCase(t *testing.T) {
+func TestUpdateCategoryUseCaseHappyCase(t *testing.T) {
 	assert := assert.New(t)
 	categoryRepo.Data = append(categoryRepo.Data, domain.Category{Name: "Shounen", Description: utils.GetDataTypeAddress("Blah blah, bloh bloh description")})
 	updatedCategory, err := usecase.Execute(&id, &req)

@@ -24,7 +24,7 @@ func TestInsertInventoryUseCaseWithUnknownError(t *testing.T) {
 	inventoryRepo.IsErr = false
 }
 
-func TestInsertInventoryHappyCase(t *testing.T) {
+func TestInsertInventoryUseCaseHappyCase(t *testing.T) {
 	assert := assert.New(t)
 	req := domain.WriteInventoryBody{Quantity: 5}
 	inventory, err := insertInventoryUseCase.Execute(&req)

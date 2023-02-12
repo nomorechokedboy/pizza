@@ -41,7 +41,7 @@ func (s *FindCategoryTestSuite) TestFindUnknownError() {
 	s.Assertions.EqualError(err, "unknown error")
 }
 
-func (s *FindCategoryTestSuite) TestFindUseCases() {
+func (s *FindCategoryTestSuite) TestFindQuery() {
 	initData := []domain.Category{{ID: 1, Name: "Test", Description: utils.GetDataTypeAddress("123")}, {ID: 2, Name: "Test123", Description: utils.GetDataTypeAddress("Traitor's requiem")}}
 	testCases := []FindCategoryTestCase{
 		{
@@ -56,7 +56,7 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 			initData: initData,
 		},
 		{
-			input: domain.CategoryQuery{},
+			input: domain.CategoryQuery{BaseQuery: common.BaseQuery{Page: utils.GetDataTypeAddress(uint(0))}},
 			expected: []domain.Category{
 				{
 					ID:          1,
@@ -95,7 +95,8 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 		{
 			input: domain.CategoryQuery{
 				BaseQuery: common.BaseQuery{
-					Q: utils.GetDataTypeAddress("requiem"),
+					Page: utils.GetDataTypeAddress(uint(0)),
+					Q:    utils.GetDataTypeAddress("requiem"),
 				},
 			},
 			expected: []domain.Category{initData[1]},
@@ -117,7 +118,8 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 		{
 			input: domain.CategoryQuery{
 				BaseQuery: common.BaseQuery{
-					Q: utils.GetDataTypeAddress("You never gonna get me lalalalala"),
+					Page: utils.GetDataTypeAddress(uint(0)),
+					Q:    utils.GetDataTypeAddress("You never gonna get me lalalalala"),
 				},
 			},
 			expected: []domain.Category{},
@@ -137,6 +139,6 @@ func (s *FindCategoryTestSuite) TestFindUseCases() {
 	}
 }
 
-func TestFindCategoryTestSuite(t *testing.T) {
+func TestFindCategoryUseCaseTestSuite(t *testing.T) {
 	suite.Run(t, new(FindCategoryTestSuite))
 }

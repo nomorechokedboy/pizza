@@ -14,7 +14,7 @@ import (
 var categoryRepo = repository.CategoryInMemoryRepo{Data: make([]domain.Category, 0), IsErr: false}
 var insertUseCase = usecases.InsertCategoryUseCase{Repo: &categoryRepo, Validator: &common.ValidatorAdapter}
 
-func TestInsertCategoryWithUnknownError(t *testing.T) {
+func TestInsertCategoryUseCaseWithUnknownError(t *testing.T) {
 	assert := assert.New(t)
 	categoryRepo.IsErr = true
 	req := domain.WriteCategoryBody{Name: "Comedy", Description: "Funny stuffs"}
@@ -25,7 +25,7 @@ func TestInsertCategoryWithUnknownError(t *testing.T) {
 	categoryRepo.IsErr = false
 }
 
-func TestInsertCategoryWithDuplicateError(t *testing.T) {
+func TestInsertCategoryUseCaseWithDuplicateError(t *testing.T) {
 	assert := assert.New(t)
 	categoryRepo.Data = append(categoryRepo.Data, domain.Category{ID: 1, Name: "Comedy", Description: utils.GetDataTypeAddress("Another description")})
 	req := domain.WriteCategoryBody{Name: "Comedy", Description: "Funny stuffs"}
@@ -35,7 +35,7 @@ func TestInsertCategoryWithDuplicateError(t *testing.T) {
 	assert.Nil(category)
 }
 
-func TestInsertCategoryHappyCase(t *testing.T) {
+func TestInsertCategoryUseCaseHappyCase(t *testing.T) {
 	assert := assert.New(t)
 	req := domain.WriteCategoryBody{Name: "Happy case", Description: "Funny stuffs"}
 	category, err := insertUseCase.Execute(&req)
@@ -46,7 +46,7 @@ func TestInsertCategoryHappyCase(t *testing.T) {
 	assert.Equal(req.Name, category.Name)
 }
 
-func TestInsertCategoryWithInvalidData(t *testing.T) {
+func TestInsertCategoryUseCaseWithInvalidData(t *testing.T) {
 	assert := assert.New(t)
 	req := domain.WriteCategoryBody{Name: "A", Description: "Funny stuffs"}
 	category, err := insertUseCase.Execute(&req)
