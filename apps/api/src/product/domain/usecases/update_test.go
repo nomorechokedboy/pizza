@@ -52,7 +52,7 @@ func (s *UpdateProductTestSuite) TestUpdateDuplicateError() {
 
 func (s *UpdateProductTestSuite) TestUpdateNotFoundError() {
 	id := uint(2)
-	s.Repo.On("Update", id, updateReq).Return(nil, errors.New("not found"))
+	s.Repo.On("Update", id, updateReq).Return(nil, nil)
 	product, err := s.UseCase.Execute(id, updateReq)
 
 	s.Assertions.Nil(product)
