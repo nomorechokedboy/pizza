@@ -3,6 +3,7 @@ package usecases_test
 import (
 	"api/src/inventory/domain"
 	"api/src/inventory/domain/usecases"
+	"api/src/utils"
 	"testing"
 	"time"
 
@@ -33,11 +34,11 @@ func TestFindOneInventoryUseCaseWithNotFoundError(t *testing.T) {
 
 func TestFindOneInventoryUseCaseHappyCase(t *testing.T) {
 	assert := assert.New(t)
-	id := 1
-	inventoryRepo.InventoryList = append(inventoryRepo.InventoryList, domain.Inventory{Id: id, Quantity: 5, CreatedAt: time.Now(), UpdatedAt: time.Now()})
-	inventory, err := findOneInventoryUseCase.Execute(&id)
+	id := uint(1)
+	inventoryRepo.InventoryList = append(inventoryRepo.InventoryList, domain.Inventory{ID: id, Quantity: 5, CreatedAt: time.Now(), UpdatedAt: time.Now()})
+	inventory, err := findOneInventoryUseCase.Execute(utils.GetDataTypeAddress(int(id)))
 
 	assert.NotNil(inventory)
-	assert.Equal(id, inventory.Id)
+	assert.Equal(id, inventory.ID)
 	assert.Nil(err)
 }

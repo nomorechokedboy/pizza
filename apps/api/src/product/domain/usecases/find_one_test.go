@@ -65,7 +65,7 @@ func (s *FindOneProductTestSuite) TestFindOneHappyCase() {
 		SKU:         "Sku",
 		Price:       1000,
 		Category:    category.Category{ID: 1, Name: "Test", Description: nil},
-		Inventory:   inventory.Inventory{Id: 1, Quantity: 1, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		Inventory:   inventory.Inventory{ID: 1, Quantity: 1, CreatedAt: time.Now(), UpdatedAt: time.Now()},
 	}, nil)
 	product, err := s.UseCase.Execute(id)
 

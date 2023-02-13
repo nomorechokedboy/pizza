@@ -3,12 +3,12 @@ package domain
 import "time"
 
 type Inventory struct {
-	Id        int
-	Quantity  int
+	ID        uint `gorm:"primaryKey"`
+	Quantity  uint `gorm:"not null"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
 type WriteInventoryBody struct {
-	Quantity int `validate:"required,numeric,min=1"`
+	Quantity uint `validate:"required,numeric,min=1"`
 }
