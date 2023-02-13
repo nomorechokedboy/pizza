@@ -27,25 +27,28 @@ func (s *FindOneProductTestSuite) TestFindOneUnknownError() {
 	id := uint(1)
 	table := []struct {
 		Description string
-		Error       string
+		Error       error
+		Expected    string
 	}{
 		{
 			Description: "Unknown error",
-			Error:       "unknown error",
+			Error:       errors.New("unknown error"),
+			Expected:    "unknown error",
 		},
 		{
 			Description: "Not found error",
-			Error:       "not found",
+			Error:       nil,
+			Expected:    "not found",
 		},
 	}
 
 	for _, c := range table {
 		s.Run(c.Description, func() {
-			s.Repo.On("FindOne", id).Return(nil, errors.New(c.Error))
+			s.Repo.On("FindOne", id).Return(nil, c.Error).Once()
 			product, err := s.UseCase.Execute(id)
 
 			s.Assertions.Nil(product)
-			s.Assertions.EqualError(err, "unknown error")
+			s.Assertions.EqualError(err, c.Expected)
 		})
 	}
 }
@@ -62,7 +65,7 @@ func (s *FindOneProductTestSuite) TestFindOneHappyCase() {
 		SKU:         "Sku",
 		Price:       1000,
 		Category:    category.Category{ID: 1, Name: "Test", Description: nil},
-		Inventory:   inventory.Inventory{Id: 1, Quantity: 1, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		Inventory:   inventory.Inventory{ID: 1, Quantity: 1, CreatedAt: time.Now(), UpdatedAt: time.Now()},
 	}, nil)
 	product, err := s.UseCase.Execute(id)
 

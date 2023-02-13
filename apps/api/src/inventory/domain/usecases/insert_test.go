@@ -31,5 +31,5 @@ func TestInsertInventoryUseCaseHappyCase(t *testing.T) {
 
 	assert.Nil(err)
 	assert.NotNil(inventory)
-	assert.Equal(inventory.Quantity, 5)
+	assert.Equal(uint(5), inventory.Quantity)
 }

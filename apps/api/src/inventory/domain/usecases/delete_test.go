@@ -39,6 +39,6 @@ func TestDeleteInventoryUseCaseHappyCase(t *testing.T) {
 
 	assert.NotNil(deletedInventory)
 	assert.Nil(err)
-	assert.Equal(id, deletedInventory.Id)
-	assert.Equal(5, deletedInventory.Quantity)
+	assert.Equal(uint(id), deletedInventory.ID)
+	assert.Equal(uint(5), deletedInventory.Quantity)
 }

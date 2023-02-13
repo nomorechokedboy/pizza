@@ -178,14 +178,14 @@ func (s *FindProductTestSuite) TestFindHappyCase() {
 		},
 		{
 			Queries: &domain.ProductQuery{
-				InventoryId: utils.GetDataTypeAddress(10),
+				InventoryId: utils.GetDataTypeAddress(uint(10)),
 			},
 			Expected:    []*domain.Product{},
 			Description: "Query By Inventory Id Not Found",
 		},
 		{
 			Queries: &domain.ProductQuery{
-				InventoryId: utils.GetDataTypeAddress(1),
+				InventoryId: utils.GetDataTypeAddress(uint(1)),
 			},
 			Expected:    []*domain.Product{&initData[0], &initData[1]},
 			Description: "Query By Inventory Id Happy Case",
@@ -197,7 +197,7 @@ func (s *FindProductTestSuite) TestFindHappyCase() {
 					PageSize: utils.GetDataTypeAddress(uint(2)),
 					Q:        utils.GetDataTypeAddress("free"),
 				},
-				InventoryId: utils.GetDataTypeAddress(2),
+				InventoryId: utils.GetDataTypeAddress(uint(2)),
 			},
 			Expected:    []*domain.Product{&initData[2]},
 			Description: "Query By Inventory Id All Params",
