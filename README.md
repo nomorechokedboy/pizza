@@ -6,7 +6,7 @@
 
 This is an official pnpm starter turborepo. The monorepo contains frontend, cms written in [VueJS](https://vuejs.org) and api written in [Go](https://go.dev/)
 
-## Prerequire
+## Prerequisite
 
 Because of the mix with typescript and golang, you will need to install go dependencies if you wish to run the api code.
 
