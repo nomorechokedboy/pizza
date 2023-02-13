@@ -1,6 +1,13 @@
 package utils
 
-import "strings"
+import (
+	"api/src/config"
+	"strings"
+
+	"github.com/stretchr/testify/suite"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
 
 func EscapeLike(left, right, word string) string {
 	var n int
@@ -22,4 +29,18 @@ func EscapeLike(left, right, word string) string {
 		b.WriteRune(c)
 	}
 	return left + b.String() + right
+}
+
+func SetupGormIntegrationTest[T any](s *suite.Suite, entity T) *gorm.DB {
+	config, err := config.LoadEnv()
+	s.Require().NoError(err)
+	db, err := gorm.Open(postgres.Open(GetDbURI(config)), &gorm.Config{
+		SkipDefaultTransaction: true,
+		PrepareStmt:            true,
+	})
+	s.Require().NoError(err)
+	err = db.AutoMigrate(&entity)
+	s.Require().NoError(err)
+
+	return db
 }
