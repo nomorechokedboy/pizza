@@ -13,11 +13,11 @@ func (s *RepositoryIntegrationTestSuite) TestDeleteCategoryRepository() {
 	})
 
 	s.Run("Happy case", func() {
-		_, err := s.Repo.Delete(utils.GetDataTypeAddress(1))
+		category, err := s.Repo.Delete(utils.GetDataTypeAddress(1))
 		s.Assertions.NoError(err)
+		s.Assertions.Equal(uint(1), category.ID)
 
-		category, err := s.Repo.FindOne(utils.GetDataTypeAddress(1))
-
+		category, err = s.Repo.FindOne(utils.GetDataTypeAddress(1))
 		s.Assertions.EqualError(err, "not found")
 		s.Assertions.Nil(category)
 	})
