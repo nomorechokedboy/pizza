@@ -56,7 +56,7 @@ func (s *DeleteProductTestSuite) TestDeleteUnknownError() {
 func (s *DeleteProductTestSuite) TestDeleteHappyCase() {
 	id := uint(1)
 	s.Repo.On("Delete", id).Return(&domain.Product{
-		Id:          1,
+		ID:          1,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		Slug:        "slug",
@@ -70,7 +70,7 @@ func (s *DeleteProductTestSuite) TestDeleteHappyCase() {
 	product, err := s.UseCase.Execute(id)
 
 	s.Assertions.NoError(err)
-	s.Assertions.Equal(product.Id, int32(id))
+	s.Assertions.Equal(product.ID, int32(id))
 }
 
 func TestDeleteProductUseCaseTestSuite(t *testing.T) {

@@ -62,7 +62,7 @@ func (s *InsertProductTestSuite) TestInsertWithDuplicateError() {
 
 func (s *InsertProductTestSuite) TestInsertHappyCase() {
 	s.mockRepo.On("Insert", insertReq).Return(&domain.Product{
-		Id:          1,
+		ID:          1,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		Slug:        "slug",

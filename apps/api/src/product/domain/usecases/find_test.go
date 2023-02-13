@@ -22,7 +22,7 @@ type FindProductTestSuite struct {
 
 var initData = []domain.Product{
 	{
-		Id:          1,
+		ID:          1,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		Slug:        "slug",
@@ -34,7 +34,7 @@ var initData = []domain.Product{
 		Inventory:   inventory.Inventory{},
 	},
 	{
-		Id:          2,
+		ID:          2,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		Slug:        "pizza-morella",
@@ -46,7 +46,7 @@ var initData = []domain.Product{
 		Inventory:   inventory.Inventory{},
 	},
 	{
-		Id:          3,
+		ID:          3,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		Slug:        "pizza-free",
@@ -105,7 +105,7 @@ func (s *FindProductTestSuite) TestFindHappyCase() {
 			},
 			Expected: []*domain.Product{
 				{
-					Id:          1,
+					ID:          1,
 					CreatedAt:   time.Now(),
 					UpdatedAt:   time.Now(),
 					Slug:        "slug",
@@ -125,7 +125,7 @@ func (s *FindProductTestSuite) TestFindHappyCase() {
 			Queries: &domain.ProductQuery{},
 			Expected: []*domain.Product{
 				{
-					Id: 2, CreatedAt: time.Now(),
+					ID: 2, CreatedAt: time.Now(),
 					UpdatedAt:   time.Now(),
 					Slug:        "pizza-morella",
 					Description: "morella",

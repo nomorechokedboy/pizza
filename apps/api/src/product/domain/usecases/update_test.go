@@ -62,7 +62,7 @@ func (s *UpdateProductTestSuite) TestUpdateNotFoundError() {
 func (s *UpdateProductTestSuite) TestUpdateHappyCase() {
 	id := uint(1)
 	s.Repo.On("Update", id, updateReq).Return(&domain.Product{
-		Id:          1,
+		ID:          1,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		Slug:        "slug",
@@ -76,7 +76,7 @@ func (s *UpdateProductTestSuite) TestUpdateHappyCase() {
 	product, err := s.UseCase.Execute(id, updateReq)
 
 	s.Assertions.NoError(err)
-	s.Assertions.Equal(id, uint(product.Id))
+	s.Assertions.Equal(id, uint(product.ID))
 	s.Assertions.Equal(product.Description, updateReq.Description)
 	s.Assertions.Equal(uint(updateReq.CategoryId), product.Category.ID)
 	s.Assertions.Equal(updateReq.InventoryId, product.Inventory.ID)

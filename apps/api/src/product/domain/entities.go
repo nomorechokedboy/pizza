@@ -8,16 +8,16 @@ import (
 )
 
 type Product struct {
-	Id          int32
+	ID          uint                `gorm:"primaryKey"`
+	Slug        string              `gorm:"size:20;not null"`
+	Description string              `gorm:"size:1000"`
+	Name        string              `gorm:"size:20; not null"`
+	SKU         string              `gorm:"unique;not null;size:20"`
+	Price       float32             `gorm:"check:price > 0; not null"`
+	Category    category.Category   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Inventory   inventory.Inventory `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
-	Slug        string
-	Description string
-	Name        string
-	SKU         string
-	Price       float32
-	Category    category.Category
-	Inventory   inventory.Inventory
 }
 
 type ProductReq struct {
