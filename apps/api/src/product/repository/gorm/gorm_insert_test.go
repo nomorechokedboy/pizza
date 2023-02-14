@@ -13,13 +13,17 @@ func (s *ProductIntegrationTestSuite) TestInsertDuplicate() {
 
 	req := domain.ProductReq{
 		Description: utils.GetDataTypeAddress("CC"),
-		Name:        "Ngu hoc",
-		SKU:         "Happy sku",
+		Name:        "Help me",
+		SKU:         "Duplicate sku",
 		Price:       100,
 		CategoryId:  (*categories)[0].ID,
 		Quantity:    100,
 	}
 	product, err := s.Repo.Insert(&req)
+	s.NotNil(product)
+	s.Assertions.NoError(err)
+
+	product, err = s.Repo.Insert(&req)
 
 	s.Assertions.EqualError(err, "resource exist")
 	s.Assertions.Nil(product)
@@ -41,7 +45,7 @@ func (s *ProductIntegrationTestSuite) TestInsertHappyCase() {
 
 	s.Assertions.NoError(err)
 	s.Assertions.NotNil(product)
-	s.Assertions.Equal(*product.Description, req.Description)
+	s.Assertions.Equal(product.Description, req.Description)
 	s.Assertions.Equal(product.Name, req.Name)
 	s.Assertions.Equal(product.SKU, req.SKU)
 	s.Assertions.Equal(product.Price, req.Price)
