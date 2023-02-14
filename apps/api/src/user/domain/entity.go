@@ -1,18 +1,21 @@
 package domain
 
-import "time"
+import (
+	"api/src/common"
+	"time"
+)
 
 type User struct {
-	Id          int
-	Identifier  string
+	Id          int    `gorm:"primaryKey"`
+	Identifier  string `gorm:"unique;not null;size:20"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
-	FullName    string
+	FullName    string `gorm:"size:20"`
 	Gender      bool
 	BirthDate   time.Time
-	PhoneNumber string
-	Email       string
-	Password    string
+	PhoneNumber string `gorm:"size:15"`
+	Email       string `gorm:"size:20"`
+	Password    string `gorm:"size:20"`
 }
 
 type CreateUserReq struct {
@@ -26,7 +29,5 @@ type CreateUserReq struct {
 }
 
 type UserQuery struct {
-	Page     uint   `query:"page"`
-	PageSize uint   `query:"pageSize"`
-	Q        string `query:"q"`
+	common.BaseQuery
 }
