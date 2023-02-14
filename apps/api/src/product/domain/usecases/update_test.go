@@ -52,7 +52,7 @@ func (s *UpdateProductTestSuite) TestUpdateDuplicateError() {
 
 func (s *UpdateProductTestSuite) TestUpdateNotFoundError() {
 	id := uint(2)
-	s.Repo.On("Update", id, updateReq).Return(nil, errors.New("not found"))
+	s.Repo.On("Update", id, updateReq).Return(nil, nil)
 	product, err := s.UseCase.Execute(id, updateReq)
 
 	s.Assertions.Nil(product)
@@ -71,7 +71,7 @@ func (s *UpdateProductTestSuite) TestUpdateHappyCase() {
 		SKU:         updateReq.SKU,
 		Price:       updateReq.Price,
 		Category:    category.Category{ID: uint(updateReq.CategoryId), Name: "Test", Description: nil},
-		Inventory:   inventory.Inventory{Id: updateReq.InventoryId, Quantity: 1, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		Inventory:   inventory.Inventory{ID: uint(updateReq.InventoryId), Quantity: 1, CreatedAt: time.Now(), UpdatedAt: time.Now()},
 	}, nil)
 	product, err := s.UseCase.Execute(id, updateReq)
 
@@ -79,7 +79,7 @@ func (s *UpdateProductTestSuite) TestUpdateHappyCase() {
 	s.Assertions.Equal(id, uint(product.Id))
 	s.Assertions.Equal(product.Description, updateReq.Description)
 	s.Assertions.Equal(uint(updateReq.CategoryId), product.Category.ID)
-	s.Assertions.Equal(updateReq.InventoryId, product.Inventory.Id)
+	s.Assertions.Equal(updateReq.InventoryId, product.Inventory.ID)
 	s.Assertions.Equal(updateReq.Name, product.Name)
 	s.Assertions.Equal(updateReq.Price, product.Price)
 	s.Assertions.Equal(updateReq.SKU, product.SKU)

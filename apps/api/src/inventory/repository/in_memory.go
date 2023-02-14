@@ -16,8 +16,8 @@ func (repo *InventoryInMemoryRepo) Insert(req *domain.WriteInventoryBody) (*doma
 		return nil, errors.New("unknown error")
 	}
 
-	Id := len(repo.InventoryList) + 1
-	newProduct := domain.Inventory{Id: Id, Quantity: req.Quantity, CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	Id := uint(len(repo.InventoryList)) + 1
+	newProduct := domain.Inventory{ID: Id, Quantity: req.Quantity, CreatedAt: time.Now(), UpdatedAt: time.Now()}
 	repo.InventoryList = append(repo.InventoryList, newProduct)
 
 	return &newProduct, nil
@@ -30,7 +30,7 @@ func (repo *InventoryInMemoryRepo) Update(id *int, req *domain.WriteInventoryBod
 
 	for i := range repo.InventoryList {
 		inventory := &repo.InventoryList[i]
-		if inventory.Id == *id {
+		if inventory.ID == uint(*id) {
 			inventory.Quantity = req.Quantity
 			inventory.UpdatedAt = time.Now()
 			return inventory, nil
@@ -50,7 +50,7 @@ func (repo *InventoryInMemoryRepo) Delete(req *int) (*domain.Inventory, error) {
 	filteredList := make([]domain.Inventory, 0)
 
 	for i, inventory := range repo.InventoryList {
-		if inventory.Id == *req {
+		if inventory.ID == uint(*req) {
 			res = inventory
 			pos = i
 			continue
@@ -81,7 +81,7 @@ func (repo *InventoryInMemoryRepo) FindOne(req *int) (*domain.Inventory, error) 
 	var res *domain.Inventory
 
 	for _, inventory := range repo.InventoryList {
-		if inventory.Id == *req {
+		if inventory.ID == uint(*req) {
 			res = &inventory
 			break
 		}

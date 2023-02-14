@@ -27,6 +27,10 @@ func (m *MockRepository) Update(id uint, req domain.ProductReq) (*domain.Product
 		return nil, args.Get(1).(error)
 	}
 
+	if args.Get(0) == nil && args.Get(1) == nil {
+		return nil, nil
+	}
+
 	return args.Get(0).(*domain.Product), nil
 }
 

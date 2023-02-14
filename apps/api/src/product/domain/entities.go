@@ -25,11 +25,11 @@ type ProductReq struct {
 	Name        string  `js:"name"`
 	SKU         string  `js:"sku"`
 	Price       float32 `js:"price"`
-	CategoryId  int     `js:"categoryId"`
-	InventoryId int     `js:"inventoryId"`
+	CategoryId  uint    `js:"categoryId"`
+	InventoryId uint    `js:"inventoryId"`
 }
 
 type ProductQuery struct {
 	common.BaseQuery
-	InventoryId *int `query:"inventoryId"`
+	InventoryId *uint `query:"inventoryId"`
 }
