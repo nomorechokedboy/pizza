@@ -84,10 +84,10 @@ func (repo *UserInMemoryRepo) Find(req *domain.UserQuery) (*[]domain.User, error
 	}
 
 	res := repo.UserList
-	if req.Q != "" {
+	if req.Q != nil {
 		res = make([]domain.User, 0)
 		for _, user := range repo.UserList {
-			q := strings.ToLower(req.Q)
+			q := strings.ToLower(*req.Q)
 			entityContainsQ := strings.Contains(strings.ToLower(user.Email), q) || strings.Contains(strings.ToLower(user.FullName), q) || strings.Contains(strings.ToLower(user.Identifier), q) || strings.Contains(strings.ToLower(user.PhoneNumber), q) || strings.Contains(strings.ToLower(user.Password), q) || strings.Contains(strings.ToLower(user.BirthDate.Format("2006-01-02 15:04:05")), q)
 
 			if entityContainsQ {
@@ -97,12 +97,8 @@ func (repo *UserInMemoryRepo) Find(req *domain.UserQuery) (*[]domain.User, error
 		}
 	}
 
-	if req.PageSize == 0 {
-		req.PageSize = 10
-	}
-
-	start := uint(req.Page * req.PageSize)
-	end := uint(start + req.PageSize)
+	start := uint(req.GetPage() * req.GetPageSize())
+	end := uint(start + req.GetPageSize())
 
 	res = res[min(start, uint(len(res))):min(end, uint(len(res)))]
 
