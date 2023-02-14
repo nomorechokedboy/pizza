@@ -5,6 +5,7 @@ import (
 	inventory "api/src/inventory/domain"
 	"api/src/product/domain"
 	"api/src/product/domain/usecases"
+	"api/src/utils"
 	"errors"
 	"testing"
 	"time"
@@ -23,7 +24,7 @@ func (s *InsertProductTestSuite) SetupTest() {
 	s.UseCase = usecases.InsertProductUseCase{Repo: &s.mockRepo}
 }
 
-var insertReq = domain.ProductReq{Description: "Test Description", Name: "Should ok", SKU: "Success", Price: 10000}
+var insertReq = domain.ProductReq{Description: utils.GetDataTypeAddress("Test Description"), Name: "Should ok", SKU: "Success", Price: 10000}
 
 func (s *InsertProductTestSuite) TestInsertWithErrors() {
 	table := []struct {
@@ -77,7 +78,7 @@ func (s *InsertProductTestSuite) TestInsertHappyCase() {
 
 	s.Assertions.NoError(err)
 	s.Assertions.NotNil(product)
-	s.Assertions.Equal(product.Description, insertReq.Description)
+	s.Assertions.Equal(product.Description, &insertReq.Description)
 	s.Assertions.Equal(product.Name, insertReq.Name)
 	s.Assertions.Equal(product.Price, insertReq.Price)
 	s.Assertions.Equal(product.SKU, insertReq.SKU)

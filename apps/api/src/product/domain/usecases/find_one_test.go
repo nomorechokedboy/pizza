@@ -5,6 +5,7 @@ import (
 	inventory "api/src/inventory/domain"
 	"api/src/product/domain"
 	"api/src/product/domain/usecases"
+	"api/src/utils"
 	"errors"
 	"testing"
 	"time"
@@ -60,7 +61,7 @@ func (s *FindOneProductTestSuite) TestFindOneHappyCase() {
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		Slug:        "slug",
-		Description: "Description",
+		Description: utils.GetDataTypeAddress("Description"),
 		Name:        "Name",
 		SKU:         "Sku",
 		Price:       1000,

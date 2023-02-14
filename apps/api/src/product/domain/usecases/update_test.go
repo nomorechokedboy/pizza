@@ -5,6 +5,7 @@ import (
 	inventory "api/src/inventory/domain"
 	"api/src/product/domain"
 	"api/src/product/domain/usecases"
+	"api/src/utils"
 	"errors"
 	"testing"
 	"time"
@@ -25,7 +26,7 @@ type UpdateCategoryTestCase struct {
 	InitData []domain.Product
 }
 
-var updateReq = domain.ProductReq{Description: "Lalalala", Name: "Updated name", SKU: "Updated SKU", Price: 100, CategoryId: 1, InventoryId: 2}
+var updateReq = domain.ProductReq{Description: utils.GetDataTypeAddress("Lalalala"), Name: "Updated name", SKU: "Updated SKU", Price: 100, CategoryId: 1, Quantity: 2}
 
 func (s *UpdateProductTestSuite) SetupTest() {
 	s.Repo = MockRepository{}
@@ -71,15 +72,15 @@ func (s *UpdateProductTestSuite) TestUpdateHappyCase() {
 		SKU:         updateReq.SKU,
 		Price:       updateReq.Price,
 		Category:    category.Category{ID: uint(updateReq.CategoryId), Name: "Test", Description: nil},
-		Inventory:   inventory.Inventory{ID: uint(updateReq.InventoryId), Quantity: 1, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		Inventory:   inventory.Inventory{ID: uint(updateReq.Quantity), Quantity: 1, CreatedAt: time.Now(), UpdatedAt: time.Now()},
 	}, nil)
 	product, err := s.UseCase.Execute(id, updateReq)
 
 	s.Assertions.NoError(err)
 	s.Assertions.Equal(id, uint(product.ID))
-	s.Assertions.Equal(product.Description, updateReq.Description)
+	s.Assertions.Equal(product.Description, &updateReq.Description)
 	s.Assertions.Equal(uint(updateReq.CategoryId), product.Category.ID)
-	s.Assertions.Equal(updateReq.InventoryId, product.Inventory.ID)
+	s.Assertions.Equal(updateReq.Quantity, product.Inventory.ID)
 	s.Assertions.Equal(updateReq.Name, product.Name)
 	s.Assertions.Equal(updateReq.Price, product.Price)
 	s.Assertions.Equal(updateReq.SKU, product.SKU)

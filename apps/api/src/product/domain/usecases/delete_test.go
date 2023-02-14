@@ -5,6 +5,7 @@ import (
 	inventory "api/src/inventory/domain"
 	"api/src/product/domain"
 	"api/src/product/domain/usecases"
+	"api/src/utils"
 	"errors"
 	"testing"
 	"time"
@@ -60,7 +61,7 @@ func (s *DeleteProductTestSuite) TestDeleteHappyCase() {
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		Slug:        "slug",
-		Description: "Description",
+		Description: utils.GetDataTypeAddress("Description"),
 		Name:        "Name",
 		SKU:         "Sku",
 		Price:       1000,
@@ -70,7 +71,7 @@ func (s *DeleteProductTestSuite) TestDeleteHappyCase() {
 	product, err := s.UseCase.Execute(id)
 
 	s.Assertions.NoError(err)
-	s.Assertions.Equal(product.ID, int32(id))
+	s.Assertions.Equal(product.ID, id)
 }
 
 func TestDeleteProductUseCaseTestSuite(t *testing.T) {
