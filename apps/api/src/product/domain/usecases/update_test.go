@@ -78,7 +78,7 @@ func (s *UpdateProductTestSuite) TestUpdateHappyCase() {
 
 	s.Assertions.NoError(err)
 	s.Assertions.Equal(id, uint(product.ID))
-	s.Assertions.Equal(product.Description, &updateReq.Description)
+	s.Assertions.Equal(product.Description, updateReq.Description)
 	s.Assertions.Equal(uint(updateReq.CategoryId), product.Category.ID)
 	s.Assertions.Equal(updateReq.Quantity, product.Inventory.ID)
 	s.Assertions.Equal(updateReq.Name, product.Name)

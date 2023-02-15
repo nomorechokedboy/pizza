@@ -33,5 +33,5 @@ type ProductReq struct {
 
 type ProductQuery struct {
 	common.BaseQuery
-	InventoryId *uint `query:"inventoryId"`
+	CategoryId *uint `query:"categoryId"`
 }

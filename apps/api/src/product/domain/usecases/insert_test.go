@@ -78,7 +78,7 @@ func (s *InsertProductTestSuite) TestInsertHappyCase() {
 
 	s.Assertions.NoError(err)
 	s.Assertions.NotNil(product)
-	s.Assertions.Equal(product.Description, &insertReq.Description)
+	s.Assertions.Equal(product.Description, insertReq.Description)
 	s.Assertions.Equal(product.Name, insertReq.Name)
 	s.Assertions.Equal(product.Price, insertReq.Price)
 	s.Assertions.Equal(product.SKU, insertReq.SKU)
