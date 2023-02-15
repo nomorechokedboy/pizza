@@ -9,8 +9,11 @@ import (
 	"syscall"
 
 	"api/src/category"
-	"api/src/category/domain"
+	CategoryDomain "api/src/category/domain"
 	"api/src/config"
+	InventoryDomain "api/src/inventory/domain"
+	"api/src/product"
+	ProductDomain "api/src/product/domain"
 	"api/src/utils"
 
 	"github.com/gofiber/fiber/v2"
@@ -53,7 +56,7 @@ func main() {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	if err = db.AutoMigrate(&domain.Category{}); err != nil {
+	if err = db.AutoMigrate(&CategoryDomain.Category{}, &InventoryDomain.Inventory{}, &ProductDomain.Product{}); err != nil {
 		panic("failed to migrate database")
 	}
 
@@ -64,6 +67,7 @@ func main() {
 	app.Use(cors.New())
 	app.Use(func(c *fiber.Ctx) error {
 		category.RegisterUseCases(c, db)
+		product.RegisterUseCases(c, db)
 		return c.Next()
 	})
 	app.Use(recover.New())
@@ -76,6 +80,7 @@ func main() {
 	app.Use(favicon.New())
 
 	category.New(v1)
+	product.New(v1)
 	app.Get("healthz", HealthCheck)
 	app.Get("/docs/*", swagger.HandlerDefault)
 	app.Get("/", func(c *fiber.Ctx) error {
