@@ -42,5 +42,6 @@ func (s *ProductIntegrationTestSuite) TestUpdateProductHappyCase() {
 	s.Assertions.Equal(product.Price, updatedProduct.Price)
 	s.Assertions.Equal(req.Quantity, updatedProduct.Inventory.Quantity)
 	s.Assertions.Equal(product.CategoryID, updatedProduct.CategoryID)
+	s.Assertions.Equal(product.CategoryID, updatedProduct.Category.ID)
 	s.Assertions.Equal(product.Slug, updatedProduct.Slug)
 }
