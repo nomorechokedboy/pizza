@@ -48,7 +48,7 @@ func (repo *CategoryGormRepo) Update(id *int, req *domain.WriteCategoryBody) (*d
 
 func (repo *CategoryGormRepo) Delete(req *int) (*domain.Category, error) {
 	deleteReq := domain.Category{ID: uint(*req)}
-	result := repo.DB.Clauses(clause.Returning{}).Delete(&deleteReq)
+	result := repo.DB.Preload(clause.Associations).Clauses(clause.Returning{}).Delete(&deleteReq)
 	if result.Error != nil {
 		return nil, errors.New("unknown error")
 	}
@@ -78,7 +78,7 @@ func (repo *CategoryGormRepo) Find(req *domain.CategoryQuery) (*[]domain.Categor
 	queryBuilder := repo.DB.Scopes(scopes.Pagination(&req.BaseQuery))
 
 	if req.Q != nil {
-		queryBuilder = queryBuilder.Where("name ILIKE ?", apiUtils.EscapeLike("%", "%", strings.ToLower(*req.Q))).Or("description ILIKE ?", apiUtils.EscapeLike("%", "%", strings.ToLower(*req.Q)))
+		queryBuilder.Where("name ILIKE ?", apiUtils.EscapeLike("%", "%", strings.ToLower(*req.Q))).Or("description ILIKE ?", apiUtils.EscapeLike("%", "%", strings.ToLower(*req.Q)))
 	}
 
 	if result := queryBuilder.Find(&categories); result.Error != nil {
