@@ -21,7 +21,7 @@ type BasePaginationResponse[T any] struct {
 
 func (baseQ *BaseQuery) GetPage() uint {
 	if baseQ.Page == nil {
-		baseQ.PageSize = utils.GetDataTypeAddress(uint(0))
+		baseQ.Page = utils.GetDataTypeAddress(uint(0))
 	}
 
 	return *baseQ.Page

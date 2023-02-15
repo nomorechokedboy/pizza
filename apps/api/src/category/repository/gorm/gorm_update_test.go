@@ -12,7 +12,7 @@ func (s *RepositoryIntegrationTestSuite) TestUpdateCategoryRepository() {
 		category, err := s.Repo.Update(utils.GetDataTypeAddress(100), &req)
 
 		s.Assertions.Nil(category)
-		s.Assertions.EqualError(err, "not found")
+		s.Assertions.Nil(err)
 	})
 
 	s.Run("Test unique constraint when update", func() {

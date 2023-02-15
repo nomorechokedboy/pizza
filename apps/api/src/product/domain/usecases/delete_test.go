@@ -5,6 +5,7 @@ import (
 	inventory "api/src/inventory/domain"
 	"api/src/product/domain"
 	"api/src/product/domain/usecases"
+	"api/src/utils"
 	"errors"
 	"testing"
 	"time"
@@ -56,11 +57,11 @@ func (s *DeleteProductTestSuite) TestDeleteUnknownError() {
 func (s *DeleteProductTestSuite) TestDeleteHappyCase() {
 	id := uint(1)
 	s.Repo.On("Delete", id).Return(&domain.Product{
-		Id:          1,
+		ID:          1,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		Slug:        "slug",
-		Description: "Description",
+		Description: utils.GetDataTypeAddress("Description"),
 		Name:        "Name",
 		SKU:         "Sku",
 		Price:       1000,
@@ -70,7 +71,7 @@ func (s *DeleteProductTestSuite) TestDeleteHappyCase() {
 	product, err := s.UseCase.Execute(id)
 
 	s.Assertions.NoError(err)
-	s.Assertions.Equal(product.Id, int32(id))
+	s.Assertions.Equal(product.ID, id)
 }
 
 func TestDeleteProductUseCaseTestSuite(t *testing.T) {

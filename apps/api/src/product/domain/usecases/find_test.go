@@ -22,11 +22,11 @@ type FindProductTestSuite struct {
 
 var initData = []domain.Product{
 	{
-		Id:          1,
+		ID:          1,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		Slug:        "slug",
-		Description: "Desc",
+		Description: utils.GetDataTypeAddress("Desc"),
 		Name:        "Lmao",
 		SKU:         "123ABC",
 		Price:       1000,
@@ -34,11 +34,11 @@ var initData = []domain.Product{
 		Inventory:   inventory.Inventory{},
 	},
 	{
-		Id:          2,
+		ID:          2,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		Slug:        "pizza-morella",
-		Description: "morella",
+		Description: utils.GetDataTypeAddress("morella"),
 		Name:        "pizza morella",
 		SKU:         "p123",
 		Price:       1000,
@@ -46,11 +46,11 @@ var initData = []domain.Product{
 		Inventory:   inventory.Inventory{},
 	},
 	{
-		Id:          3,
+		ID:          3,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		Slug:        "pizza-free",
-		Description: "free",
+		Description: utils.GetDataTypeAddress("free"),
 		Name:        "pizza free",
 		SKU:         "1234",
 		Price:       1000,
@@ -86,7 +86,7 @@ func (s *FindProductTestSuite) TestFindHappyCase() {
 	}{
 		{
 			Queries: &domain.ProductQuery{
-				InventoryId: nil,
+				CategoryId: nil,
 				BaseQuery: common.BaseQuery{
 					Page:     &ExceedPage,
 					PageSize: &ExceedPageSize,
@@ -97,7 +97,7 @@ func (s *FindProductTestSuite) TestFindHappyCase() {
 		},
 		{
 			Queries: &domain.ProductQuery{
-				InventoryId: nil,
+				CategoryId: nil,
 				BaseQuery: common.BaseQuery{
 					Page:     &Page,
 					PageSize: &PageSize,
@@ -105,11 +105,11 @@ func (s *FindProductTestSuite) TestFindHappyCase() {
 			},
 			Expected: []*domain.Product{
 				{
-					Id:          1,
+					ID:          1,
 					CreatedAt:   time.Now(),
 					UpdatedAt:   time.Now(),
 					Slug:        "slug",
-					Description: "Desc",
+					Description: utils.GetDataTypeAddress("Desc"),
 					Name:        "Lmao",
 					SKU:         "123ABC",
 					Price:       1000,
@@ -125,10 +125,10 @@ func (s *FindProductTestSuite) TestFindHappyCase() {
 			Queries: &domain.ProductQuery{},
 			Expected: []*domain.Product{
 				{
-					Id: 2, CreatedAt: time.Now(),
+					ID: 2, CreatedAt: time.Now(),
 					UpdatedAt:   time.Now(),
 					Slug:        "pizza-morella",
-					Description: "morella",
+					Description: utils.GetDataTypeAddress("morella"),
 					Name:        "pizza morella",
 					SKU:         "p123",
 					Price:       1000,
@@ -147,7 +147,7 @@ func (s *FindProductTestSuite) TestFindHappyCase() {
 					PageSize: nil,
 					Q:        &Q,
 				},
-				InventoryId: nil,
+				CategoryId: nil,
 			},
 			Expected:    []*domain.Product{},
 			Description: "Search Not Found",
@@ -178,14 +178,14 @@ func (s *FindProductTestSuite) TestFindHappyCase() {
 		},
 		{
 			Queries: &domain.ProductQuery{
-				InventoryId: utils.GetDataTypeAddress(uint(10)),
+				CategoryId: utils.GetDataTypeAddress(uint(10)),
 			},
 			Expected:    []*domain.Product{},
 			Description: "Query By Inventory Id Not Found",
 		},
 		{
 			Queries: &domain.ProductQuery{
-				InventoryId: utils.GetDataTypeAddress(uint(1)),
+				CategoryId: utils.GetDataTypeAddress(uint(1)),
 			},
 			Expected:    []*domain.Product{&initData[0], &initData[1]},
 			Description: "Query By Inventory Id Happy Case",
@@ -197,7 +197,7 @@ func (s *FindProductTestSuite) TestFindHappyCase() {
 					PageSize: utils.GetDataTypeAddress(uint(2)),
 					Q:        utils.GetDataTypeAddress("free"),
 				},
-				InventoryId: utils.GetDataTypeAddress(uint(2)),
+				CategoryId: utils.GetDataTypeAddress(uint(2)),
 			},
 			Expected:    []*domain.Product{&initData[2]},
 			Description: "Query By Inventory Id All Params",

@@ -5,6 +5,7 @@ import (
 	inventory "api/src/inventory/domain"
 	"api/src/product/domain"
 	"api/src/product/domain/usecases"
+	"api/src/utils"
 	"errors"
 	"testing"
 	"time"
@@ -56,11 +57,11 @@ func (s *FindOneProductTestSuite) TestFindOneUnknownError() {
 func (s *FindOneProductTestSuite) TestFindOneHappyCase() {
 	id := uint(1)
 	s.Repo.On("FindOne", id).Return(&domain.Product{
-		Id:          1,
+		ID:          1,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		Slug:        "slug",
-		Description: "Description",
+		Description: utils.GetDataTypeAddress("Description"),
 		Name:        "Name",
 		SKU:         "Sku",
 		Price:       1000,
@@ -70,7 +71,7 @@ func (s *FindOneProductTestSuite) TestFindOneHappyCase() {
 	product, err := s.UseCase.Execute(id)
 
 	s.Assertions.NoError(err)
-	s.Assertions.Equal(id, uint(product.Id))
+	s.Assertions.Equal(id, uint(product.ID))
 }
 
 func TestFindOneProductUseCaseTestSuite(t *testing.T) {

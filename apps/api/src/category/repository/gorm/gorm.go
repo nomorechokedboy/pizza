@@ -31,7 +31,7 @@ func (repo *CategoryGormRepo) Insert(req *domain.WriteCategoryBody) (*domain.Cat
 
 func (repo *CategoryGormRepo) Update(id *int, req *domain.WriteCategoryBody) (*domain.Category, error) {
 	updateReq := domain.Category{ID: uint(*id)}
-	result := repo.DB.Model(&updateReq).Debug().Clauses(clause.Returning{}).Updates(&domain.Category{Name: req.Name, Description: &req.Description})
+	result := repo.DB.Model(&updateReq).Clauses(clause.Returning{}).Updates(&domain.Category{Name: req.Name, Description: &req.Description})
 	if result.Error != nil {
 		if result.Error.(*pgconn.PgError).Code == "23505" {
 			return nil, errors.New("resource exist")
@@ -40,7 +40,7 @@ func (repo *CategoryGormRepo) Update(id *int, req *domain.WriteCategoryBody) (*d
 	}
 
 	if result.RowsAffected == 0 {
-		return nil, errors.New("not found")
+		return nil, nil
 	}
 
 	return &updateReq, nil
@@ -48,7 +48,7 @@ func (repo *CategoryGormRepo) Update(id *int, req *domain.WriteCategoryBody) (*d
 
 func (repo *CategoryGormRepo) Delete(req *int) (*domain.Category, error) {
 	deleteReq := domain.Category{ID: uint(*req)}
-	result := repo.DB.Clauses(clause.Returning{}).Delete(&deleteReq)
+	result := repo.DB.Preload(clause.Associations).Clauses(clause.Returning{}).Delete(&deleteReq)
 	if result.Error != nil {
 		return nil, errors.New("unknown error")
 	}
@@ -78,7 +78,7 @@ func (repo *CategoryGormRepo) Find(req *domain.CategoryQuery) (*[]domain.Categor
 	queryBuilder := repo.DB.Scopes(scopes.Pagination(&req.BaseQuery))
 
 	if req.Q != nil {
-		queryBuilder = queryBuilder.Where("name ILIKE ?", apiUtils.EscapeLike("%", "%", strings.ToLower(*req.Q))).Or("description ILIKE ?", apiUtils.EscapeLike("%", "%", strings.ToLower(*req.Q)))
+		queryBuilder.Where("name ILIKE ?", apiUtils.EscapeLike("%", "%", strings.ToLower(*req.Q))).Or("description ILIKE ?", apiUtils.EscapeLike("%", "%", strings.ToLower(*req.Q)))
 	}
 
 	if result := queryBuilder.Find(&categories); result.Error != nil {

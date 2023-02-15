@@ -2,9 +2,11 @@ package usecases_test
 
 import (
 	category "api/src/category/domain"
+	"api/src/common"
 	inventory "api/src/inventory/domain"
 	"api/src/product/domain"
 	"api/src/product/domain/usecases"
+	"api/src/utils"
 	"errors"
 	"testing"
 	"time"
@@ -20,10 +22,10 @@ type InsertProductTestSuite struct {
 
 func (s *InsertProductTestSuite) SetupTest() {
 	s.mockRepo = MockRepository{}
-	s.UseCase = usecases.InsertProductUseCase{Repo: &s.mockRepo}
+	s.UseCase = usecases.InsertProductUseCase{Repo: &s.mockRepo, Validator: &common.ValidatorAdapter}
 }
 
-var insertReq = domain.ProductReq{Description: "Test Description", Name: "Should ok", SKU: "Success", Price: 10000}
+var insertReq = domain.ProductReq{Description: utils.GetDataTypeAddress("Test Description"), Name: "Should ok", SKU: "Success", Price: 10000}
 
 func (s *InsertProductTestSuite) TestInsertWithErrors() {
 	table := []struct {
@@ -62,7 +64,7 @@ func (s *InsertProductTestSuite) TestInsertWithDuplicateError() {
 
 func (s *InsertProductTestSuite) TestInsertHappyCase() {
 	s.mockRepo.On("Insert", insertReq).Return(&domain.Product{
-		Id:          1,
+		ID:          1,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		Slug:        "slug",

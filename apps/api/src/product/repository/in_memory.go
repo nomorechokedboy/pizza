@@ -22,8 +22,8 @@ func (repo *ProductInMemoryRepo) Insert(req *domain.ProductReq) (*domain.Product
 		}
 	}
 
-	Id := len(repo.DataStore) + 1
-	newProduct := domain.Product{Id: int32(Id), CreatedAt: time.Now(), UpdatedAt: time.Now(), Slug: "Not implemented", Description: req.Description, Name: req.Name, SKU: req.SKU, Price: req.Price}
+	Id := uint(len(repo.DataStore)) + 1
+	newProduct := domain.Product{ID: Id, CreatedAt: time.Now(), UpdatedAt: time.Now(), Slug: "Not implemented", Description: req.Description, Name: req.Name, SKU: req.SKU, Price: req.Price}
 	repo.DataStore = append(repo.DataStore, newProduct)
 
 	return &newProduct, nil
