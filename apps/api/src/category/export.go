@@ -23,10 +23,10 @@ func New(v1 fiber.Router) {
 	categoryRoute := v1.Group("/category")
 
 	categoryRoute.Post("/insert", infrastructure.InsertCategory)
-	categoryRoute.Put("/update/:id<int>", infrastructure.UpdateCategory)
-	categoryRoute.Delete("/delete/:id<int>", infrastructure.DeleteCategory)
+	categoryRoute.Put("/update/:id<int;min(0)>", infrastructure.UpdateCategory)
+	categoryRoute.Delete("/delete/:id<int;min(0)>", infrastructure.DeleteCategory)
 	categoryRoute.Get("/find", infrastructure.FindCategory)
-	categoryRoute.Get("/details/:id<int>", infrastructure.FindOneCategory)
+	categoryRoute.Get("/details/:id<int;min(0)>", infrastructure.FindOneCategory)
 }
 
 func RegisterUseCases(c *fiber.Ctx, db *gorm.DB) {
