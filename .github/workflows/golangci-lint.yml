@@ -1,0 +1,45 @@
+name: golangci-lint
+on:
+        push:
+                tags:
+                        - v*
+                branches:
+                        - main
+        pull_request:
+permissions:
+        contents: read
+
+jobs:
+        golangci:
+                name: Lint api
+                runs-on: ubuntu-latest
+                steps:
+                        - uses: actions/setup-go@v3
+                          with:
+                                  go-version: 1.19
+                        - uses: actions/checkout@v3
+                        - name: Run docker compose
+                          run: |
+                                  mkdir -p data/minio data/postgresql
+                                  docker compose up minio postgres -d
+                        - name: Generate swagger docs
+                          run: |
+                                  cd apps/api
+                                  go install github.com/swaggo/swag/cmd/swag
+                                  /home/runner/go/bin/swag init
+                        - name: golangci-lint
+                          uses: golangci/golangci-lint-action@v3
+                          with:
+                                  version: v1.50.1
+                                  working-directory: apps/api
+
+                        - name: Run api test
+                          run: |
+                                  cd apps/api
+                                  go test -v -race -coverprofile=coverage.out -covermode=atomic ./... | sed ''/PASS/s//$(printf "\033[32mPASS\033[0m")/'' | sed ''/FAIL/s//$(printf "\033[31mFAIL\033[0m")/''
+                        - name: Upload coverage to Codecov
+                          uses: codecov/codecov-action@v3
+                          with:
+                                  fail_ci_if_error: true
+                                  verbose: true
+                                  files: apps/api/coverage.out

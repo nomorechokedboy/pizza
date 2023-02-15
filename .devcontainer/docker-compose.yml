@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+        api:
+                build:
+                        target: builder
+                command: /go/bin/air
+                volumes:
+                        - ..:/workspaces:cached

@@ -2,23 +2,33 @@ package main
 
 import (
 	_ "api/docs"
+	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
+	"api/src/category"
+	CategoryDomain "api/src/category/domain"
+	"api/src/config"
+	InventoryDomain "api/src/inventory/domain"
 	"api/src/product"
-	"api/src/product/domain"
+	ProductDomain "api/src/product/domain"
+	"api/src/utils"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/compress"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/etag"
+	"github.com/gofiber/fiber/v2/middleware/favicon"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/monitor"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/swagger"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-var productMemRepo = product.ProductInMemoryRepo{ProductList: make([]domain.Product, 0), IsErr: false}
-var createProductUseCase = domain.CreateProductUseCase{Repo: &productMemRepo}
-
-// HealthCheck godoc
-// @Summary healthcheck api
-// @Description Get uptime and application status
-// @Accept json
-// @Produce json
-// @Router / [get]
 func HealthCheck(c *fiber.Ctx) error {
 	return c.SendString("Hello, World!")
 }
@@ -31,18 +41,69 @@ func HealthCheck(c *fiber.Ctx) error {
 // @contact.email fiber@swagger.io
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-// @host localhost:3001
-// @BasePath /
+// @BasePath /api/v1
 func main() {
-	app := fiber.New()
+	config, e := config.LoadEnv()
+	if e != nil {
+		log.Fatal(e)
+	}
+	DB_DNS := utils.GetDbURI(config)
+	serverAddr := utils.GetServerAddress(config)
+	db, err := gorm.Open(postgres.Open(DB_DNS), &gorm.Config{
+		SkipDefaultTransaction: true,
+		PrepareStmt:            true,
+	})
+	if err != nil {
+		panic("failed to connect database")
+	}
+	if err = db.AutoMigrate(&CategoryDomain.Category{}, &InventoryDomain.Inventory{}, &ProductDomain.Product{}); err != nil {
+		panic("failed to migrate database")
+	}
 
+	app := fiber.New()
+	api := app.Group("/api")
+	v1 := api.Group("/v1")
+
+	app.Use(cors.New())
 	app.Use(func(c *fiber.Ctx) error {
-		c.Locals("createProductUseCase", createProductUseCase)
+		category.RegisterUseCases(c, db)
+		product.RegisterUseCases(c, db)
 		return c.Next()
 	})
-	app.Post("/create-product", product.CreateProduct)
-	app.Get("/swagger/*", swagger.HandlerDefault)
-	app.Get("/", HealthCheck)
+	app.Use(recover.New())
+	app.Use(logger.New(logger.Config{
+		Format: "[${time}] ${ip}  ${status} - ${latency} ${method} ${path}\n",
+	}))
+	app.Get("/metrics", monitor.New(monitor.Config{Title: "MyService Metrics Page"}))
+	app.Use(compress.New())
+	app.Use(etag.New())
+	app.Use(favicon.New())
 
-	app.Listen(":3001")
+	category.New(v1)
+	product.New(v1)
+	app.Get("healthz", HealthCheck)
+	app.Get("/docs/*", swagger.HandlerDefault)
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.Redirect("/docs")
+	})
+
+	go func() {
+		if appErr := app.Listen(serverAddr); appErr != nil {
+			log.Panic(appErr)
+		}
+	}()
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM) // When an interrupt or termination signal is sent, notify the channel
+
+	<-c // This blocks the main thread until an interrupt is received
+	fmt.Println("Gracefully shutting down...")
+	_ = app.Shutdown()
+
+	fmt.Println("Running cleanup tasks...")
+
+	// Your cleanup tasks go here
+	// db.Close()
+	// redisConn.Close()
+	fmt.Println("Fiber was successful shutdown.")
 }

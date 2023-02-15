@@ -1,0 +1,34 @@
+name: CI workflows
+on:
+        pull_request:
+                branches:
+                        - dev
+
+jobs:
+        build-test-node:
+                runs-on: ubuntu-latest
+
+                strategy:
+                        matrix:
+                                node-version: [16.x]
+
+                steps:
+                        - name: Checkout
+                          uses: actions/checkout@v2
+
+                        - name: Use Node.js ${{ matrix.node-version }}
+                          uses: actions/setup-node@v2
+                          with:
+                                  node-version: ${{ matrix.node-version }}
+                        - name: Cache dependencies
+                          uses: actions/cache@v2
+                          with:
+                                  path: ~/.npm
+                                  key: npm-${{ hashFiles('package-lock.json') }}
+                                  restore-keys: npm-
+                        - name: ci, build and test
+                          run: |
+                                  yarn global add pnpm
+                                  pnpm i
+                                  pnpm lint
+                                  pnpm t

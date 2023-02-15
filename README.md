@@ -1,20 +1,73 @@
 # Turborepo starter
 
-This is an official pnpm starter turborepo.
+[![codecov](https://codecov.io/github/nomorechokedboy/pizza/branch/main/graph/badge.svg?token=8USH85MRVT)](https://codecov.io/github/nomorechokedboy/pizza)
+[![CI workflows](https://github.com/nomorechokedboy/pizza/actions/workflows/ci.yml/badge.svg)](https://github.com/nomorechokedboy/pizza/actions/workflows/ci.yml)
+[![golangci-lint](https://github.com/nomorechokedboy/pizza/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/nomorechokedboy/pizza/actions/workflows/golangci-lint.yml)
+
+This is an official pnpm starter turborepo. The monorepo contains frontend, cms written in [VueJS](https://vuejs.org) and api written in [Go](https://go.dev/)
+
+## Prerequisite
+
+Because of the mix with typescript and golang, you will need to install go dependencies if you wish to run the api code.
+
+And of course, please install [NodeJs](https://nodejs.dev/) and [Golang](https://go.dev/) locally for development.
+
+### Set GOPATH to use go binary
+
+Running this command will set your environtment path with $GOPATH/bin so you can use golang binary commands
+
+```sh
+echo 'export PATH=$(go env GOPATH)/bin:$PATH' >> ~/.zshrc # (or .bashrc)
+```
+
+### Swaggo
+
+Install swaggo with the below installation command [from fiber swagger repo](https://github.com/gofiber/swagger)
+
+```sh
+go get -u github.com/swaggo/swag/cmd/swag
+# 1.16 or newer
+go install github.com/swaggo/swag/cmd/swag@latest
+
+swag -v
+```
+
+### Golanglint-ci
+
+To install Golanglint-ci, run the command from golanglint-ci installation guide. If you wish to install with other methods, you can checkout [the documentation](https://golangci-lint.run/usage/install/)
+
+```sh
+# binary will be $(go env GOPATH)/bin/golangci-lint
+curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.50.1
+
+golangci-lint --version
+```
+
+After this, you are good to contribute to the golang repository
 
 ## What's inside?
 
 This turborepo uses [pnpm](https://pnpm.io) as a package manager. It includes the following packages/apps:
 
+### Dev container
+
+This monorepo use dev containers for development, you could choose between local environment and dev containers environment for developing the project.
+
+Just install dev containers and run it in the container
+
+_Note_: dev containers is pretty new with me so the setup is not at its best so you might have some trouble with dev containers.
+
 ### Apps and Packages
 
-- `docs`: a [Next.js](https://nextjs.org) app
+- `admin-nuxt`: a [Nuxt.js](https://nuxt.com) app
+- `web-nuxt`: a [Nuxt.js](https://nuxt.com) app
 - `web`: another [Next.js](https://nextjs.org) app
-- `ui`: a stub React component library shared by both `web` and `docs` applications
+- `ui`: a stub React component library shared by `web` applications
+- `ui`: a stub Vue component library shared by both `admin-nuxt` and `web-nuxt` applications
 - `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
 - `tsconfig`: `tsconfig.json`s used throughout the monorepo
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+Each package/app is 100% [TypeScript](https://www.typescriptlang.org/) and [Golang](https://go.dev/)
 
 ### Utilities
 
@@ -29,7 +82,7 @@ This turborepo has some additional tools already setup for you:
 To build all apps and packages, run the following command:
 
 ```
-cd my-turborepo
+cd pizza
 pnpm run build
 ```
 
@@ -38,7 +91,7 @@ pnpm run build
 To develop all apps and packages, run the following command:
 
 ```
-cd my-turborepo
+cd pizza
 pnpm run dev
 ```
 
@@ -49,7 +102,7 @@ Turborepo can use a technique known as [Remote Caching](https://turborepo.org/do
 By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
 
 ```
-cd my-turborepo
+cd pizza
 pnpm dlx turbo login
 ```
 
