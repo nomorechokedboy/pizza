@@ -13,7 +13,7 @@ func (s *RepositoryIntegrationTestSuite) TestFindOneCategoryRepository() {
 	s.Run("Happy case", func() {
 		category, err := s.Repo.FindOne(utils.GetDataTypeAddress(2))
 
-		s.Assertions.Nil(err)
+		s.Assertions.NoError(err)
 		s.Assertions.Equal(uint(2), category.ID)
 	})
 }
