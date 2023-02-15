@@ -28,7 +28,7 @@ func (r *InventoryGormRepo) Insert(req *domain.WriteInventoryBody) (*domain.Inve
 
 func (r *InventoryGormRepo) Update(id *int, req *domain.WriteInventoryBody) (*domain.Inventory, error) {
 	updateReq := domain.Inventory{ID: uint(*id)}
-	result := r.Conn.Model(&updateReq).Debug().Clauses(clause.Returning{}).Updates(&domain.Inventory{Quantity: req.Quantity})
+	result := r.Conn.Model(&updateReq).Clauses(clause.Returning{}).Updates(&domain.Inventory{Quantity: req.Quantity})
 	if result.Error != nil {
 		if result.Error.(*pgconn.PgError).Code == "23505" {
 			return nil, errors.New("resource exist")
