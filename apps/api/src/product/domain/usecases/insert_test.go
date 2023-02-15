@@ -2,6 +2,7 @@ package usecases_test
 
 import (
 	category "api/src/category/domain"
+	"api/src/common"
 	inventory "api/src/inventory/domain"
 	"api/src/product/domain"
 	"api/src/product/domain/usecases"
@@ -21,7 +22,7 @@ type InsertProductTestSuite struct {
 
 func (s *InsertProductTestSuite) SetupTest() {
 	s.mockRepo = MockRepository{}
-	s.UseCase = usecases.InsertProductUseCase{Repo: &s.mockRepo}
+	s.UseCase = usecases.InsertProductUseCase{Repo: &s.mockRepo, Validator: &common.ValidatorAdapter}
 }
 
 var insertReq = domain.ProductReq{Description: utils.GetDataTypeAddress("Test Description"), Name: "Should ok", SKU: "Success", Price: 10000}

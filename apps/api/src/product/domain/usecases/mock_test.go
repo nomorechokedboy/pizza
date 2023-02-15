@@ -11,7 +11,7 @@ type MockRepository struct {
 }
 
 func (m *MockRepository) Insert(req *domain.ProductReq) (*domain.Product, error) {
-	args := m.Called(req)
+	args := m.Called(*req)
 
 	if args.Get(1) != nil {
 		return nil, args.Get(1).(error)
