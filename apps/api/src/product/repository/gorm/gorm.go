@@ -64,6 +64,11 @@ func (r *ProductGormRepo) Delete(id uint) (*domain.Product, error) {
 }
 
 func (r *ProductGormRepo) Update(id uint, req domain.ProductReq) (*domain.Product, error) {
+	categoryRepo := categoryGorm.CategoryGormRepo{DB: r.Conn}
+	category, err := categoryRepo.FindOne(utils.GetDataTypeAddress(int(req.CategoryId)))
+	if err != nil {
+		return nil, err
+	}
 	updateProduct, err := r.FindOne(id)
 	if err == nil && updateProduct == nil {
 		return nil, nil
@@ -73,7 +78,7 @@ func (r *ProductGormRepo) Update(id uint, req domain.ProductReq) (*domain.Produc
 		return nil, err
 	}
 
-	updateProduct.CategoryID = req.CategoryId
+	updateProduct.Category = *category
 	updateProduct.Inventory.Quantity = req.Quantity
 	updateProduct.Name = req.Name
 	updateProduct.Description = req.Description
@@ -123,10 +128,10 @@ func (r *ProductGormRepo) Find(queries *domain.ProductQuery) ([]*domain.Product,
 	}
 
 	if queries.Q != nil {
-		queryBuilder.Where("name ILIKE ?", utils.EscapeLike("%", "%", strings.ToLower(*queries.Q))).Or("description ILIKE ?", utils.EscapeLike("%", "%", strings.ToLower(*queries.Q))).Or("sku ILIKE ?", utils.EscapeLike("%", "%", strings.ToLower(*queries.Q)))
+		queryBuilder.Where("products.name ILIKE ?", utils.EscapeLike("%", "%", strings.ToLower(*queries.Q))).Or("products.description ILIKE ?", utils.EscapeLike("%", "%", strings.ToLower(*queries.Q))).Or("products.sku ILIKE ?", utils.EscapeLike("%", "%", strings.ToLower(*queries.Q)))
 	}
 
-	if result := queryBuilder.Find(&products); result.Error != nil {
+	if result := queryBuilder.Joins("Category").Joins("Inventory").Find(&products); result.Error != nil {
 		return nil, errors.New("unknown error")
 	}
 
