@@ -5,7 +5,7 @@
 	"main": "index.ts",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 0",
-		"lint": "eslint **/*.vue"
+		"lint": "eslint **/*.{ts,vue}"
 	},
 	"keywords": [],
 	"author": "",
