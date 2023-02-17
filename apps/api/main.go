@@ -11,6 +11,7 @@ import (
 	"api/src/category"
 	"api/src/category/domain"
 	"api/src/config"
+	"api/src/user"
 	"api/src/utils"
 
 	"github.com/gofiber/fiber/v2"
@@ -64,8 +65,10 @@ func main() {
 	app.Use(cors.New())
 	app.Use(func(c *fiber.Ctx) error {
 		category.RegisterUseCases(c, db)
+		user.RegisterUseCases(c, db)
 		return c.Next()
 	})
+
 	app.Use(recover.New())
 	app.Use(logger.New(logger.Config{
 		Format: "[${time}] ${ip}  ${status} - ${latency} ${method} ${path}\n",
@@ -76,6 +79,7 @@ func main() {
 	app.Use(favicon.New())
 
 	category.New(v1)
+	user.New(v1)
 	app.Get("healthz", HealthCheck)
 	app.Get("/docs/*", swagger.HandlerDefault)
 	app.Get("/", func(c *fiber.Ctx) error {
