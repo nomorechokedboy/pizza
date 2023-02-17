@@ -98,7 +98,7 @@ func DeleteProduct(ctx *fiber.Ctx) error {
 // @Param sort query string false "Sort direction" Enums(asc, desc) default(desc)
 // @Param sortBy query string false "Sort by" Enums(id, name, description, sku, price, category_id) default(id)
 // @Param categoryId query string false "Category ID"
-// @Success 201 {object} []domain.Product
+// @Success 201 {object} common.BasePaginationResponse[domain.Product]
 // @Failure 400
 // @Router /product/find [get]
 // @tags Product

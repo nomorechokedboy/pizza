@@ -2,8 +2,10 @@ package gorm
 
 import (
 	categoryGorm "api/src/category/repository/gorm"
+	"api/src/common"
 	inventory "api/src/inventory/domain"
 	"api/src/scopes"
+	"fmt"
 	"strings"
 
 	"api/src/product/domain"
@@ -119,9 +121,10 @@ func (r *ProductGormRepo) FindOne(id uint) (*domain.Product, error) {
 	return &product, nil
 }
 
-func (r *ProductGormRepo) Find(queries *domain.ProductQuery) ([]*domain.Product, error) {
+func (r *ProductGormRepo) Find(queries *domain.ProductQuery) (common.BasePaginationResponse[domain.Product], error) {
 	var products []*domain.Product
-	queryBuilder := r.Conn.Scopes(scopes.Pagination(&queries.BaseQuery))
+	baseRes := &common.BasePaginationResponse[domain.Product]{}
+	queryBuilder := r.Conn.Scopes(scopes.Pagination(products, &queries.BaseQuery, baseRes, r.Conn))
 
 	if queries.CategoryId != nil {
 		queryBuilder.Where("category_id = ?", queries.CategoryId)
@@ -132,8 +135,10 @@ func (r *ProductGormRepo) Find(queries *domain.ProductQuery) ([]*domain.Product,
 	}
 
 	if result := queryBuilder.Joins("Category").Joins("Inventory").Find(&products); result.Error != nil {
-		return nil, errors.New("unknown error")
+		return common.BasePaginationResponse[domain.Product]{}, errors.New("unknown error")
 	}
+	baseRes.Items = products
+	fmt.Println("DEBUT find product: ", products)
 
-	return products, nil
+	return *baseRes, nil
 }

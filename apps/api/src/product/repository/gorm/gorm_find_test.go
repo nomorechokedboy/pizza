@@ -25,6 +25,6 @@ func (s *ProductIntegrationTestSuite) TestFindProduct() {
 		products, err := s.Repo.Find(&c.Query)
 
 		s.Assertions.NoError(err)
-		s.Assertions.Equal(c.Expected, len(products))
+		s.Assertions.Equal(c.Expected, len(products.Items))
 	}
 }
