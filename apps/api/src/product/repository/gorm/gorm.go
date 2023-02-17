@@ -5,7 +5,6 @@ import (
 	"api/src/common"
 	inventory "api/src/inventory/domain"
 	"api/src/scopes"
-	"fmt"
 	"strings"
 
 	"api/src/product/domain"
@@ -138,7 +137,6 @@ func (r *ProductGormRepo) Find(queries *domain.ProductQuery) (common.BasePaginat
 		return common.BasePaginationResponse[domain.Product]{}, errors.New("unknown error")
 	}
 	baseRes.Items = products
-	fmt.Println("DEBUT find product: ", products)
 
 	return *baseRes, nil
 }
