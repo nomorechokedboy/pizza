@@ -2,6 +2,7 @@ package gorm
 
 import (
 	"api/src/category/domain"
+	"api/src/common"
 	"api/src/scopes"
 	apiUtils "api/src/utils"
 	"errors"
@@ -73,9 +74,10 @@ func (repo *CategoryGormRepo) FindOne(id *int) (*domain.Category, error) {
 	return &dbCategory, nil
 }
 
-func (repo *CategoryGormRepo) Find(req *domain.CategoryQuery) (*[]domain.Category, error) {
-	var categories []domain.Category
-	queryBuilder := repo.DB.Scopes(scopes.Pagination(&req.BaseQuery))
+func (repo *CategoryGormRepo) Find(req *domain.CategoryQuery) ([]*domain.Category, error) {
+	var categories []*domain.Category
+	baseRes := &common.BasePaginationResponse[domain.Category]{}
+	queryBuilder := repo.DB.Scopes(scopes.Pagination(categories, &req.BaseQuery, baseRes, repo.DB))
 
 	if req.Q != nil {
 		queryBuilder.Where("name ILIKE ?", apiUtils.EscapeLike("%", "%", strings.ToLower(*req.Q))).Or("description ILIKE ?", apiUtils.EscapeLike("%", "%", strings.ToLower(*req.Q)))
@@ -84,6 +86,7 @@ func (repo *CategoryGormRepo) Find(req *domain.CategoryQuery) (*[]domain.Categor
 	if result := queryBuilder.Find(&categories); result.Error != nil {
 		return nil, errors.New("unknown error")
 	}
+	baseRes.Items = categories
 
-	return &categories, nil
+	return categories, nil
 }

@@ -11,7 +11,7 @@ func (s *RepositoryIntegrationTestSuite) TestFindCategoryRepository() {
 		categories, err := s.Repo.Find(&domain.CategoryQuery{BaseQuery: common.BaseQuery{Page: utils.GetDataTypeAddress(uint(0)), PageSize: utils.GetDataTypeAddress(uint(10))}})
 
 		s.Assertions.NoError(err)
-		s.Assertions.Equal(5, len(*categories))
+		s.Assertions.Equal(5, len(categories))
 	})
 
 	s.Run("Pagination", func() {
@@ -46,7 +46,7 @@ func (s *RepositoryIntegrationTestSuite) TestFindCategoryRepository() {
 			categories, err := s.Repo.Find(&domain.CategoryQuery{BaseQuery: common.BaseQuery{Page: &c.Page, PageSize: &c.PageSize}})
 
 			s.Assertions.NoError(err)
-			s.Assertions.Equal(c.Expected, len(*categories))
+			s.Assertions.Equal(c.Expected, len(categories))
 		}
 	})
 
@@ -84,7 +84,7 @@ func (s *RepositoryIntegrationTestSuite) TestFindCategoryRepository() {
 			categories, err := s.Repo.Find(&domain.CategoryQuery{BaseQuery: common.BaseQuery{Page: &c.Page, PageSize: &c.PageSize, Q: c.Q}})
 
 			s.Assertions.NoError(err)
-			s.Assertions.Equal(c.Expected, len(*categories))
+			s.Assertions.Equal(c.Expected, len(categories))
 		}
 	})
 }

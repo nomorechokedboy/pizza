@@ -6,6 +6,6 @@ type FindCategoryUseCase struct {
 	Repo CategoryRepository
 }
 
-func (useCase *FindCategoryUseCase) Execute(req *domain.CategoryQuery) (*[]domain.Category, error) {
+func (useCase *FindCategoryUseCase) Execute(req *domain.CategoryQuery) ([]*domain.Category, error) {
 	return useCase.Repo.Find(req)
 }

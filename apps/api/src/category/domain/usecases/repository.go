@@ -7,5 +7,5 @@ type CategoryRepository interface {
 	Update(id *int, req *domain.WriteCategoryBody) (*domain.Category, error)
 	Delete(id *int) (*domain.Category, error)
 	FindOne(id *int) (*domain.Category, error)
-	Find(req *domain.CategoryQuery) (*[]domain.Category, error)
+	Find(req *domain.CategoryQuery) ([]*domain.Category, error)
 }

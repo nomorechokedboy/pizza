@@ -19,18 +19,18 @@ type FindCategoryTestSuite struct {
 
 type FindCategoryTestCase struct {
 	input    domain.CategoryQuery
-	expected []domain.Category
+	expected []*domain.Category
 	TestName string
-	initData []domain.Category
+	initData []*domain.Category
 }
 
 func (s *FindCategoryTestSuite) SetupTest() {
-	s.repo = repository.CategoryInMemoryRepo{Data: make([]domain.Category, 0), IsErr: false}
+	s.repo = repository.CategoryInMemoryRepo{Data: make([]*domain.Category, 0), IsErr: false}
 	s.useCase = usecases.FindCategoryUseCase{Repo: &s.repo}
 }
 
 func (s *FindCategoryTestSuite) TearDownTest() {
-	s.useCase.Repo = &repository.CategoryInMemoryRepo{Data: make([]domain.Category, 0), IsErr: false}
+	s.useCase.Repo = &repository.CategoryInMemoryRepo{Data: make([]*domain.Category, 0), IsErr: false}
 }
 
 func (s *FindCategoryTestSuite) TestFindUnknownError() {
@@ -42,7 +42,7 @@ func (s *FindCategoryTestSuite) TestFindUnknownError() {
 }
 
 func (s *FindCategoryTestSuite) TestFindQuery() {
-	initData := []domain.Category{{ID: 1, Name: "Test", Description: utils.GetDataTypeAddress("123")}, {ID: 2, Name: "Test123", Description: utils.GetDataTypeAddress("Traitor's requiem")}}
+	initData := []*domain.Category{{ID: 1, Name: "Test", Description: utils.GetDataTypeAddress("123")}, {ID: 2, Name: "Test123", Description: utils.GetDataTypeAddress("Traitor's requiem")}}
 	testCases := []FindCategoryTestCase{
 		{
 			input: domain.CategoryQuery{
@@ -51,13 +51,13 @@ func (s *FindCategoryTestSuite) TestFindQuery() {
 					PageSize: utils.GetDataTypeAddress(uint(2)),
 				},
 			},
-			expected: make([]domain.Category, 0),
+			expected: make([]*domain.Category, 0),
 			TestName: "Exceed Page Number",
 			initData: initData,
 		},
 		{
 			input: domain.CategoryQuery{BaseQuery: common.BaseQuery{Page: utils.GetDataTypeAddress(uint(0))}},
-			expected: []domain.Category{
+			expected: []*domain.Category{
 				{
 					ID:          1,
 					Name:        "Test",
@@ -77,7 +77,7 @@ func (s *FindCategoryTestSuite) TestFindQuery() {
 					PageSize: utils.GetDataTypeAddress(uint(1)),
 				},
 			},
-			expected: []domain.Category{initData[0]},
+			expected: []*domain.Category{initData[0]},
 			initData: initData,
 			TestName: "Pagination",
 		},
@@ -88,7 +88,7 @@ func (s *FindCategoryTestSuite) TestFindQuery() {
 					PageSize: utils.GetDataTypeAddress(uint(1)),
 				},
 			},
-			expected: []domain.Category{initData[1]},
+			expected: []*domain.Category{initData[1]},
 			initData: initData,
 			TestName: "Pagination",
 		},
@@ -99,7 +99,7 @@ func (s *FindCategoryTestSuite) TestFindQuery() {
 					Q:    utils.GetDataTypeAddress("requiem"),
 				},
 			},
-			expected: []domain.Category{initData[1]},
+			expected: []*domain.Category{initData[1]},
 			initData: initData,
 			TestName: "Search Query Happy Case",
 		},
@@ -111,7 +111,7 @@ func (s *FindCategoryTestSuite) TestFindQuery() {
 					Q:        utils.GetDataTypeAddress("requiem"),
 				},
 			},
-			expected: []domain.Category{},
+			expected: []*domain.Category{},
 			initData: initData,
 			TestName: "Search Query With Other Param",
 		},
@@ -122,7 +122,7 @@ func (s *FindCategoryTestSuite) TestFindQuery() {
 					Q:    utils.GetDataTypeAddress("You never gonna get me lalalalala"),
 				},
 			},
-			expected: []domain.Category{},
+			expected: []*domain.Category{},
 			initData: initData,
 			TestName: "Not Found Search Query",
 		},
@@ -134,7 +134,7 @@ func (s *FindCategoryTestSuite) TestFindQuery() {
 			categories, err := s.useCase.Execute(&c.input)
 
 			s.Assertions.Nil(err)
-			s.Assertions.Equal(c.expected, *categories)
+			s.Assertions.Equal(c.expected, categories)
 		})
 	}
 }

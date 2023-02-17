@@ -16,7 +16,7 @@ func (s *ProductIntegrationTestSuite) TestInsertDuplicate() {
 		Name:        "Help me",
 		SKU:         "Duplicate sku",
 		Price:       100,
-		CategoryId:  (*categories)[0].ID,
+		CategoryId:  categories[0].ID,
 		Quantity:    100,
 	}
 	product, err := s.Repo.Insert(&req)
@@ -38,7 +38,7 @@ func (s *ProductIntegrationTestSuite) TestInsertHappyCase() {
 		Name:        seeds[0].Name,
 		SKU:         "Happy sku",
 		Price:       seeds[0].Price,
-		CategoryId:  (*categories)[0].ID,
+		CategoryId:  categories[0].ID,
 		Quantity:    500,
 	}
 	product, err := s.Repo.Insert(&req)
