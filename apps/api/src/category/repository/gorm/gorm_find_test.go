@@ -11,7 +11,9 @@ func (s *RepositoryIntegrationTestSuite) TestFindCategoryRepository() {
 		categories, err := s.Repo.Find(&domain.CategoryQuery{BaseQuery: common.BaseQuery{Page: utils.GetDataTypeAddress(uint(0)), PageSize: utils.GetDataTypeAddress(uint(10))}})
 
 		s.Assertions.NoError(err)
-		s.Assertions.Equal(5, len(*categories))
+		s.Assertions.Equal(5, len(categories.Items))
+		s.Assertions.Equal(uint(0), categories.Page)
+		s.Assertions.Equal(uint(10), categories.PageSize)
 	})
 
 	s.Run("Pagination", func() {
@@ -46,45 +48,63 @@ func (s *RepositoryIntegrationTestSuite) TestFindCategoryRepository() {
 			categories, err := s.Repo.Find(&domain.CategoryQuery{BaseQuery: common.BaseQuery{Page: &c.Page, PageSize: &c.PageSize}})
 
 			s.Assertions.NoError(err)
-			s.Assertions.Equal(c.Expected, len(*categories))
+			s.Assertions.Equal(c.Expected, len(categories.Items))
+			s.Assertions.Equal(c.Page, categories.Page)
+			s.Assertions.Equal(c.PageSize, categories.PageSize)
 		}
 	})
 
 	s.Run("Search", func() {
 		table := []struct {
-			Page     uint
-			PageSize uint
-			Q        *string
+			q        *domain.CategoryQuery
 			Expected int
 		}{
 			{
-				Page:     0,
-				Q:        utils.GetDataTypeAddress("e"),
+				q: &domain.CategoryQuery{
+					BaseQuery: common.BaseQuery{
+						Page: utils.GetDataTypeAddress(uint(0)),
+						Q:    utils.GetDataTypeAddress("e"),
+					},
+				},
 				Expected: 4,
 			},
 			{
-				Page:     0,
-				PageSize: 3,
-				Q:        utils.GetDataTypeAddress("e"),
+				q: &domain.CategoryQuery{
+					BaseQuery: common.BaseQuery{
+						Page:     utils.GetDataTypeAddress(uint(0)),
+						PageSize: utils.GetDataTypeAddress(uint(3)),
+						Q:        utils.GetDataTypeAddress("e"),
+					},
+				},
 				Expected: 3,
 			},
 			{
-				Page:     1,
-				PageSize: 3,
-				Q:        utils.GetDataTypeAddress("e"),
+				q: &domain.CategoryQuery{
+					BaseQuery: common.BaseQuery{
+						Page:     utils.GetDataTypeAddress(uint(1)),
+						PageSize: utils.GetDataTypeAddress(uint(3)),
+						Q:        utils.GetDataTypeAddress("e"),
+					},
+				},
 				Expected: 1,
 			},
 			{
-				Q:        utils.GetDataTypeAddress("drink"),
+				q: &domain.CategoryQuery{
+					BaseQuery: common.BaseQuery{
+						Q: utils.GetDataTypeAddress("drink"),
+					},
+				},
 				Expected: 1,
 			},
 		}
 
 		for _, c := range table {
-			categories, err := s.Repo.Find(&domain.CategoryQuery{BaseQuery: common.BaseQuery{Page: &c.Page, PageSize: &c.PageSize, Q: c.Q}})
+			categories, err := s.Repo.Find(c.q)
 
 			s.Assertions.NoError(err)
-			s.Assertions.Equal(c.Expected, len(*categories))
+			s.Assertions.Equal(c.Expected, len(categories.Items))
+			s.Assertions.Equal(c.q.GetPage(), categories.Page)
+			s.Assertions.Equal(c.q.GetPageSize(), categories.PageSize)
 		}
 	})
 }
