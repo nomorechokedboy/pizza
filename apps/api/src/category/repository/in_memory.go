@@ -2,6 +2,7 @@ package repository
 
 import (
 	"api/src/category/domain"
+	"api/src/common"
 	"errors"
 	"strings"
 )
@@ -90,11 +91,13 @@ func (repo *CategoryInMemoryRepo) FindOne(id *int) (*domain.Category, error) {
 	return res, nil
 }
 
-func (repo *CategoryInMemoryRepo) Find(req *domain.CategoryQuery) ([]*domain.Category, error) {
+func (repo *CategoryInMemoryRepo) Find(req *domain.CategoryQuery) (common.BasePaginationResponse[domain.Category], error) {
 	if repo.IsErr {
-		return nil, errors.New("unknown error")
+		return common.BasePaginationResponse[domain.Category]{}, errors.New("unknown error")
 	}
 
+	Page := req.GetPage()
+	PageSize := req.GetPageSize()
 	res := repo.Data
 	if req.Q != nil {
 		res = make([]*domain.Category, 0)
@@ -108,11 +111,17 @@ func (repo *CategoryInMemoryRepo) Find(req *domain.CategoryQuery) ([]*domain.Cat
 		}
 	}
 
-	start := uint(req.GetPage() * req.GetPageSize())
-	end := uint(start + req.GetPageSize())
-	res = res[min(start, uint(len(res))):min(end, uint(len(res)))]
+	start := uint(req.GetOffset())
+	end := uint(start + PageSize)
+	lenght := uint(len(res))
+	res = res[min(start, lenght):min(end, lenght)]
 
-	return res, nil
+	return common.BasePaginationResponse[domain.Category]{
+		Items:    res,
+		Page:     Page,
+		PageSize: PageSize,
+		Total:    uint(len(repo.Data)),
+	}, nil
 }
 
 func min(x, y uint) uint {

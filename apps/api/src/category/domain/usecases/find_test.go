@@ -37,7 +37,7 @@ func (s *FindCategoryTestSuite) TestFindUnknownError() {
 	s.repo.IsErr = true
 	category, err := s.useCase.Execute(nil)
 
-	s.Assertions.Nil(category)
+	s.Assertions.Equal(common.BasePaginationResponse[domain.Category]{}, category)
 	s.Assertions.EqualError(err, "unknown error")
 }
 
@@ -134,7 +134,7 @@ func (s *FindCategoryTestSuite) TestFindQuery() {
 			categories, err := s.useCase.Execute(&c.input)
 
 			s.Assertions.Nil(err)
-			s.Assertions.Equal(c.expected, categories)
+			s.Assertions.Equal(c.expected, categories.Items)
 		})
 	}
 }
