@@ -7,13 +7,13 @@ import (
 
 type User struct {
 	Id          int    `gorm:"primaryKey"`
-	Identifier  string `gorm:"unique;not null;size:20"`
+	Identifier  string `gorm:"unique;not null;size:50"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	FullName    string `gorm:"size:20"`
 	Gender      bool
 	BirthDate   time.Time
-	PhoneNumber string `gorm:"size:15"`
+	PhoneNumber string `gorm:"size:20"`
 	Email       string `gorm:"size:20"`
 	Password    string `gorm:"size:20"`
 }
