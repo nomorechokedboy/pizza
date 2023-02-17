@@ -95,6 +95,8 @@ func DeleteProduct(ctx *fiber.Ctx) error {
 // @Param page query int false "Product page number"
 // @Param pageSize query int false "Product page size return"
 // @Param q query string false "Product query"
+// @Param sort query string false "Sort direction" Enums(asc, desc) default(desc)
+// @Param sortBy query string false "Sort by" Enums(id, name, description, sku, price, category_id) default(id)
 // @Param categoryId query string false "Category ID"
 // @Success 201 {object} []domain.Product
 // @Failure 400
