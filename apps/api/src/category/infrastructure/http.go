@@ -3,6 +3,7 @@ package infrastructure
 import (
 	"api/src/category/domain"
 	"api/src/category/domain/usecases"
+	_ "api/src/common"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -100,7 +101,7 @@ func DeleteCategory(ctx *fiber.Ctx) error {
 // @Param q query string false "Category query"
 // @Param sort query string false "Sort direction" Enums(asc, desc) default(desc)
 // @Param sortBy query string false "Sort by" Enums(id, name, description) default(id)
-// @Success 201 {object} []domain.Category
+// @Success 201 {object} common.BasePaginationResponse[domain.Category]
 // @Failure 400
 // @Router /category/find [get]
 // @tags Category

@@ -1,6 +1,7 @@
 package framework
 
 import (
+	_ "api/src/common"
 	"api/src/product/domain"
 	"api/src/product/domain/usecases"
 
