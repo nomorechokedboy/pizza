@@ -1,4 +1,4 @@
-package repository
+package gorm
 
 import (
 	"api/src/scopes"
@@ -21,7 +21,6 @@ func (repo *UserGormRepo) Insert(req *domain.CreateUserReq) (*domain.User, error
 	user := domain.User{Identifier: req.Identifier, CreatedAt: time.Now(), UpdatedAt: time.Now(), Gender: req.Gender, FullName: req.FullName, BirthDate: req.BirthDate, Email: req.Email, Password: req.Password, PhoneNumber: req.PhoneNumber}
 	if result := repo.DB.Create(&user); result.Error != nil {
 		if result.Error.(*pgconn.PgError).Code == "23505" {
-			//the code SQLSTATE 23505 is duplicate value
 			return nil, errors.New("resource exist")
 		}
 		return nil, errors.New("unknown error")
