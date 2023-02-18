@@ -4,7 +4,6 @@ import (
 	"api/src/category/domain"
 	"api/src/category/domain/usecases"
 	"api/src/common"
-	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -119,7 +118,6 @@ func FindCategory(ctx *fiber.Ctx) error {
 
 	validateSortByErr := common.ValidatorAdapter.SingleValue(queries.GetSortBy(), "oneof=id name description")
 	if validateSortByErr != nil {
-		fmt.Println("DEBUG", *queries.SortBy)
 		return nil
 	}
 
