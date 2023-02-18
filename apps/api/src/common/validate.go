@@ -10,6 +10,7 @@ type ErrorResponse struct {
 
 type Validate interface {
 	Exec(req interface{}) []*ErrorResponse
+	SingleValue(req interface{}, tag string) error
 }
 
 type Validator struct {
@@ -30,6 +31,10 @@ func (v *Validator) Exec(req interface{}) []*ErrorResponse {
 	}
 
 	return errors
+}
+
+func (v *Validator) SingleValue(req interface{}, tag string) error {
+	return v.lib.Var(req, tag)
 }
 
 var validate = validator.New()

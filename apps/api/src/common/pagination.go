@@ -8,7 +8,7 @@ type BaseQuery struct {
 	Page     *uint   `query:"page"`
 	PageSize *uint   `query:"pageSize"`
 	Q        *string `query:"q"`
-	Sort     *string `query:"sort"`
+	Sort     *string `query:"sort" validate:"oneof=asc ASC desc DESC"`
 	SortBy   *string `query:"sortBy"`
 }
 
