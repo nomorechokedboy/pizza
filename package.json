@@ -8,11 +8,12 @@
 	],
 	"scripts": {
 		"build": "turbo run build",
+		"coverage": "turbo run coverage",
 		"dev": "turbo run dev --parallel",
 		"lint": "turbo run lint",
 		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
 		"prepare": "husky install",
-		"test": "turbo run coverage",
+		"test": "turbo run test",
 		"api:dev": "(cd apps/api; air; cd ..; cd ..)",
 		"api:unit": "(cd apps/api; go test ./... -run UseCase -v; cd ..; cd ..)",
 		"api:integration": "(cd apps/api; go test ./... -run Repository -v; cd ..; cd ..)"

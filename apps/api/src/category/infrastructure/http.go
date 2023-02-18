@@ -3,7 +3,7 @@ package infrastructure
 import (
 	"api/src/category/domain"
 	"api/src/category/domain/usecases"
-	_ "api/src/common"
+	"api/src/common"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -109,6 +109,16 @@ func FindCategory(ctx *fiber.Ctx) error {
 	queries := new(domain.CategoryQuery)
 	if err := ctx.QueryParser(queries); err != nil {
 		return err
+	}
+
+	validateErr := common.ValidatorAdapter.Exec(queries)
+	if validateErr != nil {
+		return nil
+	}
+
+	validateSortByErr := common.ValidatorAdapter.SingleValue(queries.GetSortBy(), "oneof=id name description")
+	if validateSortByErr != nil {
+		return nil
 	}
 
 	useCase := ctx.Locals("findCategoryUseCase").(*usecases.FindCategoryUseCase)

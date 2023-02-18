@@ -6,9 +6,9 @@ const defaultNuxtConfig = {
 		// '@nuxtjs/i18n',
 		'nuxt-svgo',
 		// '@nuxtjs/google-fonts',
-		'@nuxtjs/web-vitals',
+		'@nuxtjs/web-vitals'
 		// '@nuxt/image',
-		'ui-vue'
+		// 'ui-vue'
 	]
 }
 
