@@ -15,8 +15,9 @@
 	},
 	"scripts": {
 		"build": "vite build",
+		"coverage": "vitest run --coverage",
 		"dev": "histoire dev",
-		"test": "echo \"Error: no test specified\" && exit 0",
+		"test": "vitest",
 		"lint": "eslint .",
 		"story:build": "histoire build",
 		"preview": "histoire preview"
@@ -31,15 +32,20 @@
 		"@histoire/plugin-vue": "^0.15.7",
 		"@nuxtjs/tailwindcss": "^6.3.0",
 		"@vitejs/plugin-vue": "^4.0.0",
+		"@vitest/coverage-c8": "^0.28.3",
+		"@vue/test-utils": "^2.2.10",
 		"autoprefixer": "^10.4.13",
 		"eslint": "^7.32.0",
 		"eslint-config-custom": "workspace:*",
 		"histoire": "^0.15.7",
+		"jsdom": "^21.1.0",
 		"postcss": "^8.4.21",
 		"sass": "^1.58.3",
 		"tailwindcss": "^3.2.4",
 		"tsconfig": "workspace:*",
 		"vite": "^4.1.2",
+		"vitest": "^0.28.3",
+		"vitest-axe": "^0.1.0",
 		"vue": "^3.2.47"
 	}
 }
