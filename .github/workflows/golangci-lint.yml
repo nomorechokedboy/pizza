@@ -6,6 +6,9 @@ on:
                 branches:
                         - main
         pull_request:
+                branches:
+                        - dev
+                        - main
 permissions:
         contents: read
 
@@ -14,10 +17,13 @@ jobs:
                 name: Lint api
                 runs-on: ubuntu-latest
                 steps:
+                        - uses: actions/checkout@v3
                         - uses: actions/setup-go@v3
                           with:
-                                  go-version: 1.19
-                        - uses: actions/checkout@v3
+                                  go-version: '1.19'
+                                  check-latest: false
+                                  cache: true
+                                  cache-dependency-path: apps/api/go.sum
                         - name: Run docker compose
                           run: |
                                   mkdir -p data/minio data/postgresql
