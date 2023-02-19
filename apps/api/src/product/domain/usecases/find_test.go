@@ -66,10 +66,10 @@ func (s *FindProductTestSuite) SetupTest() {
 
 func (s *FindProductTestSuite) TestFindUnknownError() {
 	queries := &domain.ProductQuery{}
-	s.Repo.On("Find", queries).Return(nil, errors.New("unknown error"))
-	product, err := s.UseCase.Execute(queries)
+	s.Repo.On("Find", queries).Return(common.BasePaginationResponse[domain.Product]{}, errors.New("unknown error"))
+	products, err := s.UseCase.Execute(queries)
 
-	s.Assertions.Nil(product)
+	s.Assertions.Equal(common.BasePaginationResponse[domain.Product]{}, products)
 	s.Assertions.EqualError(err, "unknown error")
 }
 
@@ -206,11 +206,15 @@ func (s *FindProductTestSuite) TestFindHappyCase() {
 
 	for _, c := range testCases {
 		s.Run(c.Description, func() {
-			s.Repo.On("Find", c.Queries).Return(c.Expected, nil).Once()
+			s.Repo.On("Find", c.Queries).Return(common.BasePaginationResponse[domain.Product]{
+				Items:    c.Expected,
+				Page:     c.Queries.GetPage(),
+				PageSize: c.Queries.GetPageSize(),
+			}, nil).Once()
 			products, err := s.UseCase.Execute(c.Queries)
 
 			s.Assertions.NoError(err)
-			s.Assertions.Equal(c.Expected, products)
+			s.Assertions.Equal(c.Expected, products.Items)
 		})
 	}
 }

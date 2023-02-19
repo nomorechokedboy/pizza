@@ -3,6 +3,7 @@ on:
         pull_request:
                 branches:
                         - dev
+                        - main
 
 jobs:
         build-test-node:
@@ -16,19 +17,19 @@ jobs:
                         - name: Checkout
                           uses: actions/checkout@v2
 
+                        - name: Install pnpm
+                          uses: pnpm/action-setup@v2
+                          with:
+                                  version: 7.8.0
+
                         - name: Use Node.js ${{ matrix.node-version }}
                           uses: actions/setup-node@v2
                           with:
                                   node-version: ${{ matrix.node-version }}
-                        - name: Cache dependencies
-                          uses: actions/cache@v2
-                          with:
-                                  path: ~/.npm
-                                  key: npm-${{ hashFiles('package-lock.json') }}
-                                  restore-keys: npm-
+                                  cache: 'pnpm'
                         - name: ci, build and test
                           run: |
                                   yarn global add pnpm
-                                  pnpm i
+                                  pnpm i --frozen-lockfile
                                   pnpm lint
                                   pnpm t

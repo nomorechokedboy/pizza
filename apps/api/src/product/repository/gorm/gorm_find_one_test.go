@@ -22,7 +22,7 @@ func (s *ProductIntegrationTestSuite) TestFindOneHappyCase() {
 		Name:        seeds[0].Name,
 		SKU:         "I am done with gorm",
 		Price:       seeds[0].Price,
-		CategoryId:  (*categories)[0].ID,
+		CategoryId:  categories.Items[0].ID,
 		Quantity:    500,
 	}
 	s.Assertions.NoError(err)
@@ -33,7 +33,7 @@ func (s *ProductIntegrationTestSuite) TestFindOneHappyCase() {
 
 	s.Assertions.NoError(err)
 	s.Assertions.Equal(createdProduct.ID, product.ID)
-	s.Assertions.Equal((*categories)[0], product.Category)
+	s.Assertions.Equal(*categories.Items[0], product.Category)
 	s.Assertions.Equal(createdProduct.Inventory.Quantity, req.Quantity)
 	s.Assertions.Equal(createdProduct.Description, product.Description)
 	s.Assertions.Equal(createdProduct.Name, product.Name)

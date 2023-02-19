@@ -1,0 +1,9 @@
+{
+	"extends": "tsconfig/vue-library.json",
+	"include": ["."],
+	"exclude": ["dist", "build", "node_modules"],
+	"compilerOptions": {
+		"types": ["vue/types", "vitest/globals", "vitest/importMeta"],
+		"isolatedModules": false
+	}
+}

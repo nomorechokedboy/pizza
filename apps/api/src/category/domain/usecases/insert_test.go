@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var categoryRepo = repository.CategoryInMemoryRepo{Data: make([]domain.Category, 0), IsErr: false}
+var categoryRepo = repository.CategoryInMemoryRepo{Data: make([]*domain.Category, 0), IsErr: false}
 var insertUseCase = usecases.InsertCategoryUseCase{Repo: &categoryRepo, Validator: &common.ValidatorAdapter}
 
 func TestInsertCategoryUseCaseWithUnknownError(t *testing.T) {
@@ -27,7 +27,7 @@ func TestInsertCategoryUseCaseWithUnknownError(t *testing.T) {
 
 func TestInsertCategoryUseCaseWithDuplicateError(t *testing.T) {
 	assert := assert.New(t)
-	categoryRepo.Data = append(categoryRepo.Data, domain.Category{ID: 1, Name: "Comedy", Description: utils.GetDataTypeAddress("Another description")})
+	categoryRepo.Data = append(categoryRepo.Data, &domain.Category{ID: 1, Name: "Comedy", Description: utils.GetDataTypeAddress("Another description")})
 	req := domain.WriteCategoryBody{Name: "Comedy", Description: "Funny stuffs"}
 	category, err := insertUseCase.Execute(&req)
 

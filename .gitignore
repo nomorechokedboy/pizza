@@ -10,8 +10,6 @@ coverage
 
 # next.js
 .next/
-out/
-build
 
 # misc
 .DS_Store
@@ -38,3 +36,8 @@ data
 
 # temp dir, files
 tmp
+
+# build
+dist
+out/
+build

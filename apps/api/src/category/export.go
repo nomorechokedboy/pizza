@@ -12,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var CategoryMemRepo = repository.CategoryInMemoryRepo{Data: make([]domain.Category, 0), IsErr: false}
+var CategoryMemRepo = repository.CategoryInMemoryRepo{Data: make([]*domain.Category, 0), IsErr: false}
 var InsertCategoryUseCase = usecases.InsertCategoryUseCase{Repo: &CategoryMemRepo, Validator: &common.ValidatorAdapter}
 var UpdateCategoryUseCase = usecases.UpdateCategoryUseCase{Repo: &CategoryMemRepo}
 var DeleteCategoryUseCase = usecases.DeleteCategoryUseCase{Repo: &CategoryMemRepo}

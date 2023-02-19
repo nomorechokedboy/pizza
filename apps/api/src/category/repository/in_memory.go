@@ -2,12 +2,13 @@ package repository
 
 import (
 	"api/src/category/domain"
+	"api/src/common"
 	"errors"
 	"strings"
 )
 
 type CategoryInMemoryRepo struct {
-	Data  []domain.Category
+	Data  []*domain.Category
 	IsErr bool
 }
 
@@ -24,7 +25,7 @@ func (repo *CategoryInMemoryRepo) Insert(req *domain.WriteCategoryBody) (*domain
 
 	Id := uint(len(repo.Data) + 1)
 	newCategory := domain.Category{ID: Id, Description: &req.Description, Name: req.Name}
-	repo.Data = append(repo.Data, newCategory)
+	repo.Data = append(repo.Data, &newCategory)
 
 	return &newCategory, nil
 }
@@ -35,7 +36,7 @@ func (repo *CategoryInMemoryRepo) Update(id *int, req *domain.WriteCategoryBody)
 	}
 
 	for i := range repo.Data {
-		category := &repo.Data[i]
+		category := repo.Data[i]
 		if category.ID == uint(*id) {
 			category.Description = &req.Description
 			category.Name = req.Name
@@ -53,11 +54,11 @@ func (repo *CategoryInMemoryRepo) Delete(req *int) (*domain.Category, error) {
 
 	var res domain.Category
 	pos := -1
-	filteredList := make([]domain.Category, 0)
+	filteredList := make([]*domain.Category, 0)
 
 	for i, inventory := range repo.Data {
 		if inventory.ID == uint(*req) {
-			res = inventory
+			res = *inventory
 			pos = i
 			continue
 		}
@@ -82,7 +83,7 @@ func (repo *CategoryInMemoryRepo) FindOne(id *int) (*domain.Category, error) {
 
 	for _, inventory := range repo.Data {
 		if inventory.ID == uint(*id) {
-			res = &inventory
+			res = inventory
 			break
 		}
 	}
@@ -90,14 +91,16 @@ func (repo *CategoryInMemoryRepo) FindOne(id *int) (*domain.Category, error) {
 	return res, nil
 }
 
-func (repo *CategoryInMemoryRepo) Find(req *domain.CategoryQuery) (*[]domain.Category, error) {
+func (repo *CategoryInMemoryRepo) Find(req *domain.CategoryQuery) (common.BasePaginationResponse[domain.Category], error) {
 	if repo.IsErr {
-		return nil, errors.New("unknown error")
+		return common.BasePaginationResponse[domain.Category]{}, errors.New("unknown error")
 	}
 
+	Page := req.GetPage()
+	PageSize := req.GetPageSize()
 	res := repo.Data
 	if req.Q != nil {
-		res = make([]domain.Category, 0)
+		res = make([]*domain.Category, 0)
 		for _, category := range repo.Data {
 			q := strings.ToLower(*req.Q)
 			entityContainsQ := strings.Contains(strings.ToLower(*category.Description), q) || strings.Contains(strings.ToLower(category.Name), q)
@@ -108,11 +111,17 @@ func (repo *CategoryInMemoryRepo) Find(req *domain.CategoryQuery) (*[]domain.Cat
 		}
 	}
 
-	start := uint(req.GetPage() * req.GetPageSize())
-	end := uint(start + req.GetPageSize())
-	res = res[min(start, uint(len(res))):min(end, uint(len(res)))]
+	start := uint(req.GetOffset())
+	end := uint(start + PageSize)
+	lenght := uint(len(res))
+	res = res[min(start, lenght):min(end, lenght)]
 
-	return &res, nil
+	return common.BasePaginationResponse[domain.Category]{
+		Items:    res,
+		Page:     Page,
+		PageSize: PageSize,
+		Total:    uint(len(repo.Data)),
+	}, nil
 }
 
 func min(x, y uint) uint {
