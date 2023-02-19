@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import { reactive } from 'vue'
-import Button, { ButtonProps } from './Button.vue'
 import { Size } from '../common'
+import Button, { ButtonProps } from './Button.vue'
 
 const state = reactive<ButtonProps & { content: string; disabled: boolean }>({
 	disabled: false,
-	fullWidth: false,
+	block: false,
 	content: 'Hello world',
 	size: 'sm',
 	radius: 'sm'
@@ -30,10 +30,7 @@ const state = reactive<ButtonProps & { content: string; disabled: boolean }>({
 				v-model="state.disabled"
 				title="Disabled"
 			/>
-			<HstCheckbox
-				v-model="state.fullWidth"
-				title="Full witdth"
-			/>
+			<HstCheckbox v-model="state.block" title="Block" />
 		</template>
 		<Variant auto-props-disabled>
 			<div class="max-w-xs w-full">
@@ -41,7 +38,7 @@ const state = reactive<ButtonProps & { content: string; disabled: boolean }>({
 					:disabled="state.disabled"
 					:size="state.size"
 					:radius="state.radius"
-					:full-width="state.fullWidth"
+					:block="state.block"
 				>
 					{{ state.content }}
 				</Button>

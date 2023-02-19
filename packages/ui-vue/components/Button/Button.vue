@@ -4,68 +4,76 @@ import type { UISize } from '../common'
 export interface ButtonProps {
 	size?: UISize
 	radius?: UISize
-	fullWidth?: boolean
+	block?: boolean
+	loading?: boolean
 }
 
 const {
 	radius = 'sm',
 	size = 'sm',
-	fullWidth = false
+	block = false,
+	loading = false
 } = defineProps<ButtonProps>()
 </script>
 
 <template>
 	<button
-		:class="[
-			`size-${size} radius-${radius}`,
-			{ 'w-full': fullWidth }
-		]"
+		:data-block="block"
+		:data-size="size"
+		:data-radius="radius"
+		:data-loading="loading"
 		class="button"
 	>
-		<slot></slot>
+		<slot name="leftIcon" />
+		<slot />
+		<slot name="rightIcon" />
 	</button>
 </template>
 
 <style lang="css" scoped>
-.radius-xs {
+.button[data-radius='xs'] {
 	@apply rounded-sm;
 }
 
-.radius-sm {
+.button[data-radius='sm'] {
 	@apply rounded;
 }
 
-.radius-md {
+.button[data-radius='md'] {
 	@apply rounded-lg;
 }
 
-.radius-lg {
+.button[data-radius='lg'] {
 	@apply rounded-2xl;
 }
 
-.radius-xl {
+.button[data-radius='xl'] {
 	@apply rounded-4xl;
 }
 
-.size-xs {
+.button[data-size='xs'] {
 	@apply px-3.5 py-1;
 }
 
-.size-sm {
+.button[data-size='sm'] {
 	@apply px-4 py-1.5;
 }
 
-.size-md {
+.button[data-size='md'] {
 	@apply px-5 py-2;
 }
-.size-lg {
+.button[data-size='lg'] {
 	@apply px-6.5 py-3.5;
 }
-.size-xl {
+.button[data-size='xl'] {
 	@apply px-8 py-5;
 }
 
 .button {
 	@apply bg-sky-300 active:translate-y-px flex flex-row gap-4 items-center justify-center font-semibold overflow-hidden disabled:bg-slate-200 disabled:text-slate-400 disabled:translate-y-0;
+}
+
+.button[data-block='true'] {
+	@apply w-full;
 }
 </style>
