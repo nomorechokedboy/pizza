@@ -27,6 +27,9 @@ export default defineConfig({
 		coverage: {
 			exclude: ['./setupTest.ts']
 		},
-		passWithNoTests: true
+		passWithNoTests: true,
+		deps: {
+			inline: ['vitest-canvas-mock']
+		}
 	}
 })

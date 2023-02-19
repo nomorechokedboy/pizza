@@ -3,7 +3,12 @@
 	"include": ["."],
 	"exclude": ["dist", "build", "node_modules"],
 	"compilerOptions": {
-		"types": ["vue/types", "vitest/globals", "vitest/importMeta"],
+		"types": [
+			"vue/types",
+			"vitest/globals",
+			"vitest/importMeta",
+			"node_modules/@types"
+		],
 		"isolatedModules": false
 	}
 }
