@@ -16,7 +16,7 @@ import (
 type UpdateProductTestSuite struct {
 	suite.Suite
 	UseCase usecases.UpdateProductUseCase
-	Repo    MockRepository
+	Repo    MockProductRepository
 }
 
 type UpdateCategoryTestCase struct {
@@ -29,7 +29,7 @@ type UpdateCategoryTestCase struct {
 var updateReq = domain.ProductReq{Description: utils.GetDataTypeAddress("Lalalala"), Name: "Updated name", SKU: "Updated SKU", Price: 100, CategoryId: 1, Quantity: 2}
 
 func (s *UpdateProductTestSuite) SetupTest() {
-	s.Repo = MockRepository{}
+	s.Repo = MockProductRepository{}
 	s.UseCase = usecases.UpdateProductUseCase{Repo: &s.Repo}
 }
 

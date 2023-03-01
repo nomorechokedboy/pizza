@@ -17,15 +17,22 @@ import (
 type InsertProductTestSuite struct {
 	suite.Suite
 	UseCase  usecases.InsertProductUseCase
-	mockRepo MockRepository
+	mockRepo MockProductRepository
 }
 
 func (s *InsertProductTestSuite) SetupTest() {
-	s.mockRepo = MockRepository{}
+	s.mockRepo = MockProductRepository{}
 	s.UseCase = usecases.InsertProductUseCase{Repo: &s.mockRepo, Validator: &common.ValidatorAdapter}
 }
 
-var insertReq = domain.ProductReq{Description: utils.GetDataTypeAddress("Test Description"), Name: "Should ok", SKU: "Success", Price: 10000}
+var insertReq = domain.ProductReq{
+	Description: utils.GetDataTypeAddress("Test Description"),
+	Name:        "Should ok",
+	SKU:         "Success",
+	Price:       10000,
+	CategoryId:  1,
+	Quantity:    100,
+}
 
 func (s *InsertProductTestSuite) TestInsertWithErrors() {
 	table := []struct {
