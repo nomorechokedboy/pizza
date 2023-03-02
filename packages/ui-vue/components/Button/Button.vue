@@ -42,6 +42,7 @@ const loaderProps = userLoaderProps ?? { size: 'sm' }
 			v-if="loading && loaderPosition === 'center'"
 			:visible="loading && loaderPosition === 'center'"
 			:loader-props="loaderProps"
+			class="overide-overlay"
 		/>
 		<slot />
 		<Loader
