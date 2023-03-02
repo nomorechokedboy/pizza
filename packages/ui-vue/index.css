@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+*[data-radius='xs'] {
+	@apply rounded-sm;
+}
+
+*[data-radius='sm'] {
+	@apply rounded;
+}
+
+*[data-radius='md'] {
+	@apply rounded-lg;
+}
+
+*[data-radius='lg'] {
+	@apply rounded-2xl;
+}
+
+*[data-radius='xl'] {
+	@apply rounded-4xl;
+}
