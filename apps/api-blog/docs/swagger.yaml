@@ -1,0 +1,42 @@
+definitions:
+  entities.UserReq:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      fullname:
+        type: string
+      indentifier:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Create New UserUsecase
+      parameters:
+      - description: New User
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UserReq'
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: Create User
+      tags:
+      - Users
+swagger: "2.0"
