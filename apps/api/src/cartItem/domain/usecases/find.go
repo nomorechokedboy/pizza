@@ -5,7 +5,7 @@ import (
 )
 
 type FindCartItemsUseCase struct {
-	Repo CartItemRepository
+	Repo CartRepository
 }
 
 func (u *FindCartItemsUseCase) Execute(uid uint) (*cartDomain.Cart, error) {
