@@ -31,5 +31,10 @@ export default defineConfig({
 		deps: {
 			inline: ['vitest-canvas-mock']
 		}
+	},
+	server: {
+		watch: {
+			ignored: ['**/.histoire/**', '**/dist/**']
+		}
 	}
 })
