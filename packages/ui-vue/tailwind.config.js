@@ -11,6 +11,15 @@ module.exports = {
 			backgroundColor: {
 				...openColor
 			},
+			borderColor: {
+				...openColor
+			},
+			boxShadowColor: {
+				...openColor
+			},
+			colors: {
+				...openColor
+			},
 			padding: {
 				5.5: '22px',
 				6.5: '26px'
