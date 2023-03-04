@@ -95,7 +95,7 @@ const {
 }
 
 .button {
-	@apply active:translate-y-px flex flex-row gap-4 items-center justify-center font-semibold relative disabled:bg-slate-200 disabled:text-slate-400 disabled:translate-y-0;
+	@apply active:translate-y-px flex flex-row gap-4 items-center justify-center font-semibold relative transition disabled:bg-slate-200 disabled:text-slate-400 disabled:translate-y-0;
 }
 
 .button[data-block='true'] {
