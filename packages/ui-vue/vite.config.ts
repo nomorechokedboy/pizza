@@ -33,5 +33,16 @@ export default defineConfig({
 		watch: {
 			ignored: ['**/.histoire/**', '**/dist/**']
 		}
+	},
+	resolve: {
+		alias: {
+			$: path.resolve(__dirname, 'components'),
+			$common: path.resolve(
+				__dirname,
+				'components',
+				'common'
+			),
+			$tests: path.resolve(__dirname, 'components', 'tests')
+		}
 	}
 })

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { openColor, Size, Variant as VariantOptions } from '../common'
+import { openColor, Size, Variant as VariantOptions } from '$common'
 import Button, { ButtonProps } from './Button.vue'
 
 const initStateBasicUsage: () => ButtonProps & {

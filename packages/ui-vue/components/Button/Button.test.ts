@@ -1,6 +1,5 @@
+import { checkA11y, itShouldRenderChildren, itSupportFocusEvent } from '$tests'
 import { mount } from '@vue/test-utils'
-import { checkA11y, itShouldRenderChildren } from '../tests'
-import { itSupportFocusEvent } from '../tests/itSupportFocusEvent'
 import Button from './Button.vue'
 
 describe('PizzaUI Button', () => {

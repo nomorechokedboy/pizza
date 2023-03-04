@@ -1,5 +1,5 @@
+import { itShouldRenderChildren } from '$tests'
 import { mount } from '@vue/test-utils'
-import { itShouldRenderChildren } from '../tests'
 import Overlay from './Overlay.vue'
 
 describe('PizzaUI Overlay', () => {

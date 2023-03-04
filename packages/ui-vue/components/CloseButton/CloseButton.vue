@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import ActionIcon from '../ActionIcon/ActionIcon.vue'
-import { UIColor, UISize, UIVariant } from '../common'
-import { LoaderProps } from '../Loader/Loader.vue'
+import ActionIcon from '$/ActionIcon/ActionIcon.vue'
+import { LoaderProps } from '$/Loader/Loader.vue'
+import type { UIColor, UISize, UIVariant } from '$common'
 import XMarkIcon from './XMarkIcon.vue'
 
 export interface CloseButtonProps {

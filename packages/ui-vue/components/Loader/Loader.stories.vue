@@ -1,6 +1,6 @@
 <script lang="ts" setup>
+import { Size } from '$common'
 import { reactive } from 'vue'
-import { Size } from '../common'
 import Loader, { LoaderProps } from './Loader.vue'
 
 const state = reactive<LoaderProps>({

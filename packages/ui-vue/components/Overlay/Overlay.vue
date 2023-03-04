@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { UISize } from '../common'
+import { UISize } from '$common'
 
 export interface OverlayProps {
 	center?: boolean

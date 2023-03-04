@@ -5,9 +5,9 @@ export default {
 </script>
 
 <script lang="ts" setup>
-import Button from '../Button/Button.vue'
-import type { UIColor, UISize, UIVariant } from '../common'
-import type { LoaderProps } from '../Loader/Loader.vue'
+import Button from '$/Button/Button.vue'
+import type { LoaderProps } from '$/Loader/Loader.vue'
+import type { UIColor, UISize, UIVariant } from '$common'
 
 export interface ActionIconProps {
 	color?: UIColor

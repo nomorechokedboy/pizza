@@ -1,7 +1,6 @@
+import Loader from '$/Loader/Loader.vue'
+import { checkA11y, itShouldRenderChildren, itSupportFocusEvent } from '$tests'
 import { mount } from '@vue/test-utils'
-import Loader from '../Loader/Loader.vue'
-import { checkA11y, itShouldRenderChildren } from '../tests'
-import { itSupportFocusEvent } from '../tests/itSupportFocusEvent'
 import ActionIcon from './ActionIcon.vue'
 
 describe('PizzaUI ActionIcon', () => {

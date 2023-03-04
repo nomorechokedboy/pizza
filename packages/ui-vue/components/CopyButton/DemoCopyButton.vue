@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import Button from '../Button/Button.vue'
+import Button from '$/Button/Button.vue'
 
 export interface DemoCopyButtonProps {
 	copied: boolean

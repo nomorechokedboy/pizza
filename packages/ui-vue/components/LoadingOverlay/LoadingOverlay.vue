@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import Overlay, { OverlayProps } from '../Overlay/Overlay.vue'
-import Loader, { LoaderProps } from '../Loader/Loader.vue'
+import Loader, { LoaderProps } from '$/Loader/Loader.vue'
+import Overlay, { OverlayProps } from '$/Overlay/Overlay.vue'
 
 export interface LoadingOverlayProps {
 	visible: boolean

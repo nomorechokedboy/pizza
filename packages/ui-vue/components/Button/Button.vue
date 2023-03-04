@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import type { UIColor, UISize, UIVariant } from '../common'
-import Loader, { LoaderProps } from '../Loader/Loader.vue'
-import LoadingOverlay from '../LoadingOverlay/LoadingOverlay.vue'
-import Overlay from '../Overlay/Overlay.vue'
+import Loader, { LoaderProps } from '$/Loader/Loader.vue'
+import LoadingOverlay from '$/LoadingOverlay/LoadingOverlay.vue'
+import Overlay from '$/Overlay/Overlay.vue'
+import type { UIColor, UISize, UIVariant } from '$common'
 
 export interface ButtonProps {
 	block?: boolean
