@@ -7,7 +7,13 @@ import ActionIcon from './ActionIcon.vue'
 describe('PizzaUI ActionIcon', () => {
 	itShouldRenderChildren(ActionIcon)
 	itSupportFocusEvent(ActionIcon, 'button')
-	checkA11y(ActionIcon)
+	checkA11y([
+		{ component: ActionIcon, props: { title: 'Action Icon' } },
+		{
+			component: ActionIcon,
+			props: { 'aria-label': 'Action Icon' }
+		}
+	])
 
 	it('should passes type to button component', () => {
 		const wrapper = mount(ActionIcon, {

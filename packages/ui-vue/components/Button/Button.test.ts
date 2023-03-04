@@ -6,7 +6,7 @@ import Button from './Button.vue'
 describe('PizzaUI Button', () => {
 	itShouldRenderChildren(Button)
 	itSupportFocusEvent(Button, 'button')
-	checkA11y(Button)
+	checkA11y([{ component: Button, props: {} }])
 
 	it('should passes type to button component', () => {
 		const wrapper = mount(Button, {
