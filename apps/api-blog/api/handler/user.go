@@ -2,27 +2,27 @@ package handler
 
 import (
 	"api-blog/api/presenter"
+	"api-blog/api/util"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserHandler struct {
 	usecase      usecase.UserUsecase
 	authencation struct {
-		JwtSecret     string
-		JwtExpiration int64
+		JwtSecret       string
+		JWTRefreshToken string
 	}
 }
 
-func NewUserHandler(usecase usecase.UserUsecase, jwtSecret string, jwtExpiration int64) *UserHandler {
+func NewUserHandler(usecase usecase.UserUsecase, jwtSecret string, jwtExpiration string) *UserHandler {
 	jwt := new(UserHandler)
 	jwt.authencation.JwtSecret = jwtSecret
-	jwt.authencation.JwtExpiration = jwtExpiration
+	jwt.authencation.JWTRefreshToken = jwtExpiration
 	jwt.usecase = usecase
 	return jwt
 }
@@ -71,17 +71,11 @@ func (handler *UserHandler) Login(c *fiber.Ctx) error {
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
 		return fiber.NewError(fiber.StatusForbidden, "incorrect password")
 	}
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["sub"] = user.Identifier
-	claims["exp"] = handler.authencation.JwtExpiration
-	tokenString, err := token.SignedString([]byte(handler.authencation.JwtSecret))
 
-	// 	Value:    tokenString,
-	// 	Expires:  time.Now().Add(time.Hour * 24),
-	// 	HTTPOnly: true,
-	// }
-	// c.Cookie(&cookie)
+	accessToken, refreshToken := util.GenerateToken(user.Identifier, []byte(handler.authencation.JwtSecret), []byte(handler.authencation.JWTRefreshToken))
+	accessCookie, refreshCookie := util.GetAuthCookies(accessToken, refreshToken)
+	c.Cookie(accessCookie)
+	c.Cookie(refreshCookie)
 
 	if err != nil {
 		return fiber.ErrInternalServerError
@@ -90,9 +84,20 @@ func (handler *UserHandler) Login(c *fiber.Ctx) error {
 		Status:  http.StatusOK,
 		Message: "Login Success",
 		Data: &fiber.Map{
-			"token": tokenString,
-			"user":  user,
+			"access_token":  accessToken,
+			"refresh_token": refreshToken,
+			"user":          user,
 		},
 	})
+}
 
+func (handler *UserHandler) GetUserById(c *fiber.Ctx) error {
+	user := c.Locals("identifier")
+	return c.JSON(presenter.Response{
+		Status:  200,
+		Message: "Nguoi day",
+		Data: &fiber.Map{
+			"user": user,
+		},
+	})
 }

@@ -17,8 +17,8 @@ type Config struct {
 		Port string `env:"PORT" env-default:"3001"`
 	}
 	AuthConfig struct {
-		JWTSecret     string `envconfig:"JWT_SECRET" default:"my-secret"`
-		JWTExpiration int64  `envconfig:"JWT_EXPIRATION" default:"3600"`
+		JWTRefreshToken string `envconfig:"JWT_REFRESH_SECRET" default:"refresh-secret"`
+		JWTSecret       string `envconfig:"JWT_SECRET" default:"my-secret"`
 	}
 }
 

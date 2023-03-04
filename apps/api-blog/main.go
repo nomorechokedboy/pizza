@@ -34,7 +34,7 @@ func main() {
 	//register usecase
 	userRepo := gorm_repository.NewUserGormRepository(db)
 	userUC := usecase.NewUserUsecase(userRepo)
-	userHandler := handler.NewUserHandler(userUC, cfg.AuthConfig.JWTSecret, cfg.AuthConfig.JWTExpiration)
+	userHandler := handler.NewUserHandler(userUC, cfg.AuthConfig.JWTSecret, cfg.AuthConfig.JWTRefreshToken)
 
 	//app
 	app := fiber.New()
