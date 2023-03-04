@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { openColor, Size, Variant as VariantOptions } from '$common'
+import { openColor, Size, Variant as VariantOptions } from '$common'
 import { reactive } from 'vue'
 import CloseButton, { CloseButtonProps } from './CloseButton.vue'
 
