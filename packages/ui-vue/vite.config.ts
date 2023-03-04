@@ -24,9 +24,6 @@ export default defineConfig({
 		environment: 'jsdom',
 		includeSource: ['components/**/*.{ts,vue}'],
 		setupFiles: ['./setupTest.ts'],
-		coverage: {
-			exclude: ['./setupTest.ts']
-		},
 		passWithNoTests: true,
 		deps: {
 			inline: ['vitest-canvas-mock']
