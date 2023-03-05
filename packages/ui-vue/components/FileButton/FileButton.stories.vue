@@ -49,9 +49,9 @@ const clearFile = () => {
 					:on-change="handleFile"
 					:disabled="state.disabled"
 					:accept="state.accept"
-					v-slot="{ onClick }"
+					v-slot="slotProps"
 				>
-					<Button @click="onClick"
+					<Button :="slotProps"
 						>Upload image</Button
 					>
 					<div v-if="file" class="text-dark-0">
@@ -64,10 +64,9 @@ const clearFile = () => {
 			<template #default>
 				<FileButton
 					:on-change="handleFiles"
-					v-slot="{ onClick }"
-					multiple
+					v-slot="slotProps"
 				>
-					<Button @click="onClick"
+					<Button :="slotProps"
 						>Upload multiple</Button
 					>
 				</FileButton>
@@ -91,10 +90,9 @@ const clearFile = () => {
 							resetFile = e
 						}
 					"
-					v-slot="{ onClick }"
-					ref="fileButtonRef"
+					v-slot="slotProps"
 				>
-					<Button @click="onClick"
+					<Button :="slotProps"
 						>Upload file</Button
 					>
 					<Button

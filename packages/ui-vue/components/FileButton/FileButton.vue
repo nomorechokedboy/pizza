@@ -27,7 +27,7 @@ const {
 } = defineProps<FileButtonProps<boolean>>()
 const input = ref<HTMLInputElement | null>(null)
 const handleClick = () => {
-	!disabled && input.value?.click()
+	input.value?.click()
 }
 const handleChange = computed<InputHTMLAttributes['onChange']>(() => (e) => {
 	const target = e.currentTarget as HTMLInputElement
@@ -56,11 +56,12 @@ defineExpose({ reset })
 		:name="name"
 		:capture="capture"
 		:form="form"
+		:disabled="disabled"
 		@change="handleChange"
 		v-show="false"
 		type="file"
 		ref="input"
 		v-bind="inputProps"
 	/>
-	<slot :onClick="handleClick" />
+	<slot @click="handleClick" :disabled="disabled" />
 </template>
