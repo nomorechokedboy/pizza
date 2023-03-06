@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { UISize } from '../common'
+import { UISize } from '$common'
 
 export interface OverlayProps {
 	center?: boolean
@@ -16,7 +16,7 @@ const { center, fixed, radius } = defineProps<OverlayProps>()
 		aria-hidden="true"
 		:data-fixed="fixed"
 		:data-center="center"
-		:data-radius="radius"
+		:data-radius="radius ?? 'sm'"
 		class="overlay"
 	>
 		<slot />

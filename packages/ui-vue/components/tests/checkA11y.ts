@@ -13,14 +13,22 @@ const config = {
 	}
 }
 
-export const checkA11y = (component: any) => {
+interface RenderComponent {
+	component: any
+	props: any
+}
+
+export const checkA11y = (components: RenderComponent[]) => {
 	it('should has no a11y violation', async () => {
-		const wrapper = mount(component, {
-			slots: {
-				default: 'Pizza Component'
-			}
-		})
-		const res = await axe(wrapper.element, config)
-		expect(res).toHaveNoViolations()
+		for (const { component, props } of components) {
+			const wrapper = mount(component, {
+				slots: {
+					default: 'Pizza Component'
+				},
+				props: props
+			})
+			const res = await axe(wrapper.element, config)
+			expect(res).toHaveNoViolations()
+		}
 	})
 }

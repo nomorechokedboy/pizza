@@ -3,6 +3,12 @@
 	"include": ["."],
 	"exclude": ["dist", "build", "node_modules"],
 	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"$/*": ["./components/*"],
+			"$common": ["./components/common/index.ts"],
+			"$tests": ["./components/tests/index.ts"]
+		},
 		"types": [
 			"vue/types",
 			"vitest/globals",

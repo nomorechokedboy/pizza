@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import Overlay, { OverlayProps } from '../Overlay/Overlay.vue'
-import Loader, { LoaderProps } from '../Loader/Loader.vue'
+import Loader, { LoaderProps } from '$/Loader/Loader.vue'
+import Overlay, { OverlayProps } from '$/Overlay/Overlay.vue'
 
 export interface LoadingOverlayProps {
 	visible: boolean
@@ -18,7 +18,21 @@ const overlayProps = userOverlayProps ?? { center: true }
 </script>
 
 <template>
-	<Overlay v-if="visible" v-bind="overlayProps">
-		<Loader v-bind="loaderProps" />
-	</Overlay>
+	<Transition name="fade">
+		<Overlay v-if="visible" v-bind="overlayProps">
+			<Loader v-bind="loaderProps" />
+		</Overlay>
+	</Transition>
 </template>
+
+<style lang="css" scoped>
+.fade-enter-active,
+.fade-leave-active {
+	transition: opacity 0.1s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+	opacity: 0;
+}
+</style>

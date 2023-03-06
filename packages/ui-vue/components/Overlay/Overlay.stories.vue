@@ -1,8 +1,8 @@
 <script lang="ts" setup>
+import Button from '$/Button/Button.vue'
+import { Size } from '$common'
 import { reactive } from 'vue'
 import Overlay, { OverlayProps } from './Overlay.vue'
-import Button from '../Button/Button.vue'
-import { Size } from '../common'
 
 const state = reactive<OverlayProps & { visible: boolean }>({
 	fixed: false,

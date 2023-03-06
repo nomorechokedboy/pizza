@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { UISize } from '../common'
+import type { UISize } from '$common'
 
 export interface LoaderProps {
 	size?: UISize
