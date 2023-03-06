@@ -6,8 +6,10 @@ import (
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
 	"net/http"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -19,10 +21,10 @@ type UserHandler struct {
 	}
 }
 
-func NewUserHandler(usecase usecase.UserUsecase, jwtSecret string, jwtExpiration string) *UserHandler {
+func NewUserHandler(usecase usecase.UserUsecase, jwtSecret string, jwtRefreshToken string) *UserHandler {
 	jwt := new(UserHandler)
 	jwt.authencation.JwtSecret = jwtSecret
-	jwt.authencation.JWTRefreshToken = jwtExpiration
+	jwt.authencation.JWTRefreshToken = jwtRefreshToken
 	jwt.usecase = usecase
 	return jwt
 }
@@ -36,9 +38,7 @@ func NewUserHandler(usecase usecase.UserUsecase, jwtSecret string, jwtExpiration
 // @Failure 400
 // @Router /register [post]
 func (handler *UserHandler) CreateUser(c *fiber.Ctx) error {
-
 	req := new(entities.UserReq)
-
 	if err := c.BodyParser(req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request body")
 	}
@@ -77,9 +77,6 @@ func (handler *UserHandler) Login(c *fiber.Ctx) error {
 	}
 
 	accessToken, refreshToken := util.GenerateToken(user.Id, []byte(handler.authencation.JwtSecret), []byte(handler.authencation.JWTRefreshToken))
-	accessCookie, refreshCookie := util.GetAuthCookies(accessToken, refreshToken)
-	c.Cookie(accessCookie)
-	c.Cookie(refreshCookie)
 
 	if err != nil {
 		return fiber.ErrInternalServerError
@@ -95,7 +92,7 @@ func (handler *UserHandler) Login(c *fiber.Ctx) error {
 	})
 }
 
-func (handler *UserHandler) GetUserById(c *fiber.Ctx) error {
+func (handler *UserHandler) GetAuthUserById(c *fiber.Ctx) error {
 	authId, ok := c.Locals("uId").(uint)
 	if !ok {
 		return fiber.NewError(fiber.ErrInternalServerError.Code, "can not parse Id from token")
@@ -138,4 +135,32 @@ func (handler *UserHandler) UpdateUserById(c *fiber.Ctx) error {
 			"user": newUser,
 		},
 	})
+}
+func (handler *UserHandler) RefreshAccessToken(c *fiber.Ctx) error {
+	authHeader := c.Get("Authorization")
+	if authHeader == "" {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
+	tokenString := authHeader[len("Bearer "):]
+	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, jwt.ErrSignatureInvalid
+		}
+		return []byte(handler.authencation.JWTRefreshToken), nil
+	})
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
+	expirationtime := time.Unix(int64(claims["exp"].(float64)), 0)
+	if time.Now().After(expirationtime) {
+		return fiber.NewError(fiber.StatusUnauthorized, "token is out of date")
+	}
+	uId := uint(claims["sub"].(float64))
+	accessToken := util.GenerateAccessClaims(uId, []byte(handler.authencation.JwtSecret), 15*time.Minute)
+	return c.JSON(accessToken)
 }

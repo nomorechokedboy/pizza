@@ -3,18 +3,26 @@ package routes
 import (
 	"api-blog/api/handler"
 	"api-blog/api/middleware"
-	"api-blog/api/util"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-func UserRouter(app fiber.Router, handler handler.UserHandler) {
+func UserRouter(app fiber.Router, handler handler.UserHandler, jwtSecret string, jwtRefreshSecret string) {
 	users := app.Group("/users")
-	users.Post("/register", handler.CreateUser)
-	users.Get("/refresh_access_token", util.RefreshAccessToken)
-	users.Post("/login", handler.Login)
-	middle := middleware.NewJWTMiddleware("my-secret")
-	users.Use(middle.Protected())
-	users.Get("/userid", handler.GetUserById)
-	users.Post("/Updated", handler.UpdateUserById)
+	publicRouter(users, handler, jwtRefreshSecret)
+	privateRouter(users, handler, jwtSecret)
+
+}
+
+func publicRouter(app fiber.Router, handler handler.UserHandler, jwtRefreshSecret string) {
+	app.Post("/register", handler.CreateUser)
+	app.Get("/refresh_access_token", handler.RefreshAccessToken)
+	app.Post("/login", handler.Login)
+}
+
+func privateRouter(app fiber.Router, handler handler.UserHandler, jwtSecret string) {
+	middle := middleware.NewJWTMiddleware(jwtSecret)
+	app.Use(middle.Protected())
+	app.Get("/", handler.GetAuthUserById)
+	app.Post("/update", handler.UpdateUserById)
 }
