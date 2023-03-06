@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -44,7 +45,8 @@ func (m *JWTMiddleware) Protected() func(*fiber.Ctx) error {
 		if time.Now().After(expirationTime) {
 			return fiber.NewError(fiber.StatusUnauthorized, "token is out of date")
 		}
-		c.Locals("identifier", claims["sub"].(string))
+		c.Locals("uId", uint(claims["sub"].(float64)))
+		fmt.Print(c.Locals("uId"))
 		return c.Next()
 
 	}

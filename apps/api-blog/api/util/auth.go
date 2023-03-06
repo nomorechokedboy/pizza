@@ -7,19 +7,19 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func GenerateToken(identifier string, jwtSecret []byte, jwtRefreshSecret []byte) (string, string) {
+func GenerateToken(uId uint, jwtSecret []byte, jwtRefreshSecret []byte) (string, string) {
 
-	accessToken := GenerateAccessClaims(identifier, jwtSecret)
-	refreshToken := GenerateRefreshClaims(identifier, jwtRefreshSecret)
+	accessToken := GenerateAccessClaims(uId, jwtSecret)
+	refreshToken := GenerateRefreshClaims(uId, jwtRefreshSecret)
 	return accessToken, refreshToken
 }
 
-func GenerateAccessClaims(identifier string, jwtSecret []byte) string {
+func GenerateAccessClaims(uId uint, jwtSecret []byte) string {
 	t := time.Now()
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-	claims["sub"] = identifier
-	claims["exp"] = t.Add(1 * time.Minute).Unix()
+	claims["sub"] = uId
+	claims["exp"] = t.Add(15 * time.Minute).Unix()
 	tokenString, err := token.SignedString(jwtSecret)
 	if err != nil {
 		panic(err)
@@ -27,12 +27,12 @@ func GenerateAccessClaims(identifier string, jwtSecret []byte) string {
 	return tokenString
 }
 
-func GenerateRefreshClaims(identifier string, jwtSecret []byte) string {
+func GenerateRefreshClaims(uId uint, jwtSecret []byte) string {
 
 	t := time.Now()
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-	claims["sub"] = identifier
+	claims["sub"] = uId
 	claims["exp"] = t.Add(30 * 24 * time.Hour).Unix()
 	refreshTokenString, err := token.SignedString(jwtSecret)
 	if err != nil {
@@ -85,8 +85,8 @@ func RefreshAccessToken(c *fiber.Ctx) error {
 	if time.Now().After(expirationtime) {
 		return fiber.NewError(fiber.StatusUnauthorized, "token is out of date")
 	}
-	identifier := claims["sub"].(string)
-	accessToken := GenerateAccessClaims(identifier, []byte("my-secret"))
+	uId := uint(claims["sub"].(float64))
+	accessToken := GenerateAccessClaims(uId, []byte("my-secret"))
 	// accessCookie, _ := GetAuthCookies(accessToken, tokenString)
 	return c.JSON(accessToken)
 }

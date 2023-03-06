@@ -54,3 +54,14 @@ func (r *UserGormRepo) GetUserByIdentifier(identifier string) (*entities.User, e
 	}
 	return &user, nil
 }
+
+func (r *UserGormRepo) UpdateUserInfo(user *entities.User) error {
+	return r.db.Where("id = ?", user.Id).Updates(entities.User{
+		Fullname:    user.Fullname,
+		Password:    user.Password,
+		PhoneNumber: user.PhoneNumber,
+		Email:       user.Email,
+		Avatar:      user.Avatar,
+		UpdateAt:    user.UpdateAt,
+	}).Error
+}

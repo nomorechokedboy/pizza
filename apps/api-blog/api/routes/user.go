@@ -16,4 +16,5 @@ func UserRouter(app fiber.Router, handler handler.UserHandler) {
 	middle := middleware.NewJWTMiddleware("my-secret")
 	users.Use(middle.Protected())
 	users.Get("/userid", handler.GetUserById)
+	users.Post("/Updated", handler.UpdateUserById)
 }

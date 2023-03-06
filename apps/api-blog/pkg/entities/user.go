@@ -22,7 +22,7 @@ type UserReq struct {
 	Password    string `json:"password"`
 	Username    string `json:"username"`
 	Fullname    string `json:"fullname"`
-	PhoneNumber string `json:"phone"`
+	PhoneNumber string `json:"phonenumber"`
 	Email       string `json:"email"`
 	Avatar      string `json:"avatar"`
 }
