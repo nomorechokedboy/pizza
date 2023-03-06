@@ -27,6 +27,5 @@ func LoadConfig() (*Config, error) {
 	if err := envconfig.Process("", cfg); err != nil {
 		return nil, err
 	}
-
 	return cfg, nil
 }

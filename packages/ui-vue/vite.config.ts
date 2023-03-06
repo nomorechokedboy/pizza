@@ -24,9 +24,25 @@ export default defineConfig({
 		environment: 'jsdom',
 		includeSource: ['components/**/*.{ts,vue}'],
 		setupFiles: ['./setupTest.ts'],
-		coverage: {
-			exclude: ['./setupTest.ts']
-		},
-		passWithNoTests: true
+		passWithNoTests: true,
+		deps: {
+			inline: ['vitest-canvas-mock']
+		}
+	},
+	server: {
+		watch: {
+			ignored: ['**/.histoire/**', '**/dist/**']
+		}
+	},
+	resolve: {
+		alias: {
+			$: path.resolve(__dirname, 'components'),
+			$common: path.resolve(
+				__dirname,
+				'components',
+				'common'
+			),
+			$tests: path.resolve(__dirname, 'components', 'tests')
+		}
 	}
 })
