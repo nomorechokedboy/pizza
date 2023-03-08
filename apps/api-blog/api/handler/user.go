@@ -33,10 +33,12 @@ func NewUserHandler(usecase usecase.UserUsecase, jwtSecret string, jwtRefreshTok
 // @Summary Create User
 // @Description Create New UserUsecase
 // @Tags Users
+// @Param todo body entities.UserReq true "New User"
 // @Accept json
-// @Success 200
+// @Success 200 {object} presenter.Response
 // @Failure 400
-// @Router /register [post]
+// @Failure 409
+// @Router /api/v1/users/register [post]
 func (handler *UserHandler) CreateUser(c *fiber.Ctx) error {
 	req := new(entities.UserReq)
 	if err := c.BodyParser(req); err != nil {
@@ -59,12 +61,21 @@ func (handler *UserHandler) CreateUser(c *fiber.Ctx) error {
 	})
 }
 
+// Login
+// @Login godoc
+// @Summary User Login
+// @Description Use for login response the refresh_token and accessToken
+// @Tags Users
+// @Accept json
+// @Param todo body entities.UserLogin true "Login"
+// @Success 200 {object} presenter.Response
+// @Failure 400
+// @Failure 401
+// @Failure 403
+// @Router /api/v1/users/login [post]
 func (handler *UserHandler) Login(c *fiber.Ctx) error {
-	type userLogin struct {
-		Identifier string `json:"identifier"`
-		Password   string `json:"password"`
-	}
-	req := new(userLogin)
+
+	req := new(entities.UserLogin)
 	if err := c.BodyParser(req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
 	}
@@ -92,6 +103,18 @@ func (handler *UserHandler) Login(c *fiber.Ctx) error {
 	})
 }
 
+// GetAuthUserByToken
+// @Login godoc
+// @Summary Get user infor by token
+// @Description Get UserInfo by accessToken
+// @Tags Users
+// @Accept json
+// @Success 200 {object} presenter.Response
+// @Failure 400
+// @Failure 401
+// @Failure 500
+// @Security ApiKeyAuth
+// @Router /api/v1/users/ [get]
 func (handler *UserHandler) GetAuthUserById(c *fiber.Ctx) error {
 	authId, ok := c.Locals("uId").(uint)
 	if !ok {
@@ -110,6 +133,19 @@ func (handler *UserHandler) GetAuthUserById(c *fiber.Ctx) error {
 	})
 }
 
+// UpdateUserByToken
+// @Update godoc
+// @Summary Update user infor by token
+// @Description Update UserInfo by Id from accessToken
+// @Tags Users
+// @Accept json
+// @Param todo body entities.UserReq true "Updated User"
+// @Success 200 {object} presenter.Response
+// @Failure 400
+// @Failure 401
+// @Failure 500
+// @Security ApiKeyAuth
+// @Router /api/v1/users/update [post]
 func (handler *UserHandler) UpdateUserById(c *fiber.Ctx) error {
 	authId, ok := c.Locals("uId").(uint)
 	if !ok {
@@ -136,6 +172,15 @@ func (handler *UserHandler) UpdateUserById(c *fiber.Ctx) error {
 		},
 	})
 }
+
+// GetNewAccessToken method for create a new access token.
+// @Description Create a new access token.
+// @Summary create a new access token
+// @Tags Token
+// @Produce json
+// @Success 200 {object} string
+// @Security ApiKeyAuth
+// @Router /api/v1/users/refresh_access_token [get]
 func (handler *UserHandler) RefreshAccessToken(c *fiber.Ctx) error {
 	authHeader := c.Get("Authorization")
 	if authHeader == "" {

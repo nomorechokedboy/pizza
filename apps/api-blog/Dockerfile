@@ -11,7 +11,7 @@ COPY apps/api-blog/api ./src
 COPY apps/api-blogs/pkg ./src
 COPY apps/api-blog/main.go apps/api/.air.toml ./
 
-RUN $GOPATH/bin/swag init && \
+RUN $GOPATH/bin/swag init --parseDependency --parseInternal && \
     go build -ldflags="-s -w" -o api .
 
 FROM scratch

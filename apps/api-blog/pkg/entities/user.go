@@ -26,3 +26,7 @@ type UserReq struct {
 	Email       string `json:"email"`
 	Avatar      string `json:"avatar"`
 }
+type UserLogin struct {
+	Identifier string `json:"identifier"`
+	Password   string `json:"password"`
+}

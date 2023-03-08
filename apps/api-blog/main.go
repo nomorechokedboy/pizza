@@ -22,6 +22,13 @@ import (
 	// "github.com/minio/minio-go/v7/pkg/credentials"
 )
 
+// @title web Blog
+// @version 1.0
+// @description This is a web blog
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+// @BasePath /api/v1
 func main() {
 
 	//
