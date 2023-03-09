@@ -29,6 +29,7 @@ import (
 // @in header
 // @name Authorization
 // @BasePath /api/v1
+// @description Apply "bearer " before token in authorization
 func main() {
 
 	//

@@ -147,7 +147,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            type: invalid
+            type: string
         "401":
           description: Unauthorized
         "500":
@@ -159,6 +159,7 @@ paths:
       - Users
 securityDefinitions:
   ApiKeyAuth:
+    description: Apply "bearer " before token in authorization
     in: header
     name: Authorization
     type: apiKey

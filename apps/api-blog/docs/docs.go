@@ -187,7 +187,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "invalid"
+                            "type": "string"
                         }
                     },
                     "401": {
@@ -259,6 +259,7 @@ const docTemplate = `{
     },
     "securityDefinitions": {
         "ApiKeyAuth": {
+            "description": "Apply \"bearer \" before token in authorization",
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
