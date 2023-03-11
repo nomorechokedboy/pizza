@@ -9,5 +9,6 @@ type UserRepository interface {
 	Create(user *entities.User) error
 	GetUserByUsername(username string) (*entities.User, error)
 	GetUserByIdentifier(identifier string) (*entities.User, error)
+	GetUserByEmail(email string) (*entities.User, error)
 	UpdateUserInfo(user *entities.User) error
 }

@@ -59,9 +59,22 @@ func (r *UserGormRepo) UpdateUserInfo(user *entities.User) error {
 	return r.db.Where("id = ?", user.Id).Updates(entities.User{
 		Fullname:    user.Fullname,
 		Password:    user.Password,
+		Username:    user.Username,
 		PhoneNumber: user.PhoneNumber,
 		Email:       user.Email,
 		Avatar:      user.Avatar,
 		UpdateAt:    user.UpdateAt,
 	}).Error
+}
+
+func (r *UserGormRepo) GetUserByEmail(email string) (*entities.User, error) {
+	var user entities.User
+
+	if err := r.db.First(&user, "email = ?", email).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, gorm.ErrRecordNotFound
+		}
+		return nil, err
+	}
+	return &user, nil
 }

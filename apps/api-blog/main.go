@@ -76,10 +76,11 @@ func main() {
 	db.AutoMigrate(&entities.User{})
 
 	//register usecase
+	authHandler := handler.NewAuthHanlder(cfg.AuthConfig.JWTSecret, cfg.AuthConfig.JWTRefreshToken)
 	//user
 	userRepo := gorm_repository.NewUserGormRepository(db)
 	userUC := usecase.NewUserUsecase(userRepo)
-	userHandler := handler.NewUserHandler(userUC, cfg.AuthConfig.JWTSecret, cfg.AuthConfig.JWTRefreshToken)
+	userHandler := handler.NewUserHandler(userUC, *cfg)
 
 	//app
 	app := fiber.New()
@@ -98,9 +99,9 @@ func main() {
 
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
+	routes.TokenRouter(v1, *authHandler)
 	routes.UserRouter(v1, *userHandler, cfg.AuthConfig.JWTSecret, cfg.AuthConfig.JWTRefreshToken)
 	port := fmt.Sprintf(":%v", cfg.Server.Port)
-	app.Listen(port)
 	log.Printf("Server started on port %v", cfg.Server.Port)
-
+	app.Listen(port)
 }

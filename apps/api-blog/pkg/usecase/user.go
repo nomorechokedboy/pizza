@@ -9,11 +9,13 @@ import (
 )
 
 type UserUsecase interface {
-	CreateUser(password, username, fullName, phone, email, avatar, identifier string) error
+	CreateUser(password, identifier string) error
 	GetUserById(id uint) (*entities.User, error)
 	GetUserByUsername(username string) (*entities.User, error)
 	GetUserByIdentifier(indentifier string) (*entities.User, error)
-	UpdateUserInfo(password, fullName, phone, email, avatar string, uId uint) error
+	GetUserByEmail(email string) (*entities.User, error)
+	UpdateUserInfo(password, fullName, username, phone, email, avatar string, uId uint) error
+	UpdatePasswordById(password string, userId uint) error
 }
 
 type userUsecase struct {
@@ -24,21 +26,16 @@ func NewUserUsecase(repo repository.UserRepository) UserUsecase {
 	return &userUsecase{repo: repo}
 }
 
-func (usecase *userUsecase) CreateUser(password, username, fullName, phone, email, avatar, identifier string) error {
+func (usecase *userUsecase) CreateUser(password, identifier string) error {
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
 		return err
 	}
 	user := &entities.User{
-		Identifier:  identifier,
-		Username:    username,
-		Password:    string(hashPassword),
-		Fullname:    fullName,
-		PhoneNumber: phone,
-		Email:       email,
-		Avatar:      avatar,
-		CreatedAt:   time.Now(),
-		UpdateAt:    time.Now(),
+		Identifier: identifier,
+		Password:   string(hashPassword),
+		CreatedAt:  time.Now(),
+		UpdateAt:   time.Now(),
 	}
 	return usecase.repo.Create(user)
 
@@ -46,6 +43,10 @@ func (usecase *userUsecase) CreateUser(password, username, fullName, phone, emai
 
 func (usecase *userUsecase) GetUserById(id uint) (*entities.User, error) {
 	return usecase.repo.GetUserById(id)
+}
+
+func (usecase *userUsecase) GetUserByEmail(email string) (*entities.User, error) {
+	return usecase.repo.GetUserByEmail(email)
 }
 
 func (usecase *userUsecase) GetUserByUsername(username string) (*entities.User, error) {
@@ -56,7 +57,7 @@ func (usecase *userUsecase) GetUserByIdentifier(identifier string) (*entities.Us
 	return usecase.repo.GetUserByIdentifier(identifier)
 }
 
-func (usecase *userUsecase) UpdateUserInfo(password, fullName, phone, email, avatar string, uId uint) error {
+func (usecase *userUsecase) UpdateUserInfo(password, fullName, username, phone, email, avatar string, uId uint) error {
 	var hashPassword []byte
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
@@ -70,9 +71,25 @@ func (usecase *userUsecase) UpdateUserInfo(password, fullName, phone, email, ava
 		Password:    string(hashPassword),
 		PhoneNumber: phone,
 		Email:       email,
+		Username:    username,
 		Avatar:      avatar,
 		Fullname:    fullName,
 		UpdateAt:    time.Now(),
 	}
 	return usecase.repo.UpdateUserInfo(user)
+}
+
+func (usecase *userUsecase) UpdatePasswordById(password string, userId uint) error {
+	var hashPassword []byte
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	if err != nil {
+		return err
+	}
+
+	user := &entities.User{
+		Id:       userId,
+		Password: string(hashPassword),
+	}
+	return usecase.repo.UpdateUserInfo(user)
+
 }

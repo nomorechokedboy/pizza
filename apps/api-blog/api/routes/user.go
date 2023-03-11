@@ -9,20 +9,21 @@ import (
 
 func UserRouter(app fiber.Router, handler handler.UserHandler, jwtSecret string, jwtRefreshSecret string) {
 	users := app.Group("/users")
-	publicRouter(users, handler, jwtRefreshSecret)
+	publicRouter(users, handler)
 	privateRouter(users, handler, jwtSecret)
-
 }
 
-func publicRouter(app fiber.Router, handler handler.UserHandler, jwtRefreshSecret string) {
+func publicRouter(app fiber.Router, handler handler.UserHandler) {
 	app.Post("/register", handler.CreateUser)
-	app.Get("/refresh_access_token", handler.RefreshAccessToken)
 	app.Post("/login", handler.Login)
+	app.Post("/forgot-password", handler.ForgotPassword)
+
 }
 
 func privateRouter(app fiber.Router, handler handler.UserHandler, jwtSecret string) {
 	middle := middleware.NewJWTMiddleware(jwtSecret)
 	app.Use(middle.Protected())
 	app.Get("/", handler.GetAuthUserById)
-	app.Post("/update", handler.UpdateUserById)
+	app.Put("/update", handler.UpdateUserById)
+	app.Put("/reset-password", handler.ResetPassword)
 }

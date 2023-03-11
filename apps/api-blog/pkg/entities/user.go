@@ -8,7 +8,7 @@ type User struct {
 	Id          uint   `gorm:"primaryKey"`
 	Identifier  string `gorm:"unique;size:50; not null"`
 	Password    string `gorm:"size:250; not null"`
-	Username    string `gorm:"unique; size:50; not null"`
+	Username    string `gorm:"unique; size:50"`
 	Fullname    string `gorm:"size:50; not null"`
 	PhoneNumber string `gorm:"size:50; not null"`
 	Email       string `gorm:"size:50; not null"`
@@ -18,7 +18,6 @@ type User struct {
 }
 
 type UserReq struct {
-	Identifier  string `json:"identifier"`
 	Password    string `json:"password"`
 	Username    string `json:"username"`
 	Fullname    string `json:"fullname"`
@@ -29,4 +28,18 @@ type UserReq struct {
 type UserLogin struct {
 	Identifier string `json:"identifier"`
 	Password   string `json:"password"`
+}
+
+type UserEmail struct {
+	Email string `json:"email"`
+}
+
+type UserPassword struct {
+	Password string `json:"password"`
+}
+
+type ResponseEmail struct {
+	Link     string
+	Username string
+	Sender   string
 }

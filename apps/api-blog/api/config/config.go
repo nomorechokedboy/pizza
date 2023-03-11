@@ -13,12 +13,19 @@ type Config struct {
 		Password string `envconfig:"DB_PASSWORD" default:"postgres"`
 	}
 	Server struct {
-		Host string `env:"HOST" env-default:""`
-		Port string `env:"PORT" env-default:"3001"`
+		Host string `envconfig:"HOST" default:""`
+		Port string `envconfig:"PORT" default:"8080"`
 	}
 	AuthConfig struct {
 		JWTRefreshToken string `envconfig:"JWT_REFRESH_SECRET" default:"refresh-secret"`
 		JWTSecret       string `envconfig:"JWT_SECRET" default:"my-secret"`
+	}
+	AuthEmail struct {
+		Email    string `envconfig:"EMAIL" default:"kristiannguyen276@gmail.com"`
+		Password string `envconfig:"EMAIL_PASSWORD" default:"figjbdfsggwhcvbr"`
+	}
+	AppAPI struct {
+		Link string `envconfig:"API_LINK" default:"Hello"`
 	}
 }
 
