@@ -19,6 +19,27 @@ services:
                         - cache-network
                         - db-network
                         - storage-network
+
+        api-blog:
+                build:
+                        context: .
+                        dockerfile: apps/api-blog/Dockerfile
+                depends_on:
+                        - postgres
+                        - minio
+                environment:
+                        - DB_PORT=5432
+                        - DB_HOST=postgres
+                        - DB_NAME=pizza
+                        - DB_USER=postgres
+                        - DB_PASSWORD=postgres
+                ports:
+                        - '8080:8080'
+                networks:
+                        - cache-network
+                        - db-network
+                        - storage-network
+
         postgres:
                 image: postgres:14.1-alpine
                 restart: always
