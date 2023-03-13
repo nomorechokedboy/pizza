@@ -10,6 +10,7 @@
 			"$tests": ["./components/tests/index.ts"]
 		},
 		"types": ["vitest/globals", "vitest/importMeta"],
-		"isolatedModules": false
+		"isolatedModules": false,
+		"outDir": "dist"
 	}
 }

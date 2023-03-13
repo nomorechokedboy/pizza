@@ -11,10 +11,13 @@
 		".": {
 			"import": "./dist/pizza-ui.es.js",
 			"require": "./dist/pizza-ui.umd.js"
-		}
+		},
+		"./dist/style.css": "./dist/style.css"
 	},
+	"types": "./dist/index.d.ts",
+	"sideEffects": false,
 	"scripts": {
-		"build": "vite build && vue-tsc --emitDeclarationOnly && mv ./dist/lib ./dist/types",
+		"build": "vite build",
 		"coverage": "vitest run --coverage",
 		"dev": "histoire dev",
 		"test": "vitest",
@@ -46,6 +49,7 @@
 		"tailwindcss": "^3.2.4",
 		"tsconfig": "workspace:*",
 		"vite": "^4.1.2",
+		"vite-plugin-dts": "^2.1.0",
 		"vitest": "^0.28.3",
 		"vitest-axe": "^0.1.0",
 		"vitest-canvas-mock": "^0.2.2",
