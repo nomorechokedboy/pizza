@@ -31,6 +31,6 @@
 		"vitest": "^0.28.3"
 	},
 	"dependencies": {
-		"ui-vue": "workspace:1.0.0"
+		"ui-vue": "workspace:*"
 	}
 }
