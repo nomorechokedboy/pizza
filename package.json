@@ -24,7 +24,8 @@
 		"eslint-config-custom": "workspace:*",
 		"husky": "^7.0.4",
 		"lint-staged": "^12.1.2",
-		"prettier": "latest",
+		"nuxt": "^3.1.0",
+		"prettier": "^2.8.4",
 		"turbo": "1.5.5"
 	},
 	"engines": {

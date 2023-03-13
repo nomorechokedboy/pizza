@@ -1,4 +1,6 @@
-const defaultNuxtConfig = {
+import type { NuxtConfig } from 'nuxt/config'
+
+const defaultNuxtConfig: NuxtConfig = {
 	modules: [
 		// '@nuxt/typescript-build',
 		'@nuxtjs/tailwindcss',
