@@ -14,7 +14,7 @@
 		}
 	},
 	"scripts": {
-		"build": "vite build",
+		"build": "vite build && vue-tsc --emitDeclarationOnly && mv ./dist/lib ./dist/types",
 		"coverage": "vitest run --coverage",
 		"dev": "histoire dev",
 		"test": "vitest",
@@ -49,6 +49,7 @@
 		"vitest": "^0.28.3",
 		"vitest-axe": "^0.1.0",
 		"vitest-canvas-mock": "^0.2.2",
-		"vue": "^3.2.47"
+		"vue": "^3.2.47",
+		"vue-tsc": "^1.2.0"
 	}
 }

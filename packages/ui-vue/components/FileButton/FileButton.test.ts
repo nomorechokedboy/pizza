@@ -1,4 +1,4 @@
-import { checkA11y } from '$/tests'
+import { checkA11y } from '$tests'
 import { mount } from '@vue/test-utils'
 import FileButton from './FileButton.vue'
 
