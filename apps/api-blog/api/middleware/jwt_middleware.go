@@ -1,11 +1,9 @@
 package middleware
 
 import (
-	"fmt"
-	"time"
+	"api-blog/api/util"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v4"
 )
 
 type JWTMiddleware struct {
@@ -23,30 +21,11 @@ func (m *JWTMiddleware) Protected() func(*fiber.Ctx) error {
 			return fiber.ErrUnauthorized
 		}
 		tokenString := authHeader[len("Bearer "):]
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, jwt.ErrSignatureInvalid
-			}
-			return m.secret, nil
-		})
+		uId, err := util.ParseToken(tokenString, m.secret)
 		if err != nil {
-			return fiber.NewError(fiber.StatusUnauthorized, "invalid or missing token")
+			return fiber.NewError(fiber.ErrUnauthorized.Code, "Invalid or missing Token")
 		}
-
-		if !token.Valid {
-			return fiber.NewError(fiber.StatusUnauthorized)
-		}
-
-		claims, ok := token.Claims.(jwt.MapClaims)
-		if !ok {
-			return fiber.NewError(fiber.StatusUnauthorized)
-		}
-		expirationTime := time.Unix(int64(claims["exp"].(float64)), 0)
-		if time.Now().After(expirationTime) {
-			return fiber.NewError(fiber.StatusUnauthorized, "token is out of date")
-		}
-		c.Locals("uId", uint(claims["sub"].(float64)))
-		fmt.Print(c.Locals("uId"))
+		c.Locals("uId", uId)
 		return c.Next()
 
 	}

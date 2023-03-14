@@ -2,11 +2,25 @@ package routes
 
 import (
 	"api-blog/api/handler"
+	"api-blog/api/middleware"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-func TokenRouter(app fiber.Router, handler handler.AuthHandler) {
-	token := app.Group("token")
-	token.Get("/refresh_token", handler.RefreshToken)
+func AuthRouter(app fiber.Router, authHandler handler.AuthHandler, userHandler handler.UserHandler, middlerware middleware.JWTMiddleware) {
+	auth := app.Group("/auth")
+	publicAuthRouter(auth, userHandler, authHandler)
+	privateAuthRouter(auth, userHandler, middlerware)
+}
+
+func publicAuthRouter(app fiber.Router, userHandler handler.UserHandler, authHandler handler.AuthHandler) {
+	app.Post("/login", userHandler.Login)
+	app.Put("/reset-password", userHandler.ResetPassword)
+	app.Post("/refresh-token", authHandler.RefreshToken)
+	app.Post("/forgot-password", userHandler.ForgotPassword)
+}
+
+func privateAuthRouter(app fiber.Router, userHandler handler.UserHandler, middleware middleware.JWTMiddleware) {
+	app.Use(middleware.Protected())
+	app.Get("/me", userHandler.GetAuthUserById)
 }

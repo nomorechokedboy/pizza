@@ -4,8 +4,9 @@ import (
 	"time"
 
 	"api-blog/api/util"
+	"api-blog/pkg/entities"
+
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v4"
 )
 
 type AuthHandler struct {
@@ -23,36 +24,26 @@ func NewAuthHanlder(jwtSecret string, jwtRefreshSecret string) *AuthHandler {
 // GetNewAccessToken method for create a new access token.
 // @Description Create a new access token.
 // @Summary create a new access token
-// @Tags Token
+// @Tags Auth
 // @Produce json
-// @Success 200 {object} string
-// @Security ApiKeyAuth
-// @Router /api/v1/token/refresh_token [get]
+// @Param request body handler.RefreshToken.request true "refresh_token"
+// @Success 200 {object} entities.Auth
+// @Router /auth/refresh-token [post]
 func (handler *AuthHandler) RefreshToken(c *fiber.Ctx) error {
-	authHeader := c.Get("Authorization")
-	if authHeader == "" {
-		return c.SendStatus(fiber.StatusUnauthorized)
+	type request struct {
+		Refresh_token string `json:"refresh_token"`
 	}
-	tokenString := authHeader[len("Bearer "):]
-	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
-		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, jwt.ErrSignatureInvalid
-		}
-		return []byte(handler.JwtRefreshToken), nil
-	})
+	tokenString := new(request)
+	if err := c.BodyParser(tokenString); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
+	}
+	uId, err := util.ParseToken(tokenString.Refresh_token, []byte(handler.JwtRefreshToken))
 	if err != nil {
-		return c.SendStatus(fiber.StatusUnauthorized)
+		return fiber.NewError(fiber.ErrUnauthorized.Code, err.Error())
 	}
-
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok || !token.Valid {
-		return c.SendStatus(fiber.StatusUnauthorized)
-	}
-	expirationtime := time.Unix(int64(claims["exp"].(float64)), 0)
-	if time.Now().After(expirationtime) {
-		return fiber.NewError(fiber.StatusUnauthorized, "token is out of date")
-	}
-	uId := uint(claims["sub"].(float64))
 	accessToken := util.GenerateAccessClaims(uId, []byte(handler.JwtSecret), 15*time.Minute)
-	return c.JSON(accessToken)
+	newToken := new(entities.Auth)
+	newToken.Token = accessToken
+	newToken.RefreshToken = tokenString.Refresh_token
+	return c.JSON(newToken)
 }

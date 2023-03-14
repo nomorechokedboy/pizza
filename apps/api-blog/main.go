@@ -4,6 +4,7 @@ import (
 	"api-blog/api/config"
 	"api-blog/api/gorm_repository"
 	"api-blog/api/handler"
+	"api-blog/api/middleware"
 	"api-blog/api/routes"
 	"api-blog/api/util"
 	_ "api-blog/docs"
@@ -25,10 +26,10 @@ import (
 // @title web Blog
 // @version 1.0
 // @description This is a web blog
+// @BasePath /api/v1
 // @securityDefinitions.apikey ApiKeyAuth
 // @in header
 // @name Authorization
-// @BasePath /api/v1
 // @description Apply "bearer " before token in authorization
 func main() {
 
@@ -75,6 +76,10 @@ func main() {
 	}
 	db.AutoMigrate(&entities.User{})
 
+	//middlerware
+
+	middle := middleware.NewJWTMiddleware(cfg.AuthConfig.JWTSecret)
+
 	//register usecase
 	authHandler := handler.NewAuthHanlder(cfg.AuthConfig.JWTSecret, cfg.AuthConfig.JWTRefreshToken)
 	//user
@@ -89,6 +94,9 @@ func main() {
 	}))
 	app.Use(logger.New())
 	app.Use(recover.New())
+	app.Get("/healthCheck", func(c *fiber.Ctx) error {
+		return c.SendString("Helo, world")
+	})
 	app.Get("/swagger/*", swagger.New(swagger.Config{
 		URL:         "/swagger/doc.json",
 		DeepLinking: false,
@@ -99,8 +107,8 @@ func main() {
 
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
-	routes.TokenRouter(v1, *authHandler)
-	routes.UserRouter(v1, *userHandler, cfg.AuthConfig.JWTSecret, cfg.AuthConfig.JWTRefreshToken)
+	routes.UserRouter(v1, *userHandler, *middle)
+	routes.AuthRouter(v1, *authHandler, *userHandler, *middle)
 	port := fmt.Sprintf(":%v", cfg.Server.Port)
 	log.Printf("Server started on port %v", cfg.Server.Port)
 	app.Listen(port)

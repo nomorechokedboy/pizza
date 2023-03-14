@@ -45,3 +45,31 @@ func GetAuthCookies(accessToken, refreshToken string) (*fiber.Cookie, *fiber.Coo
 
 	return accessCookie, refreshCookie
 }
+
+func ParseToken(tokenString string, jwtSecret []byte) (uint, error) {
+	var userId uint
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, jwt.ErrSignatureInvalid
+		}
+		return jwtSecret, nil
+	})
+
+	if err != nil {
+		return userId, fiber.NewError(fiber.StatusUnauthorized, "invalid or missing token")
+	}
+	if !token.Valid {
+		return userId, fiber.NewError(fiber.StatusUnauthorized)
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return userId, fiber.NewError(fiber.StatusUnauthorized)
+	}
+	expirationTime := time.Unix(int64(claims["exp"].(float64)), 0)
+	if time.Now().After(expirationTime) {
+		return userId, fiber.NewError(fiber.StatusUnauthorized, "token is out of date")
+	}
+	userId = uint(claims["sub"].(float64))
+	return userId, nil
+}

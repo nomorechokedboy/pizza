@@ -30,16 +30,17 @@ type UserLogin struct {
 	Password   string `json:"password"`
 }
 
-type UserEmail struct {
-	Email string `json:"email"`
-}
-
-type UserPassword struct {
-	Password string `json:"password"`
-}
-
 type ResponseEmail struct {
 	Link     string
 	Username string
 	Sender   string
+}
+
+type UserResponse struct {
+	Username    string `json:"username"`
+	Id          uint   `json:"id"`
+	Fullname    string `json:"fullname"`
+	PhoneNumber string `json:"phone"`
+	Email       string `json:"email"`
+	Avatar      string `json:"avatar"`
 }

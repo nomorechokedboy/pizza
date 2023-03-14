@@ -1,9 +1,8 @@
 package presenter
 
-import "github.com/gofiber/fiber/v2"
+import ()
 
-type Response struct {
+type ResponseMessage struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`
-	Data    *fiber.Map `json:"data"`
 }
