@@ -15,7 +15,6 @@ func UserRouter(app fiber.Router, handler handler.UserHandler, middleware middle
 
 func publicRouter(app fiber.Router, handler handler.UserHandler) {
 	app.Get("/:id", handler.FindUserById)
-	app.Post("/register", handler.CreateUser)
 }
 
 func privateRouter(app fiber.Router, handler handler.UserHandler, middle middleware.JWTMiddleware) {

@@ -18,6 +18,7 @@ func publicAuthRouter(app fiber.Router, userHandler handler.UserHandler, authHan
 	app.Put("/reset-password", userHandler.ResetPassword)
 	app.Post("/refresh-token", authHandler.RefreshToken)
 	app.Post("/forgot-password", userHandler.ForgotPassword)
+	app.Post("/register", userHandler.CreateUser)
 }
 
 func privateAuthRouter(app fiber.Router, userHandler handler.UserHandler, middleware middleware.JWTMiddleware) {

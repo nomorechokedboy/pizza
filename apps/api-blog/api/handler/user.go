@@ -2,7 +2,6 @@ package handler
 
 import (
 	"api-blog/api/config"
-	"api-blog/api/presenter"
 	"api-blog/api/util"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
@@ -31,11 +30,11 @@ func NewUserHandler(usecase usecase.UserUsecase, config config.Config) *UserHand
 // @CreateUser godoc
 // @Summary Create User
 // @Description Create New UserUsecase
-// @Tags User
+// @Tags Auth
 // @Param todo body entities.UserLogin true "New User"
 // @Accept json
-// @Success 200 {object} presenter.ResponseMessage
-// @Router /user/register [post]
+// @Success 200
+// @Router /auth/register [post]
 func (handler *UserHandler) CreateUser(c *fiber.Ctx) error {
 	req := new(entities.UserLogin)
 	if err := c.BodyParser(req); err != nil {
@@ -48,11 +47,7 @@ func (handler *UserHandler) CreateUser(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to create New user")
 	}
-
-	return c.JSON(presenter.ResponseMessage{
-		Status:  http.StatusCreated,
-		Message: "Create success",
-	})
+	return c.Status(http.StatusCreated).SendString("Create success")
 }
 
 // Login
@@ -152,7 +147,7 @@ func (handler *UserHandler) UpdateUserById(c *fiber.Ctx) error {
 // @Tags Auth
 // @Accept json
 // @Param todo body handler.ForgotPassword.userEmailReq true "user email"
-// @Success 200 {object} presenter.ResponseMessage{}
+// @Success 200
 // @Router /auth/forgot-password [post]
 func (handler *UserHandler) ForgotPassword(c *fiber.Ctx) error {
 	type userEmailReq struct {
@@ -166,7 +161,6 @@ func (handler *UserHandler) ForgotPassword(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.ErrNotFound.Code, err.Error())
 	}
-
 	accessToken, _ := util.GenerateToken(user.Id, []byte(handler.config.AuthConfig.JWTSecret), []byte(handler.config.AuthConfig.JWTRefreshToken))
 
 	auth := smtp.PlainAuth(
@@ -197,10 +191,7 @@ func (handler *UserHandler) ForgotPassword(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.ErrInternalServerError.Code, err.Error())
 	}
-	return c.JSON(presenter.ResponseMessage{
-		Status:  http.StatusOK,
-		Message: "Please check your email",
-	})
+	return c.SendString("Please check your email")
 }
 
 // resetpassword
@@ -210,7 +201,7 @@ func (handler *UserHandler) ForgotPassword(c *fiber.Ctx) error {
 // @Tags Auth
 // @Accept json
 // @Param todo body handler.ResetPassword.resetPasswordReq true "new Password"
-// @Success 200 {object} presenter.ResponseMessage{}
+// @Success 200
 // @Security ApiKeyAuth
 // @Router /auth/reset-password [put]
 func (handler *UserHandler) ResetPassword(c *fiber.Ctx) error {
@@ -229,10 +220,7 @@ func (handler *UserHandler) ResetPassword(c *fiber.Ctx) error {
 	if err := handler.usecase.UpdatePasswordById(newPassword.Password, userId); err != nil {
 		return fiber.NewError(fiber.ErrInternalServerError.Code, err.Error())
 	}
-	return c.Status(http.StatusOK).JSON(presenter.ResponseMessage{
-		Status:  http.StatusOK,
-		Message: "Password is reseted",
-	})
+	return c.Status(http.StatusOK).SendString("Password is reseted")
 }
 
 // resetpassword
@@ -253,7 +241,6 @@ func (handler *UserHandler) FindUserById(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.ErrBadRequest.Code, err.Error())
 	}
-
 	userRes := entities.UserResponse{
 		Id:          user.Id,
 		Username:    user.Username,
@@ -262,5 +249,5 @@ func (handler *UserHandler) FindUserById(c *fiber.Ctx) error {
 		Email:       user.Email,
 		Avatar:      user.Avatar,
 	}
-	return c.JSON(userRes)
+	return c.Status(http.StatusOK).JSON(userRes)
 }
