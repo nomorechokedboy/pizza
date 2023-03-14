@@ -4,13 +4,12 @@ const defaultNuxtConfig: NuxtConfig = {
 	modules: [
 		// '@nuxt/typescript-build',
 		'@nuxtjs/tailwindcss',
-		'nuxt-vitest',
+		'nuxt-vitest'
 		// '@nuxtjs/i18n',
-		'nuxt-svgo',
+		// 'nuxt-svgo'
 		// '@nuxtjs/google-fonts',
-		'@nuxtjs/web-vitals'
+		// '@nuxtjs/web-vitals',
 		// '@nuxt/image',
-		// 'ui-vue'
 	]
 }
 

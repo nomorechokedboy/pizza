@@ -23,7 +23,8 @@
 		"test": "vitest",
 		"lint": "eslint .",
 		"story:build": "histoire build",
-		"preview": "histoire preview"
+		"preview": "histoire preview",
+		"prepublish": "pnpm build"
 	},
 	"keywords": [],
 	"author": "",
