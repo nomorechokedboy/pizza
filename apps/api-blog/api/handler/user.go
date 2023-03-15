@@ -5,6 +5,7 @@ import (
 	"api-blog/api/util"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
+	"api-blog/templates"
 	"bytes"
 	"net/http"
 	"net/smtp"
@@ -172,8 +173,8 @@ func (handler *UserHandler) ForgotPassword(c *fiber.Ctx) error {
 	var emailReponse entities.ResponseEmail
 	emailReponse.Link = handler.config.AppAPI.Link + "/userId:" + accessToken
 	emailReponse.Username = user.Username
-	emailReponse.Sender = "blog team"
-	tmpl := template.Must(template.ParseFiles("template/emailTemp.html"))
+	emailReponse.Sender = "Blog team"
+	tmpl := template.Must(template.New("").Parse(templates.TemplateEmail))
 	buff := new(bytes.Buffer)
 	tmpl.Execute(buff, emailReponse)
 
@@ -202,7 +203,6 @@ func (handler *UserHandler) ForgotPassword(c *fiber.Ctx) error {
 // @Accept json
 // @Param todo body handler.ResetPassword.resetPasswordReq true "new Password"
 // @Success 200
-// @Security ApiKeyAuth
 // @Router /auth/reset-password [put]
 func (handler *UserHandler) ResetPassword(c *fiber.Ctx) error {
 	type resetPasswordReq struct {
@@ -223,7 +223,7 @@ func (handler *UserHandler) ResetPassword(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).SendString("Password is reseted")
 }
 
-// resetpassword
+// FindUserById
 // @FindUserById godoc
 // @Summary find user profile
 // @Tags User

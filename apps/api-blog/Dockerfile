@@ -9,6 +9,7 @@ RUN go mod download && \
 
 COPY apps/api-blog/api ./api
 COPY apps/api-blog/pkg ./pkg
+COPY apps/api-blog/templates ./templates 
 COPY apps/api-blog/main.go apps/api-blog/.air.toml ./
 
 RUN $GOPATH/bin/swag init && \
