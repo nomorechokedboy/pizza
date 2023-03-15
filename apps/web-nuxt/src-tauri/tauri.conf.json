@@ -1,18 +1,22 @@
 {
-	"$schema": "../node_modules/@tauri-apps/cli/schema.json",
 	"build": {
-		"beforeBuildCommand": "npm run build",
 		"beforeDevCommand": "npm run dev",
+		"beforeBuildCommand": "npm run build",
 		"devPath": "http://localhost:3000",
-		"distDir": "../dist"
+		"distDir": "../.output",
+		"withGlobalTauri": false
 	},
 	"package": {
-		"productName": "web-nuxt",
-		"version": "0.1.0"
+		"productName": "nuxt-mobile",
+		"version": "0.0.0"
 	},
 	"tauri": {
 		"allowlist": {
-			"all": false
+			"all": false,
+			"shell": {
+				"all": false,
+				"open": true
+			}
 		},
 		"bundle": {
 			"active": true,
@@ -29,7 +33,7 @@
 				"icons/icon.icns",
 				"icons/icon.ico"
 			],
-			"identifier": "com.tauri.dev",
+			"identifier": "com.copium.dev",
 			"longDescription": "",
 			"macOS": {
 				"entitlements": null,
@@ -58,7 +62,7 @@
 				"fullscreen": false,
 				"height": 600,
 				"resizable": true,
-				"title": "web-nuxt",
+				"title": "nuxt-mobile",
 				"width": 800
 			}
 		]

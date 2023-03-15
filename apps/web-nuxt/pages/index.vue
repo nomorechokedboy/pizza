@@ -6,7 +6,7 @@ import { Button } from 'ui-vue'
 	<div>
 		<NuxtWelcome />
 		<div class="flex">
-			<p class="text-cyan-500">Test tailwindcss</p>
+			<p class="text-cyan-500">I love Tailwindcss</p>
 		</div>
 		<Button>Lmao</Button>
 	</div>
