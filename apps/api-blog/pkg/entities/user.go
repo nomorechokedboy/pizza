@@ -8,7 +8,7 @@ type User struct {
 	Id          uint   `gorm:"primaryKey"`
 	Identifier  string `gorm:"unique;size:50; not null"`
 	Password    string `gorm:"size:250; not null"`
-	Username    string `gorm:"unique; size:50"`
+	Username    string `gorm:"unique; size:50; default:null"`
 	Fullname    string `gorm:"size:50; not null"`
 	PhoneNumber string `gorm:"size:50; not null"`
 	Email       string `gorm:"size:50; not null"`
@@ -43,4 +43,11 @@ type UserResponse struct {
 	PhoneNumber string `json:"phone"`
 	Email       string `json:"email"`
 	Avatar      string `json:"avatar"`
+}
+
+type SignUpBody struct {
+	Password string  `json:"password"`
+	Username *string `json:"username"`
+	Fullname *string `json:"fullname"`
+	Email    string  `json:"email"`
 }

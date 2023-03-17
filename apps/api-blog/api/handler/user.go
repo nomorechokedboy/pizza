@@ -7,6 +7,7 @@ import (
 	"api-blog/pkg/usecase"
 	"api-blog/templates"
 	"bytes"
+	"fmt"
 	"net/http"
 	"net/smtp"
 	"text/template"
@@ -32,19 +33,22 @@ func NewUserHandler(usecase usecase.UserUsecase, config config.Config) *UserHand
 // @Summary Create User
 // @Description Create New UserUsecase
 // @Tags Auth
-// @Param todo body entities.UserLogin true "New User"
+// @Param todo body entities.SignUpBody true "New User"
 // @Accept json
 // @Success 200
 // @Router /auth/register [post]
 func (handler *UserHandler) CreateUser(c *fiber.Ctx) error {
-	req := new(entities.UserLogin)
+	req := new(entities.SignUpBody)
 	if err := c.BodyParser(req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request body")
 	}
-	if _, err := handler.usecase.GetUserByIdentifier(req.Identifier); err == nil {
+
+	fmt.Println("DEBUG: ", *req)
+	if cc, err := handler.usecase.GetUserByIdentifier(req.Email); err == nil {
+		fmt.Println("DEBUG: ", cc)
 		return fiber.NewError(fiber.StatusConflict, "indentifier already existed")
 	}
-	err := handler.usecase.CreateUser(req.Password, req.Identifier)
+	err := handler.usecase.CreateUser(*req)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to create New user")
 	}
