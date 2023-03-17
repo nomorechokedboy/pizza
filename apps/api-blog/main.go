@@ -12,6 +12,7 @@ import (
 	"api-blog/pkg/usecase"
 	"fmt"
 	"log"
+
 	// "context"
 
 	swagger "github.com/arsmn/fiber-swagger/v2"
@@ -97,12 +98,9 @@ func main() {
 	app.Get("/healthCheck", func(c *fiber.Ctx) error {
 		return c.SendString("Helo, world")
 	})
-	app.Get("/swagger/*", swagger.New(swagger.Config{
-		URL:         "/swagger/doc.json",
-		DeepLinking: false,
-	}))
-	app.Get("/swagger/doc.json", func(c *fiber.Ctx) error {
-		return c.SendFile("./docs/swagger.json")
+	app.Get("/docs/*", swagger.HandlerDefault)
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.Redirect("/docs/")
 	})
 
 	api := app.Group("/api")

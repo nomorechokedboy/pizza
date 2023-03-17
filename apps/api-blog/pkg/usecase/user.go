@@ -9,7 +9,7 @@ import (
 )
 
 type UserUsecase interface {
-	CreateUser(password, identifier string) error
+	CreateUser(req entities.SignUpBody) error
 	GetUserById(id uint) (*entities.User, error)
 	GetUserByUsername(username string) (*entities.User, error)
 	GetUserByIdentifier(indentifier string) (*entities.User, error)
@@ -26,13 +26,13 @@ func NewUserUsecase(repo repository.UserRepository) UserUsecase {
 	return &userUsecase{repo: repo}
 }
 
-func (usecase *userUsecase) CreateUser(password, identifier string) error {
-	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+func (usecase *userUsecase) CreateUser(req entities.SignUpBody) error {
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), 14)
 	if err != nil {
 		return err
 	}
 	user := &entities.User{
-		Identifier: identifier,
+		Identifier: req.Email,
 		Password:   string(hashPassword),
 		CreatedAt:  time.Now(),
 		UpdateAt:   time.Now(),
