@@ -7,7 +7,7 @@ import IconFacebook from '~icons/fa6-brands/facebook'
 
 const route = useRoute()
 const isLoginPage = computed(() => route.name === 'login')
-// const buttonText = computed(() => (isLoginPage ? 'Continue' : 'Sign up'))
+const buttonText = computed(() => (isLoginPage.value ? 'Continue' : 'Sign up'))
 </script>
 
 <template>
@@ -53,11 +53,7 @@ const isLoginPage = computed(() => route.name === 'login')
 								>
 									<IconGoogle />
 								</template>
-								{{
-									isLoginPage
-										? 'Continue'
-										: 'Sign up'
-								}}
+								{{ buttonText }}
 								with Google
 							</Button>
 							<Button
@@ -71,11 +67,7 @@ const isLoginPage = computed(() => route.name === 'login')
 								>
 									<IconGithub />
 								</template>
-								{{
-									isLoginPage
-										? 'Continue'
-										: 'Sign up'
-								}}
+								{{ buttonText }}
 								with Github
 							</Button>
 							<Button
@@ -89,11 +81,7 @@ const isLoginPage = computed(() => route.name === 'login')
 								>
 									<IconGitlab />
 								</template>
-								{{
-									isLoginPage
-										? 'Continue'
-										: 'Sign up'
-								}}
+								{{ buttonText }}
 								with Gitlab
 							</Button>
 							<Button
@@ -106,11 +94,7 @@ const isLoginPage = computed(() => route.name === 'login')
 								>
 									<IconFacebook />
 								</template>
-								{{
-									isLoginPage
-										? 'Continue'
-										: 'Sign up'
-								}}
+								{{ buttonText }}
 								with Facebook
 							</Button>
 						</div>
