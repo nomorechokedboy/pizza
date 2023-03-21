@@ -30,6 +30,7 @@ module.exports = {
 				format: ['PascalCase']
 			}
 		],
-		'react/jsx-no-undef': 'off'
+		'react/jsx-no-undef': 'off',
+		'react-hooks/rules-of-hooks': 'off'
 	}
 }
