@@ -2,7 +2,13 @@
 import { Button } from 'ui-vue'
 import { authApi } from '~~/external_modules'
 
-const formData = reactive({ identifier: '', password: '', confirmPassword: '' })
+const formData = reactive({
+	identifier: '',
+	password: '',
+	confirmPassword: '',
+	fullName: '',
+	userName: ''
+})
 const handleSignUp = async () => {
 	if (formData.password !== formData.confirmPassword) {
 		alert('Password does not match')
@@ -25,7 +31,11 @@ const handleSignUp = async () => {
 	<form class="flex flex-col gap-3">
 		<div class="flex flex-col gap-2">
 			<label for="">Full name</label>
-			<input class="border" type="text" />
+			<input
+				class="border"
+				type="text"
+				v-model="formData.fullName"
+			/>
 		</div>
 		<div class="flex flex-col gap-3">
 			<div class="flex flex-col gap-2">
@@ -38,7 +48,11 @@ const handleSignUp = async () => {
 			</div>
 			<div class="flex flex-col gap-2">
 				<label for="">User name</label>
-				<input class="border" type="text" />
+				<input
+					class="border"
+					type="text"
+					v-model="formData.userName"
+				/>
 			</div>
 		</div>
 		<div class="flex flex-col gap-2">
@@ -58,6 +72,7 @@ const handleSignUp = async () => {
 			/>
 		</div>
 		<Button
+			color="indigo"
 			size="md"
 			class="!py-3"
 			@click.prevent="handleSignUp"
