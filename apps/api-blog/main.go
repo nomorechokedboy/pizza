@@ -74,10 +74,10 @@ func main() {
 	app.Get("/swagger/doc.json", func(c *fiber.Ctx) error {
 		return c.SendFile("./docs/swagger.json")
 	})
-	app.Get("/swagger/*", swagger.New(swagger.Config{
-		URL:         "/swagger/doc.json",
-		DeepLinking: false,
-	}))
+	app.Get("/docs/*", swagger.HandlerDefault)
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.Redirect("/docs/")
+	})
 
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
