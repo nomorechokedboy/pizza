@@ -22,29 +22,28 @@ const handleLogin = async () => {
 
 <template>
 	<form class="flex flex-col gap-3">
-		<div class="flex flex-col gap-2">
-			<label for="email">Email</label>
-			<input
-				class="border"
-				name="email"
-				type="email"
-				v-model="formData.identifier"
-			/>
-		</div>
-		<div class="flex flex-col gap-2">
-			<label for="password">Password</label>
-			<input
-				class="border"
-				name="password"
-				type="password"
-				v-model="formData.password"
-			/>
-		</div>
+		<TextInput
+			id="email"
+			name="email"
+			type="email"
+			v-model="formData.identifier"
+		>
+			<template #label>Email</template>
+		</TextInput>
+		<TextInput
+			id="password"
+			name="password"
+			type="password"
+			v-model="formData.password"
+		>
+			<template #label>Password</template>
+		</TextInput>
 		<div class="flex gap-2">
 			<input type="checkbox" />
 			<label for="">Remember me</label>
 		</div>
 		<Button
+			color="indigo"
 			size="md"
 			class="!py-3"
 			@click.prevent="handleLogin"
