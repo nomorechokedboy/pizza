@@ -11,8 +11,7 @@
 				"SECRET_KEY",
 				"refreshTokenKey",
 				"REDIS_HOST",
-				"REDIS_PORT",
-				"TAURI_DEBUG"
+				"REDIS_PORT"
 			],
 			"cache": false
 		},

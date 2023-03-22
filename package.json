@@ -24,12 +24,11 @@
 		"eslint-config-custom": "workspace:*",
 		"husky": "^7.0.4",
 		"lint-staged": "^12.1.2",
-		"nuxt": "^3.1.0",
-		"prettier": "^2.8.4",
+		"prettier": "latest",
 		"turbo": "1.5.5"
 	},
 	"engines": {
-		"node": ">=16.16.0"
+		"node": ">=14.0.0"
 	},
 	"packageManager": "pnpm@7.8.0",
 	"lint-staged": {

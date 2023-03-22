@@ -16,11 +16,11 @@ import (
 type DeleteProductTestSuite struct {
 	suite.Suite
 	UseCase *usecases.DeleteProductUseCase
-	Repo    *MockProductRepository
+	Repo    *MockRepository
 }
 
 func (s *DeleteProductTestSuite) SetupTest() {
-	s.Repo = &MockProductRepository{}
+	s.Repo = &MockRepository{}
 	s.UseCase = &usecases.DeleteProductUseCase{Repo: s.Repo}
 }
 

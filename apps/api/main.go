@@ -8,7 +8,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	Cart "api/src/cart"
 	"api/src/category"
 	CategoryDomain "api/src/category/domain"
 	"api/src/config"
@@ -26,7 +25,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/swagger"
-	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -62,19 +60,12 @@ func main() {
 		panic("failed to migrate database")
 	}
 
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
-	})
-
 	app := fiber.New()
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
 
 	app.Use(cors.New())
 	app.Use(func(c *fiber.Ctx) error {
-		Cart.RegisterUseCases(c, rdb)
 		category.RegisterUseCases(c, db)
 		product.RegisterUseCases(c, db)
 		return c.Next()
@@ -88,10 +79,9 @@ func main() {
 	app.Use(etag.New())
 	app.Use(favicon.New())
 
-	Cart.New(v1)
 	category.New(v1)
 	product.New(v1)
-	app.Get("/healthz", HealthCheck)
+	app.Get("healthz", HealthCheck)
 	app.Get("/docs/*", swagger.HandlerDefault)
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Redirect("/docs")
