@@ -31,6 +31,11 @@ export default defineNuxtConfig(async () => {
 					port: 5183
 				}
 			}
+		},
+		image: {
+			cloudinary: {
+				baseURL: 'https://res.cloudinary.com/nuxt/image/upload/'
+			}
 		}
 	}
 
