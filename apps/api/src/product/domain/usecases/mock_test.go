@@ -7,11 +7,11 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type MockRepository struct {
+type MockProductRepository struct {
 	mock.Mock
 }
 
-func (m *MockRepository) Insert(req *domain.ProductReq) (*domain.Product, error) {
+func (m *MockProductRepository) Insert(req *domain.ProductReq) (*domain.Product, error) {
 	args := m.Called(*req)
 
 	if args.Get(1) != nil {
@@ -21,7 +21,7 @@ func (m *MockRepository) Insert(req *domain.ProductReq) (*domain.Product, error)
 	return args.Get(0).(*domain.Product), nil
 }
 
-func (m *MockRepository) Update(id uint, req domain.ProductReq) (*domain.Product, error) {
+func (m *MockProductRepository) Update(id uint, req domain.ProductReq) (*domain.Product, error) {
 	args := m.Called(id, req)
 
 	if args.Get(1) != nil {
@@ -35,7 +35,7 @@ func (m *MockRepository) Update(id uint, req domain.ProductReq) (*domain.Product
 	return args.Get(0).(*domain.Product), nil
 }
 
-func (m *MockRepository) Delete(id uint) (*domain.Product, error) {
+func (m *MockProductRepository) Delete(id uint) (*domain.Product, error) {
 	args := m.Called(id)
 	if args.Get(1) != nil {
 		return nil, args.Get(1).(error)
@@ -48,7 +48,7 @@ func (m *MockRepository) Delete(id uint) (*domain.Product, error) {
 	return args.Get(0).(*domain.Product), nil
 }
 
-func (m *MockRepository) FindOne(id uint) (*domain.Product, error) {
+func (m *MockProductRepository) FindOne(id uint) (*domain.Product, error) {
 	args := m.Called(id)
 	if args.Get(1) != nil {
 		return nil, args.Get(1).(error)
@@ -61,7 +61,7 @@ func (m *MockRepository) FindOne(id uint) (*domain.Product, error) {
 	return args.Get(0).(*domain.Product), nil
 }
 
-func (m *MockRepository) Find(queries *domain.ProductQuery) (common.BasePaginationResponse[domain.Product], error) {
+func (m *MockProductRepository) Find(queries *domain.ProductQuery) (common.BasePaginationResponse[domain.Product], error) {
 	args := m.Called(queries)
 	if args.Get(1) != nil {
 		return common.BasePaginationResponse[domain.Product]{}, args.Get(1).(error)
