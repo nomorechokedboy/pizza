@@ -120,6 +120,7 @@ importers:
                         nuxt-svgo: ^1.1.0
                         nuxt-vitest: ^0.6.4
                         postcss: ^8.4.21
+                        swagger-codegen-openapi: ^1.0.7
                         ui-vue: workspace:*
                         unplugin-icons: ^0.15.3
                         vitest: ^0.28.3
@@ -145,6 +146,7 @@ importers:
                         nuxt-svgo: 1.1.0_hvb3md33ec4bdj4cqfdofgkh7y
                         nuxt-vitest: 0.6.4_5622n3a2wjcpp6ixhstqblv4ci
                         postcss: 8.4.21
+                        swagger-codegen-openapi: 1.0.7
                         unplugin-icons: 0.15.3
                         vitest: 0.28.3
 
@@ -1970,8 +1972,8 @@ packages:
                         vue-i18n:
                                 optional: true
                 dependencies:
-                        '@intlify/message-compiler': 9.3.0-beta.16
-                        '@intlify/shared': 9.3.0-beta.16
+                        '@intlify/message-compiler': 9.3.0-beta.17
+                        '@intlify/shared': 9.3.0-beta.17
                         jsonc-eslint-parser: 1.4.1
                         source-map: 0.6.1
                         vue-i18n: 9.3.0-beta.16_vue@3.2.47
@@ -2012,6 +2014,17 @@ packages:
                         source-map: 0.6.1
                 dev: true
 
+        /@intlify/message-compiler/9.3.0-beta.17:
+                resolution:
+                        {
+                                integrity: sha512-i7hvVIRk1Ax2uKa9xLRJCT57to08OhFMhFXXjWN07rmx5pWQYQ23MfX1xgggv9drnWTNhqEiD+u4EJeHoS5+Ww==
+                        }
+                engines: { node: '>= 14' }
+                dependencies:
+                        '@intlify/shared': 9.3.0-beta.17
+                        source-map: 0.6.1
+                dev: true
+
         /@intlify/shared/9.3.0-beta.11:
                 resolution:
                         {
@@ -2024,6 +2037,14 @@ packages:
                 resolution:
                         {
                                 integrity: sha512-kXbm4svALe3lX+EjdJxfnabOphqS4yQ1Ge/iIlR8tvUiYRCoNz3hig1M4336iY++Dfx5ytEQJPNjIcknNIuvig==
+                        }
+                engines: { node: '>= 14' }
+                dev: true
+
+        /@intlify/shared/9.3.0-beta.17:
+                resolution:
+                        {
+                                integrity: sha512-mscf7RQsUTOil35jTij4KGW1RC9SWQjYScwLxP53Ns6g24iEd5HN7ksbt9O6FvTmlQuX77u+MXpBdfJsGqizLQ==
                         }
                 engines: { node: '>= 14' }
                 dev: true
@@ -2047,7 +2068,7 @@ packages:
                                 optional: true
                 dependencies:
                         '@intlify/bundle-utils': 3.4.0_vue-i18n@9.3.0-beta.16
-                        '@intlify/shared': 9.3.0-beta.16
+                        '@intlify/shared': 9.3.0-beta.17
                         '@rollup/pluginutils': 4.2.1
                         '@vue/compiler-sfc': 3.2.45
                         debug: 4.3.4
@@ -2614,17 +2635,17 @@ packages:
                         ipx: 0.9.11
                 dev: true
 
-        /@nuxt/kit-edge/3.3.2-27989158.46712942_rollup@3.19.1:
+        /@nuxt/kit-edge/3.3.2-27990587.4430c664_rollup@3.19.1:
                 resolution:
                         {
-                                integrity: sha512-DyKocnkgivCBFrCc/TloUKt7my9RMXYnv+QaCCzUMu2GAtIDdeaE9DmPzDZflBYGS0b4cdJkN+dCu1DXVvBSJg==
+                                integrity: sha512-Xn4ABTo75B/XCua4ildZFQBghTRGt8mveAbN7OrKRTGB5hEngJ9BGh06ty30pdmHnq7WSLbUH2Q84Y41Sr1/OA==
                         }
                 engines:
                         {
                                 node: ^14.18.0 || ^16.10.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
                         }
                 dependencies:
-                        '@nuxt/schema': /@nuxt/schema-edge/3.3.2-27989158.46712942_rollup@3.19.1
+                        '@nuxt/schema': /@nuxt/schema-edge/3.3.2-27990587.4430c664_rollup@3.19.1
                         c12: 1.2.0
                         consola: 2.15.3
                         defu: 6.1.2
@@ -2771,7 +2792,7 @@ packages:
                         scule: 1.0.0
                         semver: 7.3.8
                         unctx: 2.1.2
-                        unimport: 3.0.2_rollup@3.19.1
+                        unimport: 3.0.3_rollup@3.19.1
                         untyped: 1.2.2
                 transitivePeerDependencies:
                         - rollup
@@ -2796,10 +2817,10 @@ packages:
                         - webpack
                 dev: true
 
-        /@nuxt/schema-edge/3.3.2-27989158.46712942_rollup@3.19.1:
+        /@nuxt/schema-edge/3.3.2-27990587.4430c664_rollup@3.19.1:
                 resolution:
                         {
-                                integrity: sha512-fsDMGljC5e4lioaXgoIgODhbk9l0RlcZinq665XOEJajelK4AJ3sExoi5KxzAHwX7QCGdL6iyYtz90TQe18eSQ==
+                                integrity: sha512-oTZc9px1yzBo0wWQuegETD1ZsiMCwf8yCZIUbADs3lB4IUtsxOO3E22iLW9oakUfgRRVAwK1vYgIAOMFWHn6Lw==
                         }
                 engines:
                         {
@@ -3272,6 +3293,14 @@ packages:
                 transitivePeerDependencies:
                         - rollup
                         - supports-color
+                dev: true
+
+        /@openapitools/openapi-generator-cli/1.0.12-4.3.0:
+                resolution:
+                        {
+                                integrity: sha512-p6y0ur69/vEslpARrcWg3geujOAjxoQIlIamZGm1cWsu4y4RrEdrolueWA1Lxww2pUzgxvb9PwD6hHFZNNfgrw==
+                        }
+                hasBin: true
                 dev: true
 
         /@pkgr/utils/2.3.1:
@@ -6727,6 +6756,14 @@ packages:
                         {
                                 integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
                         }
+                dev: true
+
+        /commander/5.1.0:
+                resolution:
+                        {
+                                integrity: sha512-P0CysNDQ7rtVw4QIQtm+MRxV66vKFSvlsQvGYXZWR3qFU0jlMKHZZZgw8e+8DSah4UDKMqnknRDQz+xuQXQ/Zg==
+                        }
+                engines: { node: '>= 6' }
                 dev: true
 
         /commander/6.2.1:
@@ -12644,7 +12681,7 @@ packages:
                                 integrity: sha512-rluyaY2S2ey8MrUNyA5fJHcNQsgPtBn5fKyYgDb4Wr5foP2ICwJcoN/Jp8czwfuHSEnPek0t4XXmjOSvChk+WA==
                         }
                 dependencies:
-                        '@nuxt/kit': /@nuxt/kit-edge/3.3.2-27989158.46712942_rollup@3.19.1
+                        '@nuxt/kit': /@nuxt/kit-edge/3.3.2-27990587.4430c664_rollup@3.19.1
                         svgo-loader: 3.0.3
                         vite-svg-loader: 3.6.0
                         vue-loader: 17.0.1_vue@3.2.47+webpack@5.76.1
@@ -15853,6 +15890,18 @@ packages:
                         stable: 0.1.8
                 dev: true
 
+        /swagger-codegen-openapi/1.0.7:
+                resolution:
+                        {
+                                integrity: sha512-NKgdMP2oQUd68gkVdlLhsul5TJCjXkirTwiIn79zU8JlEuNbI8DGn98Sh9f3IJ6/jaJcSKv3ei9AWUS2hdNfHA==
+                        }
+                engines: { node: '>=10.0.0', npm: '>=6.0.0' }
+                hasBin: true
+                dependencies:
+                        '@openapitools/openapi-generator-cli': 1.0.12-4.3.0
+                        commander: 5.1.0
+                dev: true
+
         /symbol-tree/3.2.4:
                 resolution:
                         {
@@ -16743,27 +16792,6 @@ packages:
                         scule: 1.0.0
                         strip-literal: 1.0.1
                         unplugin: 1.3.0
-                transitivePeerDependencies:
-                        - rollup
-                dev: true
-
-        /unimport/3.0.2_rollup@3.19.1:
-                resolution:
-                        {
-                                integrity: sha512-OQ0hShpcerS1PSsISsyn/NV2dGe5xfdUn4p5nwOodq0iqq5xxYQrTidHqlFGjxIliPDtDJp80OeySzyPTjYHmA==
-                        }
-                dependencies:
-                        '@rollup/pluginutils': 5.0.2_rollup@3.19.1
-                        escape-string-regexp: 5.0.0
-                        fast-glob: 3.2.12
-                        local-pkg: 0.4.3
-                        magic-string: 0.30.0
-                        mlly: 1.2.0
-                        pathe: 1.1.0
-                        pkg-types: 1.0.2
-                        scule: 1.0.0
-                        strip-literal: 1.0.1
-                        unplugin: 1.3.1
                 transitivePeerDependencies:
                         - rollup
                 dev: true
@@ -17985,7 +18013,7 @@ packages:
                         vue-router:
                                 optional: true
                 dependencies:
-                        '@intlify/shared': 9.3.0-beta.16
+                        '@intlify/shared': 9.3.0-beta.17
                         '@intlify/vue-i18n-bridge': 0.8.0_vue-i18n@9.3.0-beta.16
                         '@intlify/vue-router-bridge': 0.8.0_vue@3.2.47
                         ufo: 1.1.1
