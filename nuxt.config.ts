@@ -9,7 +9,6 @@ const defaultNuxtConfig: NuxtConfig = {
 		// 'nuxt-svgo'
 		// '@nuxtjs/google-fonts',
 		// '@nuxtjs/web-vitals',
-		// '@nuxt/image',
 	]
 }
 
