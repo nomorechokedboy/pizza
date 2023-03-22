@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { authApi } from '~~/external_modules'
 import { Button } from 'ui-vue'
 
 const formData = reactive({
@@ -7,12 +6,18 @@ const formData = reactive({
 	password: ''
 })
 
+const { $blogApi } = useNuxtApp()
+const token = useAuthToken()
 const handleLogin = async () => {
 	try {
-		await authApi.authLoginPost({
+		const { data: tokenData } = await $blogApi.auth.authLoginPost({
 			password: formData.password,
 			identifier: formData.identifier
 		})
+
+		token.value.refreshToken = tokenData.refresh_token
+		token.value.accessToken = tokenData.token
+
 		await navigateTo('/')
 	} catch (e) {
 		console.error('Login error', e)

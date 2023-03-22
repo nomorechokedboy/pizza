@@ -2,7 +2,8 @@
 import { SignUpForm } from './components'
 
 definePageMeta({
-	layout: 'enter'
+	layout: 'enter',
+	middleware: ['authn']
 })
 </script>
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Button } from 'ui-vue'
-import { authApi } from '~~/external_modules'
 
 const formData = reactive({
 	identifier: '',
@@ -9,6 +8,7 @@ const formData = reactive({
 	fullName: '',
 	userName: ''
 })
+const { $blogApi } = useNuxtApp()
 const handleSignUp = async () => {
 	if (formData.password !== formData.confirmPassword) {
 		alert('Password does not match')
@@ -16,7 +16,7 @@ const handleSignUp = async () => {
 	}
 
 	try {
-		await authApi.authRegisterPost({
+		await $blogApi.auth.authRegisterPost({
 			email: formData.identifier,
 			password: formData.password,
 			fullname: formData.fullName,
