@@ -120,7 +120,6 @@ importers:
                         nuxt-svgo: ^1.1.0
                         nuxt-vitest: ^0.6.4
                         postcss: ^8.4.21
-                        swagger-codegen-openapi: ^1.0.7
                         ui-vue: workspace:*
                         unplugin-icons: ^0.15.3
                         vitest: ^0.28.3
@@ -146,7 +145,6 @@ importers:
                         nuxt-svgo: 1.1.0_hvb3md33ec4bdj4cqfdofgkh7y
                         nuxt-vitest: 0.6.4_5622n3a2wjcpp6ixhstqblv4ci
                         postcss: 8.4.21
-                        swagger-codegen-openapi: 1.0.7
                         unplugin-icons: 0.15.3
                         vitest: 0.28.3
 
@@ -3295,14 +3293,6 @@ packages:
                         - supports-color
                 dev: true
 
-        /@openapitools/openapi-generator-cli/1.0.12-4.3.0:
-                resolution:
-                        {
-                                integrity: sha512-p6y0ur69/vEslpARrcWg3geujOAjxoQIlIamZGm1cWsu4y4RrEdrolueWA1Lxww2pUzgxvb9PwD6hHFZNNfgrw==
-                        }
-                hasBin: true
-                dev: true
-
         /@pkgr/utils/2.3.1:
                 resolution:
                         {
@@ -4775,7 +4765,7 @@ packages:
                         '@babel/core': 7.20.12
                         '@babel/plugin-transform-typescript': 7.20.13_@babel+core@7.20.12
                         '@vue/babel-plugin-jsx': 1.1.1_@babel+core@7.20.12
-                        vite: 4.0.4_@types+node@17.0.45
+                        vite: 4.0.4_@types+node@18.15.2
                         vue: 3.2.47
                 transitivePeerDependencies:
                         - supports-color
@@ -4791,7 +4781,7 @@ packages:
                         vite: ^4.0.0
                         vue: ^3.2.25
                 dependencies:
-                        vite: 4.0.4_@types+node@17.0.45
+                        vite: 4.0.4_@types+node@18.15.2
                         vue: 3.2.47
                 dev: true
 
@@ -6756,14 +6746,6 @@ packages:
                         {
                                 integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
                         }
-                dev: true
-
-        /commander/5.1.0:
-                resolution:
-                        {
-                                integrity: sha512-P0CysNDQ7rtVw4QIQtm+MRxV66vKFSvlsQvGYXZWR3qFU0jlMKHZZZgw8e+8DSah4UDKMqnknRDQz+xuQXQ/Zg==
-                        }
-                engines: { node: '>= 6' }
                 dev: true
 
         /commander/6.2.1:
@@ -15888,18 +15870,6 @@ packages:
                         csso: 4.2.0
                         picocolors: 1.0.0
                         stable: 0.1.8
-                dev: true
-
-        /swagger-codegen-openapi/1.0.7:
-                resolution:
-                        {
-                                integrity: sha512-NKgdMP2oQUd68gkVdlLhsul5TJCjXkirTwiIn79zU8JlEuNbI8DGn98Sh9f3IJ6/jaJcSKv3ei9AWUS2hdNfHA==
-                        }
-                engines: { node: '>=10.0.0', npm: '>=6.0.0' }
-                hasBin: true
-                dependencies:
-                        '@openapitools/openapi-generator-cli': 1.0.12-4.3.0
-                        commander: 5.1.0
                 dev: true
 
         /symbol-tree/3.2.4:
