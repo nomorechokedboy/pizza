@@ -33,6 +33,7 @@ watchEffect(() => {
 					class="group"
 					size="lg"
 					variant="subtle"
+					v-if="isLoggedIn"
 				>
 					<span
 						class="group-hover:text-indigo-500 text-black"
