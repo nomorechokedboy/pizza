@@ -1,5 +1,3 @@
-const openColor = require('./openColor')
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
 	content: ['./components/**/*.vue'],
@@ -7,18 +5,6 @@ module.exports = {
 		extend: {
 			borderRadius: {
 				'4xl': '32px'
-			},
-			backgroundColor: {
-				...openColor
-			},
-			borderColor: {
-				...openColor
-			},
-			boxShadowColor: {
-				...openColor
-			},
-			colors: {
-				...openColor
 			},
 			padding: {
 				5.5: '22px',

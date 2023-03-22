@@ -17,7 +17,7 @@ import (
 type FindProductTestSuite struct {
 	suite.Suite
 	UseCase usecases.FindProductUseCase
-	Repo    MockProductRepository
+	Repo    MockRepository
 }
 
 var initData = []domain.Product{
@@ -60,7 +60,7 @@ var initData = []domain.Product{
 }
 
 func (s *FindProductTestSuite) SetupTest() {
-	s.Repo = MockProductRepository{}
+	s.Repo = MockRepository{}
 	s.UseCase = usecases.FindProductUseCase{Repo: &s.Repo}
 }
 

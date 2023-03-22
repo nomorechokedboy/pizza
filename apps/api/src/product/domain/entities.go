@@ -27,7 +27,7 @@ type ProductReq struct {
 	Name        string  `js:"name" validate:"required,min=3,max=50"`
 	SKU         string  `js:"sku" validate:"required,min=3,max=20"`
 	Price       float32 `js:"price" validate:"required,min=1"`
-	CategoryId  uint    `js:"categoryId" validate:"required,min=1"`
+	CategoryId  uint    `js:"categoryId" validate:"required,min=0"`
 	Quantity    uint    `js:"quantity" validate:"required,min=1"`
 }
 

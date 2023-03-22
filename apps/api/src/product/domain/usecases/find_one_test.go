@@ -16,11 +16,11 @@ import (
 type FindOneProductTestSuite struct {
 	suite.Suite
 	UseCase *usecases.FindOneProductUseCase
-	Repo    *MockProductRepository
+	Repo    *MockRepository
 }
 
 func (s *FindOneProductTestSuite) SetupTest() {
-	s.Repo = &MockProductRepository{}
+	s.Repo = &MockRepository{}
 	s.UseCase = &usecases.FindOneProductUseCase{Repo: s.Repo}
 }
 

@@ -9,6 +9,10 @@ module.exports = {
 			'error',
 			{ argsIgnorePattern: '^_' }
 		],
+		'@typescript-eslint/consistent-type-definitions': [
+			'error',
+			'interface'
+		],
 		camelcase: 'off',
 		'@typescript-eslint/naming-convention': [
 			'error',
@@ -30,7 +34,6 @@ module.exports = {
 				format: ['PascalCase']
 			}
 		],
-		'react/jsx-no-undef': 'off',
-		'react-hooks/rules-of-hooks': 'off'
+		'react/jsx-no-undef': 'off'
 	}
 }

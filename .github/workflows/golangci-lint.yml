@@ -11,6 +11,7 @@ on:
                         - main
 permissions:
         contents: read
+
 jobs:
         golangci:
                 name: Lint api
@@ -26,7 +27,7 @@ jobs:
                         - name: Run docker compose
                           run: |
                                   mkdir -p data/minio data/postgresql
-                                  docker compose up minio-svc postgres -d
+                                  docker compose up minio postgres -d
                         - name: Generate swagger docs
                           run: |
                                   cd apps/api
@@ -37,6 +38,7 @@ jobs:
                           with:
                                   version: v1.50.1
                                   working-directory: apps/api
+
                         - name: Run api test
                           run: |
                                   cd apps/api
