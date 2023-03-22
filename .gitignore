@@ -41,3 +41,7 @@ tmp
 dist
 out/
 build
+
+# auto gen
+docs
+

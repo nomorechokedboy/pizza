@@ -2,6 +2,11 @@
 	// https://nuxt.com/docs/guide/concepts/typescript
 	"extends": "./.nuxt/tsconfig.json",
 	"compilerOptions": {
-		"types": ["vitest/globals", "vitest/importMeta"]
+		"types": [
+			"vitest/globals",
+			"vitest/importMeta",
+			"@nuxt/types",
+			"@nuxt/image-edge"
+		]
 	}
 }
