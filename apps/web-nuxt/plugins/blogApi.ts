@@ -65,37 +65,33 @@ export default defineNuxtPlugin(() => {
 
 				axios.interceptors.response.eject(interceptor)
 
-				try {
-					const { data } = await axios({
-						baseURL: '/api/auth',
-						method: 'POST'
+				const token = useAuthToken()
+				return auth
+					.authRefreshTokenPost({
+						refresh_token:
+							token.value.refreshToken
 					})
-					if (!data) {
-						throw Error(
-							'Unknown error from refreshtoken'
+					.then((resp) => {
+						token.value.refreshToken =
+							resp.data.refresh_token
+						token.value.accessToken =
+							resp.data.token
+						error.response.config.headers[
+							'Authorization'
+						] = `Bearer ${resp.data.token}`
+						return axios(
+							error.response.config
 						)
-					}
-
-					error.config.headers = JSON.parse(
-						JSON.stringify(
-							error.config.headers
-						)
-					)
-					error.response.config.headers[
-						'Authorization'
-					] = `Bearer ${data.token}`
-
-					return axios(error.response.config)
-				} catch (e) {
-					/* openNotification({
-                        description: 'Session timeout, please login!',
-                        id,
-                        type
-                    }) */
-					return Promise.reject('')
-				} finally {
-					createAxiosResponseInterceptor()
-				}
+					})
+					.catch((e) => {
+						token.value.accessToken =
+							undefined
+						token.value.refreshToken =
+							undefined
+						navigateTo('/login')
+						return Promise.reject(e)
+					})
+					.finally(createAxiosResponseInterceptor)
 			}
 		)
 	}

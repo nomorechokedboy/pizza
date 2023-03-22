@@ -1,5 +1,18 @@
 <script setup lang="ts">
-import { Button } from 'ui-vue'
+import { ActionIcon, Button } from 'ui-vue'
+import IconBell from '~icons/ph/bell-simple'
+
+const token = useAuthToken()
+const isLoggedIn = computed(
+	() => token.value.accessToken && token.value.refreshToken
+)
+const { $blogApi } = useNuxtApp()
+
+watchEffect(() => {
+	if (isLoggedIn.value) {
+		$blogApi.auth.authMeGet()
+	}
+})
 </script>
 
 <template>
@@ -10,7 +23,24 @@ import { Button } from 'ui-vue'
 			class="max-w-7xl w-full flex flex-row items-center justify-end px-2"
 		>
 			<div class="flex flex-row gap-2">
-				<NuxtLink to="/login">
+				<NuxtLink v-if="isLoggedIn" to="/new">
+					<Button color="indigo"
+						>Create Post</Button
+					>
+				</NuxtLink>
+				<ActionIcon
+					color="indigo"
+					class="group"
+					size="lg"
+					variant="subtle"
+				>
+					<span
+						class="group-hover:text-indigo-500 text-black"
+					>
+						<IconBell />
+					</span>
+				</ActionIcon>
+				<NuxtLink v-if="!isLoggedIn" to="/login">
 					<Button
 						variant="subtle"
 						color="indigo"
@@ -22,7 +52,7 @@ import { Button } from 'ui-vue'
 						>
 					</Button>
 				</NuxtLink>
-				<NuxtLink to="/signup">
+				<NuxtLink v-if="!isLoggedIn" to="/signup">
 					<Button color="indigo"
 						>Create account</Button
 					>
