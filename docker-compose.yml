@@ -86,7 +86,6 @@ services:
                 command: ['redis-server', '--appendonly', 'yes']
                 volumes:
                         - ./data/redis:/data
-                user: '1000:1000'
                 ports:
                         - '6379:6379'
                 networks:
