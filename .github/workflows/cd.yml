@@ -16,15 +16,11 @@ jobs:
                           uses: okteto/namespace@latest
                           with:
                                   namespace: nomorechokedboy
-                        - name: 'Deploy application'
-                          uses: okteto/apply@latest
-                          with:
-                                  namespace: nomorechokedboy
-                                  manifest: docker-compose.yml
                         - name: 'Push changes'
                           uses: okteto/push@latest
                           with:
                                   namespace: nomorechokedboy
+                                  name: pizza
                         - name: Sleep for 120 seconds
                           uses: jakejarvis/wait-action@v0.1.0
                           with:
