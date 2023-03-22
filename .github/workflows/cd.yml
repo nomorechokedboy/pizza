@@ -16,10 +16,15 @@ jobs:
                           uses: okteto/namespace@latest
                           with:
                                   namespace: nomorechokedboy
-                        - name: 'Trigger deploy stack'
-                          uses: okteto/deploy-stack@latest
+                        - name: 'Deploy application'
+                          uses: okteto/apply@latest
                           with:
-                                  build: 'true'
+                                  namespace: nomorechokedboy
+                                  manifest: docker-compose.yml
+                        - name: 'Push changes'
+                          uses: okteto/push@latest
+                          with:
+                                  namespace: nomorechokedboy
                         - name: Sleep for 120 seconds
                           uses: jakejarvis/wait-action@v0.1.0
                           with:
