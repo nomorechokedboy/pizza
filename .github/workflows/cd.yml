@@ -16,7 +16,9 @@ jobs:
                           uses: okteto/namespace@latest
                           with:
                                   namespace: nomorechokedboy
-                        - name: 'Trigger deploy stack'
-                          uses: okteto/deploy-stack@latest
+                        - name: 'Trigger the pipeline'
+                          uses: okteto/pipeline@latest
                           with:
-                                  build: 'true'
+                                  name: pizza
+                                  timeout: 8m
+                                  filename: docker-compose.yml
