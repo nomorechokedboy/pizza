@@ -137,7 +137,7 @@ func (handler *UserHandler) UpdateUserById(c *fiber.Ctx) error {
 	if _, err := handler.usecase.GetUserByUsername(req.Username); err == nil {
 		return fiber.NewError(fiber.StatusConflict, "Username already existed")
 	}
-	if err := handler.usecase.UpdateUserInfo(req.Password, req.Fullname, req.Username, req.PhoneNumber, req.Email, req.Avatar, user.Id); err != nil {
+	if err := handler.usecase.UpdateUserInfo(req.Fullname, req.Username, req.PhoneNumber, req.Email, req.Avatar, user.Id); err != nil {
 		return fiber.NewError(fiber.ErrInternalServerError.Code, "can not update")
 	}
 	newUser, err := handler.usecase.GetUserById(user.Id)
