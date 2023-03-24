@@ -53,6 +53,14 @@ func (handler *MediaHandler) PostImage(c *fiber.Ctx) error {
 	return c.JSON(objectName)
 }
 
+// @GetMedia godoc
+// @Summary get Media
+// @Tags Media
+// @Accept json
+// @Param id path string true "imageName"
+// @Produce octet-stream
+// @Success 200
+// @Router /media/{objectName} [get]
 func (handler *MediaHandler) GetMedia(c *fiber.Ctx) error {
 	ctx := context.Background()
 	objectName := c.Params("objectName")
