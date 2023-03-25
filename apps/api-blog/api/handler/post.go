@@ -16,28 +16,11 @@ func NewPostHandler(usecase usecase.PostUsecase) *PostHandler {
 	return &PostHandler{usecase: usecase}
 }
 
-// @GetAllPosts godoc
-// @Summary Show all posts
-// @Description get all posts
-// @Tags Posts
-// @Success 200
-// @Failure 400
-// @Router /api/v1/posts/ [get]
-func (handler *PostHandler) GetAllPosts(c *fiber.Ctx) error {
-	posts, err := handler.usecase.GetAllPosts()
-
-	if err != nil {
-		return fiber.NewError(fiber.StatusNotFound, "failed to get all posts")
-	}
-
-	return c.Status(fiber.StatusOK).JSON(posts)
-}
-
 // @GetAllPostsByUserID godoc
 // @Summary Show all posts from specified users
 // @Description get all posts from specified user
 // @Tags Posts
-// @Param  userID query string true
+// @Param  userID query string false "User ID"
 // @Success 200
 // @Failure 400
 // @Failure 500
@@ -47,7 +30,19 @@ func (handler *PostHandler) GetAllPostsByUserID(c *fiber.Ctx) error {
 	var posts []entities.Post
 
 	if userID == 0 {
-		return fiber.NewError(fiber.StatusBadRequest, "invaid userID")
+		posts, err := handler.usecase.GetAllPosts()
+
+		if err != nil {
+			return fiber.NewError(fiber.StatusNotFound, "failed to get all posts")
+		}
+
+		return c.Status(fiber.StatusOK).JSON(posts)
+	}
+
+	posts, err := handler.usecase.GetAllPostsByUserID(uint(userID))
+
+	if err != nil {
+		return fiber.NewError(fiber.StatusNotFound, "failed to get all posts")
 	}
 
 	return c.Status(fiber.StatusOK).JSON(posts)

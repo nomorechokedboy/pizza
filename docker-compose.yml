@@ -24,8 +24,10 @@ services:
                         context: .
                         dockerfile: apps/api-blog/Dockerfile
                 depends_on:
-                        - postgres
-                        - minio-svc
+                        postgres:
+                                condition: service_healthy
+                        minio-svc:
+                                condition: service_healthy
                 environment:
                         - DB_PORT=5432
                         - DB_HOST=postgres

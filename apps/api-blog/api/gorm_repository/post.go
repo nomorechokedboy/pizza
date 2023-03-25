@@ -22,10 +22,12 @@ func (r *PostGormRepo) CreateSlug(slug *entities.Slug) error {
 	return r.db.Create(slug).Error
 }
 
-func (r *PostGormRepo) CreatePost(post *entities.Post) error {
+func (r *PostGormRepo) CreatePost(post *entities.Post) (uint, error) {
 	post.CreatedAt = time.Now()
 
-	return r.db.Create(&post).Error
+	createdPost := r.db.Create(&post)
+
+	return post.ID, createdPost.Error
 }
 
 func (r *PostGormRepo) GetPostBySlug(slug string) (*entities.Post, error) {
