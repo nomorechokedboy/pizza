@@ -7,7 +7,6 @@ import (
 	"api-blog/api/middleware"
 	"api-blog/api/routes"
 	"api-blog/api/util"
-	_ "api-blog/docs"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
 	"fmt"
@@ -40,6 +39,7 @@ func main() {
 		panic("Cannot connect Database: %v")
 	}
 	db.AutoMigrate(&entities.User{})
+	db.AutoMigrate(&entities.Post{})
 
 	//Minio
 	minioClient, err := util.ConnectMinio(cfg)
@@ -60,6 +60,11 @@ func main() {
 
 	//Media
 	mediaHandler := handler.NewMediaHandler(*cfg, minioClient)
+
+	//post
+	postRepo := gorm_repository.NewPostGormRepository(db)
+	postUC := usecase.NewPostUseCase(postRepo)
+	postHandler := handler.NewPostHandler(postUC)
 
 	//app
 	app := fiber.New()
@@ -82,6 +87,8 @@ func main() {
 	routes.UserRouter(v1, *userHandler, *middle)
 	routes.AuthRouter(v1, *authHandler, *userHandler, *middle)
 	routes.MediaRouter(v1, *mediaHandler, *middle)
+	routes.PostRouter(v1, *postHandler, *middle)
+
 	port := fmt.Sprintf(":%v", cfg.Server.Port)
 	log.Printf("Server started on port %v", cfg.Server.Port)
 	app.Listen(port)

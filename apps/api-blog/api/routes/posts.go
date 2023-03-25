@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func PostRouter(app fiber.Router, handler handler.PostHandler, jwtSecret string) {
+func PostRouter(app fiber.Router, handler handler.PostHandler, jwtSecret middleware.JWTMiddleware) {
 	users := app.Group("/posts")
 	publicPostRouter(users, handler)
 	privatePostRouter(users, handler, jwtSecret)
@@ -15,14 +15,11 @@ func PostRouter(app fiber.Router, handler handler.PostHandler, jwtSecret string)
 }
 
 func publicPostRouter(app fiber.Router, handler handler.PostHandler) {
-	app.Get("/", handler.GetAllPosts)
 	app.Get("/", handler.GetAllPostsByUserID)
 	app.Get("/:slug", handler.GetPostBySlug)
 }
 
-func privatePostRouter(app fiber.Router, handler handler.PostHandler, jwtSecret string) {
-	middle := middleware.NewJWTMiddleware(jwtSecret)
-	app.Use(middle.Protected())
+func privatePostRouter(app fiber.Router, handler handler.PostHandler, jwtSecret middleware.JWTMiddleware) {
 	app.Post("/", handler.CreatePost)
 	app.Put("/", handler.UpdatePost)
 	app.Delete("/", handler.DeletePost)
