@@ -58,7 +58,7 @@ func (handler *MediaHandler) PostImage(c *fiber.Ctx) error {
 // @Tags Media
 // @Accept json
 // @Param id path string true "imageName"
-// @Produce octet-stream
+// @Produce png
 // @Success 200
 // @Router /media/{objectName} [get]
 func (handler *MediaHandler) GetMedia(c *fiber.Ctx) error {
