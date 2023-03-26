@@ -71,6 +71,6 @@ func (handler *MediaHandler) GetMedia(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "Can not find Image")
 	}
-
+	c.Set("Content-Type", "image/png")
 	return c.SendStream(newObject)
 }
