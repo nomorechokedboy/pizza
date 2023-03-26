@@ -1,13 +1,11 @@
-<script setup lang="ts">
-import { Button } from 'ui-vue'
-</script>
+<script setup lang="ts"></script>
 
 <template>
-	<div>
-		<NuxtWelcome />
-		<div class="flex">
-			<p class="text-cyan-500">I love Tailwindcss</p>
-		</div>
-		<Button>Lmao</Button>
-	</div>
+	<div>Main page</div>
+	<nuxt-img
+		provider="cloudinary"
+		src="/remote/nuxt-org/blog/going-full-static/main.png"
+		width="300"
+		height="169"
+	/>
 </template>

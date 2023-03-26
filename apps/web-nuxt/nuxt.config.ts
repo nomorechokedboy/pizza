@@ -6,7 +6,10 @@ import { internalIpV4 } from 'internal-ip'
 export default defineNuxtConfig(async () => {
 	const host = await internalIpV4()
 	const config: NuxtConfig = {
-		...defaultNuxtConfig,
+		modules: [
+			...defaultNuxtConfig.modules,
+			['unplugin-icons/nuxt', { scale: 1.5 }]
+		],
 		css: ['ui-vue/dist/style.css'],
 		vite: {
 			clearScreen: false,
@@ -27,6 +30,11 @@ export default defineNuxtConfig(async () => {
 					host,
 					port: 5183
 				}
+			}
+		},
+		image: {
+			cloudinary: {
+				baseURL: 'https://res.cloudinary.com/nuxt/image/upload/'
 			}
 		}
 	}

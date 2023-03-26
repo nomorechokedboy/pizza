@@ -6,7 +6,7 @@ services:
                         dockerfile: apps/api/Dockerfile
                 depends_on:
                         - postgres
-                        - minio
+                        - minio-svc
                 environment:
                         - DB_PORT=5432
                         - DB_HOST=postgres
@@ -19,14 +19,13 @@ services:
                         - cache-network
                         - db-network
                         - storage-network
-
         api-blog:
                 build:
                         context: .
                         dockerfile: apps/api-blog/Dockerfile
                 depends_on:
                         - postgres
-                        - minio
+                        - minio-svc
                 environment:
                         - DB_PORT=5432
                         - DB_HOST=postgres
@@ -39,7 +38,6 @@ services:
                         - cache-network
                         - db-network
                         - storage-network
-
         postgres:
                 image: postgres:14.1-alpine
                 restart: always
@@ -59,7 +57,7 @@ services:
                         timeout: 60s
                         retries: 5
                         start_period: 30s
-        minio:
+        minio-svc:
                 environment:
                         - MINIO_ROOT_USER=admin
                         - MINIO_ROOT_PASSWORD=admin123
@@ -88,7 +86,6 @@ services:
                 command: ['redis-server', '--appendonly', 'yes']
                 volumes:
                         - ./data/redis:/data
-                user: '1000:1000'
                 ports:
                         - '6379:6379'
                 networks:
