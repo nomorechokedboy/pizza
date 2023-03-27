@@ -76,6 +76,7 @@ func main() {
 	}
 	db.AutoMigrate(&entities.User{})
 	db.AutoMigrate(&entities.Post{})
+	db.AutoMigrate(&entities.Slug{})
 
 	//middlerware
 
@@ -102,6 +103,10 @@ func main() {
 	app.Use(recover.New())
 	app.Get("/healthCheck", func(c *fiber.Ctx) error {
 		return c.SendString("Helo, world")
+	})
+
+	app.Get("/docs/doc.json", func(c *fiber.Ctx) error {
+		return c.SendFile("./docs/swagger.json")
 	})
 	app.Get("/docs/*", swagger.HandlerDefault)
 	app.Get("/", func(c *fiber.Ctx) error {

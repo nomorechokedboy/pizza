@@ -9,6 +9,7 @@ type PostUsecase interface {
 	GetAllPosts() ([]entities.Post, error)
 	GetAllPostsByUserID(userID uint) ([]entities.Post, error)
 	GetPostBySlug(slug string) (*entities.Post, error)
+	GetSlug(slug string) (*entities.Slug, error)
 	CreateSlug(postId uint, title string) error
 	CreatePost(userID uint, title string, content string) (uint, error)
 	UpdatePost(id uint, title string, content string) error
@@ -42,7 +43,10 @@ func (usecase *postUsecase) CreateSlug(postID uint, title string) error {
 	}
 
 	return usecase.repo.CreateSlug(slug)
+}
 
+func (usecase *postUsecase) GetSlug(slug string) (*entities.Slug, error) {
+	return usecase.repo.GetSlug(slug)
 }
 
 func (usecase *postUsecase) CreatePost(userID uint, title string, content string) (uint, error) {

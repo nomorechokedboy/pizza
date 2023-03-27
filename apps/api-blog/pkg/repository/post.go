@@ -11,5 +11,6 @@ type PostRepository interface {
 	CreatePost(post *entities.Post) (uint, error)
 	UpdatePost(post *entities.Post) error
 	DeletePost(id uint) error
+	GetSlug(slug string) (*entities.Slug, error)
 	CreateSlug(slug *entities.Slug) error
 }

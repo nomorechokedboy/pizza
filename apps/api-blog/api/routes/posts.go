@@ -19,8 +19,9 @@ func publicPostRouter(app fiber.Router, handler handler.PostHandler) {
 	app.Get("/:slug", handler.GetPostBySlug)
 }
 
-func privatePostRouter(app fiber.Router, handler handler.PostHandler, jwtSecret middleware.JWTMiddleware) {
+func privatePostRouter(app fiber.Router, handler handler.PostHandler, middle middleware.JWTMiddleware) {
+	app.Use(middle.Protected())
 	app.Post("/", handler.CreatePost)
-	app.Put("/", handler.UpdatePost)
-	app.Delete("/", handler.DeletePost)
+	app.Put("/:id", handler.UpdatePost)
+	app.Delete("/:id", handler.DeletePost)
 }
