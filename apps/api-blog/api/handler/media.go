@@ -57,9 +57,11 @@ func (handler *MediaHandler) PostImage(c *fiber.Ctx) error {
 // @Summary get Media
 // @Tags Media
 // @Accept json
-// @Param id path string true "imageName"
+// @Param objectName path string true "imageName"
 // @Produce png
 // @Success 200
+// @Failure 404  "Cannot found the Image"
+// @Failure 500 "Cannot get Image"
 // @Router /media/{objectName} [get]
 func (handler *MediaHandler) GetMedia(c *fiber.Ctx) error {
 	ctx := context.Background()
@@ -67,9 +69,13 @@ func (handler *MediaHandler) GetMedia(c *fiber.Ctx) error {
 	if objectName == "" {
 		return fiber.NewError(fiber.ErrBadGateway.Code, "invalid object name")
 	}
+	_, err := handler.minioClient.StatObject(ctx, handler.config.Minio.BucketName, objectName, minio.StatObjectOptions{})
+	if err != nil {
+		return fiber.NewError(fiber.StatusNotFound, "Can not found Image")
+	}
 	newObject, err := handler.minioClient.GetObject(ctx, handler.config.Minio.BucketName, objectName, minio.GetObjectOptions{})
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "Can not find Image")
+		return fiber.NewError(fiber.StatusInternalServerError, "Can not get Image")
 	}
 	c.Set("Content-Type", "image/png")
 	return c.SendStream(newObject)
