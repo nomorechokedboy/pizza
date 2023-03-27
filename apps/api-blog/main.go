@@ -40,6 +40,7 @@ func main() {
 	}
 	db.AutoMigrate(&entities.User{})
 	db.AutoMigrate(&entities.Post{})
+	db.AutoMigrate(&entities.Slug{})
 
 	//Minio
 	minioClient, err := util.ConnectMinio(cfg)

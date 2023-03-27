@@ -3,8 +3,6 @@ package gorm_repository
 import (
 	"api-blog/pkg/entities"
 	"api-blog/pkg/repository"
-	"time"
-
 	"gorm.io/gorm"
 )
 
@@ -18,13 +16,21 @@ func NewPostGormRepository(db *gorm.DB) repository.PostRepository {
 	}
 }
 
+func (r *PostGormRepo) GetSlug(slug string) (*entities.Slug, error) {
+	var post_slug *entities.Slug
+
+	if err := r.db.Where("slug = ?", slug).First(post_slug).Error; err != nil {
+		return nil, err
+	}
+
+	return post_slug, nil
+}
+
 func (r *PostGormRepo) CreateSlug(slug *entities.Slug) error {
-	return r.db.Create(slug).Error
+	return r.db.Create(&slug).Error
 }
 
 func (r *PostGormRepo) CreatePost(post *entities.Post) (uint, error) {
-	post.CreatedAt = time.Now()
-
 	createdPost := r.db.Create(&post)
 
 	return post.ID, createdPost.Error
@@ -33,7 +39,7 @@ func (r *PostGormRepo) CreatePost(post *entities.Post) (uint, error) {
 func (r *PostGormRepo) GetPostBySlug(slug string) (*entities.Post, error) {
 	var post entities.Post
 
-	if err := r.db.Joins("JOIN slug ON slug.postID = post.id AND slug.name = ?", slug).First(&post).Error; err != nil {
+	if err := r.db.Joins("JOIN slugs ON slugs.post_id = posts.id AND slugs.slug = ?", slug).First(&post).Error; err != nil {
 		return nil, err
 	}
 
@@ -53,20 +59,21 @@ func (r *PostGormRepo) GetAllPosts() ([]entities.Post, error) {
 func (r *PostGormRepo) GetAllPostsByUserID(userID uint) ([]entities.Post, error) {
 	var posts []entities.Post
 
-	if err := r.db.Find(&posts, "userID = ?", userID).Error; err != nil {
+	if err := r.db.Find(&posts, "user_id = ?", userID).Error; err != nil {
 		return nil, err
 	}
 	return posts, nil
 }
 
 func (r *PostGormRepo) UpdatePost(post *entities.Post) error {
-	return r.db.Where("id = ?", post.ID).Updates(entities.Post{
-		Title:     post.Title,
-		Content:   post.Content,
-		UpdatedAt: time.Now(),
+	return r.db.Model(&post).Updates(entities.Post{
+		Title:   post.Title,
+		Content: post.Content,
 	}).Error
 }
 
 func (r *PostGormRepo) DeletePost(id uint) error {
-	return r.db.Delete("id = ?", id).Error
+	post := entities.Post{ID: id}
+
+	return r.db.Delete(&post).Error
 }
