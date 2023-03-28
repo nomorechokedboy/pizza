@@ -9,7 +9,7 @@ import (
 
 func GenerateToken(uId uint, jwtSecret []byte, jwtRefreshSecret []byte) (string, string) {
 
-	accessToken := GenerateAccessClaims(uId, jwtSecret, 5*time.Minute)
+	accessToken := GenerateAccessClaims(uId, jwtSecret, 15*time.Minute)
 	refreshToken := GenerateAccessClaims(uId, jwtRefreshSecret, 30*24*time.Hour)
 	return accessToken, refreshToken
 }
