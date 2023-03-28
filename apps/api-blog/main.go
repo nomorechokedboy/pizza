@@ -109,7 +109,6 @@ func main() {
 	app.Get("/healthCheck", func(c *fiber.Ctx) error {
 		return c.SendString("Helo, world")
 	})
-
 	app.Get("/docs/*", swagger.HandlerDefault)
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Redirect("/docs/")
