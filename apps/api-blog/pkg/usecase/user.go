@@ -29,6 +29,7 @@ func (usecase *userUsecase) CreateUser(req entities.SignUpBody) error {
 		Identifier: req.Email,
 		Password:   req.Password,
 		Username:   *req.Username,
+		Email:      req.Email,
 		CreatedAt:  time.Now(),
 		UpdateAt:   time.Now(),
 	}

@@ -48,6 +48,10 @@ func (handler *UserHandler) CreateUser(c *fiber.Ctx) error {
 		fmt.Println("DEBUG: ", cc)
 		return fiber.NewError(fiber.StatusConflict, "indentifier already existed")
 	}
+	if cc, err := handler.usecase.GetUserByEmail(req.Email); err == nil {
+		fmt.Println("DEBUG: ", cc)
+		return fiber.NewError(fiber.StatusConflict, "indentifier already existed")
+	}
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), 14)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError)
@@ -113,6 +117,7 @@ func (handler *UserHandler) GetAuthUserById(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.ErrNotFound
 	}
+
 	newUser := entities.UserResponse{
 		Id:          user.Id,
 		Email:       user.Email,
@@ -147,9 +152,23 @@ func (handler *UserHandler) UpdateUserById(c *fiber.Ctx) error {
 	if err := c.BodyParser(req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request body")
 	}
-	if _, err := handler.usecase.GetUserByUsername(req.Username); err == nil {
-		return fiber.NewError(fiber.StatusConflict, "Username already existed")
+
+	if newUser, err := handler.usecase.GetUserByUsername(req.Username); err == nil {
+		if newUser.Id != user.Id {
+			return fiber.NewError(fiber.StatusConflict, "Username already existed")
+		}
 	}
+	if newUser, err := handler.usecase.GetUserByEmail(req.Email); err == nil {
+		if newUser.Id != user.Id {
+			return fiber.NewError(fiber.StatusConflict, "Email already used")
+		}
+	}
+	if newUser, err := handler.usecase.GetUserByIdentifier(req.Email); err == nil {
+		if newUser.Id != user.Id {
+			return fiber.NewError(fiber.StatusConflict, "Email already existed")
+		}
+	}
+
 	if err := handler.usecase.UpdateUserInfo(req.Fullname, req.Username, req.PhoneNumber, req.Email, req.Avatar, user.Id); err != nil {
 		return fiber.NewError(fiber.ErrInternalServerError.Code, "can not update")
 	}

@@ -3,6 +3,7 @@ package handler
 import (
 	"api-blog/api/config"
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -41,11 +42,27 @@ func (handler *MediaHandler) PostImage(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
-
 	objectName := strings.ReplaceAll(file.Filename, " ", "")
 	fileBuffer := buffer
 	contentType := file.Header["Content-Type"][0]
 	fileSize := file.Size
+
+	_, minioError := handler.minioClient.StatObject(ctx, handler.config.Minio.BucketName, objectName, minio.StatObjectOptions{})
+	if minioError == nil {
+		index := 0
+		splitImage := strings.Split(objectName, ".")
+		var newName string
+		flag := true
+		for flag {
+			index += 1
+			newName = fmt.Sprintf("%s-%d.%s", splitImage[0], index, splitImage[1])
+			_, err := handler.minioClient.StatObject(ctx, handler.config.Minio.BucketName, newName, minio.StatObjectOptions{})
+			if err != nil {
+				flag = false
+			}
+		}
+		objectName = newName
+	}
 	_, err = handler.minioClient.PutObject(ctx, handler.config.Minio.BucketName, objectName, fileBuffer, fileSize, minio.PutObjectOptions{ContentType: contentType})
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())

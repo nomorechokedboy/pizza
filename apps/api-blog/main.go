@@ -65,7 +65,6 @@ func main() {
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: true,
-		AllowHeaders:     "*",
 	}))
 	app.Use(logger.New())
 	app.Use(recover.New())
