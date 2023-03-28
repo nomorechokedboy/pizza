@@ -7,6 +7,7 @@ import (
 	"api-blog/api/middleware"
 	"api-blog/api/routes"
 	"api-blog/api/util"
+	_ "api-blog/docs"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
 	"fmt"
@@ -89,10 +90,14 @@ func main() {
 	userUC := usecase.NewUserUsecase(userRepo)
 	userHandler := handler.NewUserHandler(userUC, *cfg)
 
+	// slug
+	slugRepo := gorm_repository.NewSlugGormRepository(db)
+	slugUC := usecase.NewSlugUseCase(slugRepo)
+
 	//post
 	postRepo := gorm_repository.NewPostGormRepository(db)
 	postUC := usecase.NewPostUseCase(postRepo)
-	postHandler := handler.NewPostHandler(postUC)
+	postHandler := handler.NewPostHandler(postUC, slugUC)
 
 	//app
 	app := fiber.New()
@@ -105,9 +110,6 @@ func main() {
 		return c.SendString("Helo, world")
 	})
 
-	app.Get("/docs/doc.json", func(c *fiber.Ctx) error {
-		return c.SendFile("./docs/swagger.json")
-	})
 	app.Get("/docs/*", swagger.HandlerDefault)
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Redirect("/docs/")

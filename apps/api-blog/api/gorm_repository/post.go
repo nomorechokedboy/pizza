@@ -16,16 +16,6 @@ func NewPostGormRepository(db *gorm.DB) repository.PostRepository {
 	}
 }
 
-func (r *PostGormRepo) GetSlug(slug string) (*entities.Slug, error) {
-	var post_slug *entities.Slug
-
-	if err := r.db.Where("slug = ?", slug).First(post_slug).Error; err != nil {
-		return nil, err
-	}
-
-	return post_slug, nil
-}
-
 func (r *PostGormRepo) CreateSlug(slug *entities.Slug) error {
 	return r.db.Create(&slug).Error
 }
@@ -56,6 +46,16 @@ func (r *PostGormRepo) GetAllPosts() ([]entities.Post, error) {
 	return posts, nil
 }
 
+func (r *PostGormRepo) GetAllPostsByParentID(parentID uint) ([]entities.Post, error) {
+	var posts []entities.Post
+
+	if err := r.db.Find(&posts, "parent_id = ?", parentID).Error; err != nil {
+		return nil, err
+	}
+
+	return posts, nil
+}
+
 func (r *PostGormRepo) GetAllPostsByUserID(userID uint) ([]entities.Post, error) {
 	var posts []entities.Post
 
@@ -66,9 +66,10 @@ func (r *PostGormRepo) GetAllPostsByUserID(userID uint) ([]entities.Post, error)
 }
 
 func (r *PostGormRepo) UpdatePost(post *entities.Post) error {
-	return r.db.Model(&post).Updates(entities.Post{
-		Title:   post.Title,
-		Content: post.Content,
+	return r.db.Model(&post).Updates(&entities.Post{
+		Title:    post.Title,
+		ParentID: post.ParentID,
+		Content:  post.Content,
 	}).Error
 }
 

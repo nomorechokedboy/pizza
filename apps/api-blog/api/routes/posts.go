@@ -17,6 +17,7 @@ func PostRouter(app fiber.Router, handler handler.PostHandler, jwtSecret middlew
 func publicPostRouter(app fiber.Router, handler handler.PostHandler) {
 	app.Get("/", handler.GetAllPostsByUserID)
 	app.Get("/:slug", handler.GetPostBySlug)
+	app.Get("/series/:parentID", handler.GetAllPostsByParentID)
 }
 
 func privatePostRouter(app fiber.Router, handler handler.PostHandler, middle middleware.JWTMiddleware) {
