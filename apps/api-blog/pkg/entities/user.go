@@ -18,6 +18,7 @@ type User struct {
 }
 
 type UserReq struct {
+	Password    string `json:"password"`
 	Username    string `json:"username"`
 	Fullname    string `json:"fullname"`
 	PhoneNumber string `json:"phonenumber"`
@@ -49,9 +50,4 @@ type SignUpBody struct {
 	Username *string `json:"username"`
 	Fullname *string `json:"fullname"`
 	Email    string  `json:"email"`
-}
-
-type UpdatePassword struct {
-	OldPassword string `json:"oldPassword"`
-	NewPassword string `json:"newPassword"`
 }
