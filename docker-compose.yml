@@ -19,7 +19,6 @@ services:
                         - cache-network
                         - db-network
                         - storage-network
-
         api-blog:
                 build:
                         context: .
@@ -39,7 +38,6 @@ services:
                         - cache-network
                         - db-network
                         - storage-network
-
         postgres:
                 image: postgres:14.1-alpine
                 restart: always
@@ -52,7 +50,7 @@ services:
                 ports:
                         - '5432:5432'
                 volumes:
-                        - ./data/postgresql:/var/lib/postgresql/data
+                        - data-postgresql:/var/lib/postgresql/data
                 healthcheck:
                         test: ['CMD-SHELL', 'pg_isready -d db_prod']
                         interval: 30s
@@ -114,3 +112,9 @@ volumes:
                         type: none
                         o: bind
                         device: ${PWD}/data/minio
+        postgresql-data:
+                driver: local
+                driver_opts:
+                        type: none
+                        o: bind
+                        device: ${PWD}/data/postgresql
