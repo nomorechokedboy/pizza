@@ -21,9 +21,10 @@ type Post struct {
 }
 
 type PostReq struct {
-	Title    string `json:"title"`
-	Content  string `json:"content"`
-	ParentID *uint  `json:"parent_id"`
+	Title       string `json:"title"`
+	Content     string `json:"content"`
+	ParentID    *uint  `json:"parent_id"`
+	PublishedAt *time.Time
 }
 
 type PostRes struct {
