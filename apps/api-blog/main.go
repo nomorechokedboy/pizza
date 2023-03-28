@@ -78,6 +78,7 @@ func main() {
 	db.AutoMigrate(&entities.User{})
 	db.AutoMigrate(&entities.Post{})
 	db.AutoMigrate(&entities.Slug{})
+	db.AutoMigrate(&entities.Comment{})
 
 	//middlerware
 
@@ -99,6 +100,11 @@ func main() {
 	postUC := usecase.NewPostUseCase(postRepo)
 	postHandler := handler.NewPostHandler(postUC, slugUC, userUC)
 
+	// comment
+	commentRepo := gorm_repository.NewCommentGormRepository(db)
+	commentUC := usecase.NewCommentUseCase(commentRepo)
+	commentHandler := handler.NewCommentHandler(commentUC)
+
 	//app
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
@@ -119,6 +125,7 @@ func main() {
 	routes.UserRouter(v1, *userHandler, *middle)
 	routes.AuthRouter(v1, *authHandler, *userHandler, *middle)
 	routes.PostRouter(v1, *postHandler, *middle)
+	routes.CommentRouter(v1, *commentHandler, *middle)
 
 	port := fmt.Sprintf(":%v", cfg.Server.Port)
 	log.Printf("Server started on port %v", cfg.Server.Port)
