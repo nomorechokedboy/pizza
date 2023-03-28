@@ -9,6 +9,7 @@ export const useAuthToken = () => {
 			accessToken: undefined,
 			refreshToken: undefined
 		}),
-		sameSite: 'strict'
+		sameSite: 'strict',
+		maxAge: 60 * 60
 	})
 }
