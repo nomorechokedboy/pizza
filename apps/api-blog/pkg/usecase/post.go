@@ -9,10 +9,9 @@ type PostUsecase interface {
 	GetAllPosts() ([]entities.Post, error)
 	GetAllPostsByUserID(userID uint) ([]entities.Post, error)
 	GetPostBySlug(slug string) (*entities.Post, error)
-	GetSlug(slug string) (*entities.Slug, error)
-	CreateSlug(postId uint, title string) error
-	CreatePost(userID uint, title string, content string) (uint, error)
-	UpdatePost(id uint, title string, content string) error
+	GetPostsByParentID(parentID uint) ([]entities.Post, error)
+	CreatePost(userID uint, body *entities.PostReq) (uint, error)
+	UpdatePost(id uint, body *entities.PostReq) error
 	DeletePost(id uint) error
 }
 
@@ -36,35 +35,28 @@ func (usecase *postUsecase) GetPostBySlug(slug string) (*entities.Post, error) {
 	return usecase.repo.GetPostBySlug(slug)
 }
 
-func (usecase *postUsecase) CreateSlug(postID uint, title string) error {
-	slug := &entities.Slug{
-		Slug:   title,
-		PostID: postID,
-	}
-
-	return usecase.repo.CreateSlug(slug)
-}
-
-func (usecase *postUsecase) GetSlug(slug string) (*entities.Slug, error) {
-	return usecase.repo.GetSlug(slug)
-}
-
-func (usecase *postUsecase) CreatePost(userID uint, title string, content string) (uint, error) {
+func (usecase *postUsecase) CreatePost(userID uint, body *entities.PostReq) (uint, error) {
 	post := &entities.Post{
-		UserID:  userID,
-		Title:   title,
-		Content: content,
+		Title:    body.Title,
+		ParentID: body.ParentID,
+		Content:  body.Content,
+		UserID:   userID,
 	}
 
 	return usecase.repo.CreatePost(post)
 
 }
 
-func (usecase *postUsecase) UpdatePost(id uint, title string, content string) error {
+func (usecase *postUsecase) GetPostsByParentID(parentID uint) ([]entities.Post, error) {
+	return usecase.repo.GetAllPostsByParentID(parentID)
+}
+
+func (usecase *postUsecase) UpdatePost(id uint, body *entities.PostReq) error {
 	post := &entities.Post{
-		ID:      id,
-		Title:   title,
-		Content: content,
+		ID:       id,
+		Title:    body.Title,
+		ParentID: body.ParentID,
+		Content:  body.Content,
 	}
 
 	return usecase.repo.UpdatePost(post)
