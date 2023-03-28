@@ -48,7 +48,11 @@ func (handler *UserHandler) CreateUser(c *fiber.Ctx) error {
 		fmt.Println("DEBUG: ", cc)
 		return fiber.NewError(fiber.StatusConflict, "indentifier already existed")
 	}
-	err := handler.usecase.CreateUser(*req)
+	if cc, err := handler.usecase.GetUserByEmail(req.Email); err == nil {
+		fmt.Println("DEBUG: ", cc)
+		return fiber.NewError(fiber.StatusConflict, "indentifier already existed")
+	}
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), 14)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to create New user")
 	}
@@ -108,7 +112,16 @@ func (handler *UserHandler) GetAuthUserById(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.ErrNotFound
 	}
-	return c.JSON(user)
+
+	newUser := entities.UserResponse{
+		Id:          user.Id,
+		Email:       user.Email,
+		Avatar:      user.Avatar,
+		Username:    user.Username,
+		Fullname:    user.Fullname,
+		PhoneNumber: user.PhoneNumber,
+	}
+	return c.JSON(newUser)
 }
 
 // UpdateUserByToken
@@ -134,10 +147,24 @@ func (handler *UserHandler) UpdateUserById(c *fiber.Ctx) error {
 	if err := c.BodyParser(req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request body")
 	}
-	if _, err := handler.usecase.GetUserByUsername(req.Username); err == nil {
-		return fiber.NewError(fiber.StatusConflict, "Username already existed")
+
+	if newUser, err := handler.usecase.GetUserByUsername(req.Username); err == nil {
+		if newUser.Id != user.Id {
+			return fiber.NewError(fiber.StatusConflict, "Username already existed")
+		}
 	}
-	if err := handler.usecase.UpdateUserInfo(req.Password, req.Fullname, req.Username, req.PhoneNumber, req.Email, req.Avatar, user.Id); err != nil {
+	if newUser, err := handler.usecase.GetUserByEmail(req.Email); err == nil {
+		if newUser.Id != user.Id {
+			return fiber.NewError(fiber.StatusConflict, "Email already used")
+		}
+	}
+	if newUser, err := handler.usecase.GetUserByIdentifier(req.Email); err == nil {
+		if newUser.Id != user.Id {
+			return fiber.NewError(fiber.StatusConflict, "Email already existed")
+		}
+	}
+
+	if err := handler.usecase.UpdateUserInfo(req.Fullname, req.Username, req.PhoneNumber, req.Email, req.Avatar, user.Id); err != nil {
 		return fiber.NewError(fiber.ErrInternalServerError.Code, "can not update")
 	}
 	newUser, err := handler.usecase.GetUserById(user.Id)

@@ -33,7 +33,9 @@ func (usecase *userUsecase) CreateUser(req entities.SignUpBody) error {
 	}
 	user := &entities.User{
 		Identifier: req.Email,
-		Password:   string(hashPassword),
+		Password:   req.Password,
+		Username:   *req.Username,
+		Email:      req.Email,
 		CreatedAt:  time.Now(),
 		UpdateAt:   time.Now(),
 	}
