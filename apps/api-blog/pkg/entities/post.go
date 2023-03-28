@@ -28,11 +28,11 @@ type PostReq struct {
 }
 
 type PostRes struct {
-	ID          uint   `json:"id"`
-	UserID      uint   `json:"user_id"`
-	ParentID    *uint  `json:"parent_id"`
-	Title       string `json:"title"`
-	Slug        string
+	ID          uint       `json:"id"`
+	UserID      uint       `json:"user_id"`
+	ParentID    *uint      `json:"parent_id"`
+	Title       string     `json:"title"`
+	Slug        string     `json:"slug"`
 	Content     string     `json:"content"`
 	Published   bool       `json:"published"`
 	PublishedAt *time.Time `json:"published_at"`

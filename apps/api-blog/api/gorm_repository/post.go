@@ -83,5 +83,5 @@ func (r *PostGormRepo) UpdatePost(post *entities.Post) error {
 }
 
 func (r *PostGormRepo) DeletePost(id uint) error {
-	return r.db.Model(&entities.Post{}).Where("id = ?", id).Update("deleted_at", time.Now()).Error
+	return r.db.Model(&entities.Post{ID: id}).Update("deleted_at", time.Now()).Error
 }
