@@ -42,8 +42,10 @@ func (handler *PostHandler) GetAllPostsByUserID(c *fiber.Ctx) error {
 				ID:          post.ID,
 				UserID:      post.UserID,
 				ParentID:    post.ParentID,
+				Slug:        post.Slug,
 				Title:       post.Title,
 				Content:     post.Content,
+				Published:   post.Published,
 				PublishedAt: post.PublishedAt,
 				CreatedAt:   post.CreatedAt,
 				UpdatedAt:   post.UpdatedAt,
@@ -102,7 +104,9 @@ func (handler *PostHandler) GetAllPostsByParentID(c *fiber.Ctx) error {
 			UserID:      post.UserID,
 			ParentID:    post.ParentID,
 			Title:       post.Title,
+			Slug:        post.Slug,
 			Content:     post.Content,
+			Published:   post.Published,
 			PublishedAt: post.PublishedAt,
 			CreatedAt:   post.CreatedAt,
 			UpdatedAt:   post.UpdatedAt,
@@ -144,7 +148,9 @@ func (handler *PostHandler) GetPostBySlug(c *fiber.Ctx) error {
 		UserID:      post.UserID,
 		ParentID:    post.ParentID,
 		Title:       post.Title,
+		Slug:        post.Slug,
 		Content:     post.Content,
+		Published:   post.Published,
 		PublishedAt: post.PublishedAt,
 		CreatedAt:   post.CreatedAt,
 		UpdatedAt:   post.UpdatedAt,
@@ -180,16 +186,16 @@ func (handler *PostHandler) CreatePost(c *fiber.Ctx) error {
 		}
 	}
 
-	postID, err := handler.usecase.CreatePost(authID, req)
-
-	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "failed to create new post")
-	}
-
 	postSlug := slug.Make(req.Title)
 
 	if slugCount, err := handler.slugUsecase.GetSlugCount(postSlug); slugCount != 0 && err == nil {
 		postSlug = fmt.Sprintf("%s-%d", postSlug, slugCount)
+	}
+
+	postID, err := handler.usecase.CreatePost(authID, postSlug, req)
+
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "failed to create new post")
 	}
 
 	if err := handler.slugUsecase.CreateSlug(postID, postSlug); err != nil {
@@ -223,14 +229,14 @@ func (handler *PostHandler) UpdatePost(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request body")
 	}
 
-	if err := handler.usecase.UpdatePost(uint(id), req); err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "failed to update specfied post")
-	}
-
 	postSlug := slug.Make(req.Title)
 
 	if slugCount, err := handler.slugUsecase.GetSlugCount(postSlug); slugCount != 0 && err == nil {
 		postSlug = fmt.Sprintf("%s-%d", postSlug, slugCount)
+	}
+
+	if err := handler.usecase.UpdatePost(uint(id), postSlug, req); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "failed to update specfied post")
 	}
 
 	if err := handler.slugUsecase.CreateSlug(uint(id), postSlug); err != nil {
