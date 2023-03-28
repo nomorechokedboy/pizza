@@ -41,14 +41,14 @@ watchEffect(() => {
 						<IconBell />
 					</span>
 				</ActionIcon>
-				<NuxtLink v-if="!isLoggedIn" to="/login">
+				<NuxtLink class="hidden md:inline" to="/login">
 					<Button
 						variant="subtle"
 						color="indigo"
 						class="text-black group"
 					>
 						<span
-							class="text-neutral-700 font-normal text-base hidden group-hover:underline group-hover:text-indigo-500 md:block"
+							class="text-neutral-700 font-normal text-base group-hover:underline group-hover:text-indigo-500"
 							>Log in</span
 						>
 					</Button>
