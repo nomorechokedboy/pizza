@@ -4,8 +4,15 @@ export interface TextInputProps {
 	modelValue?: string
 }
 
+const inputRef = ref<HTMLInputElement | null>(null)
+const focus = () => {
+	inputRef.value?.focus()
+}
 const { id } = defineProps<TextInputProps>()
 defineEmits(['update:modelValue'])
+defineExpose({
+	focus
+})
 </script>
 
 <template>
@@ -25,6 +32,7 @@ defineEmits(['update:modelValue'])
 				)
 			"
 			:id="id"
+			ref="inputRef"
 		/>
 	</div>
 </template>
