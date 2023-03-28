@@ -37,10 +37,11 @@ func (usecase *postUsecase) GetPostBySlug(slug string) (*entities.Post, error) {
 
 func (usecase *postUsecase) CreatePost(userID uint, body *entities.PostReq) (uint, error) {
 	post := &entities.Post{
-		Title:    body.Title,
-		ParentID: body.ParentID,
-		Content:  body.Content,
-		UserID:   userID,
+		Title:       body.Title,
+		ParentID:    body.ParentID,
+		Content:     body.Content,
+		PublishedAt: body.PublishedAt,
+		UserID:      userID,
 	}
 
 	return usecase.repo.CreatePost(post)
@@ -53,10 +54,11 @@ func (usecase *postUsecase) GetPostsByParentID(parentID uint) ([]entities.Post, 
 
 func (usecase *postUsecase) UpdatePost(id uint, body *entities.PostReq) error {
 	post := &entities.Post{
-		ID:       id,
-		Title:    body.Title,
-		ParentID: body.ParentID,
-		Content:  body.Content,
+		ID:          id,
+		Title:       body.Title,
+		ParentID:    body.ParentID,
+		Content:     body.Content,
+		PublishedAt: body.PublishedAt,
 	}
 
 	return usecase.repo.UpdatePost(post)
