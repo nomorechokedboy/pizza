@@ -5,10 +5,9 @@ import (
 )
 
 type PostRepository interface {
-	GetAllPosts() ([]entities.Post, error)
+	GetAllPosts(page int, pageSize int) ([]entities.Post, error)
 	GetPostByID(id uint) (*entities.Post, error)
-	GetAllPostsByUserID(userID uint) ([]entities.Post, error)
-	GetAllPostsByParentID(parentID uint) ([]entities.Post, error)
+	GetAllPostsByQuery(userID uint, parentID uint, page int, pageSize int) ([]entities.Post, error)
 	GetPostBySlug(slug string) (*entities.Post, error)
 	CreatePost(post *entities.Post) (uint, error)
 	UpdatePost(post *entities.Post) error

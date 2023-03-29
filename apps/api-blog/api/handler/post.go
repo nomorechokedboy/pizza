@@ -28,15 +28,33 @@ func NewPostHandler(usecase usecase.PostUsecase, slugUsecase usecase.SlugUsecase
 // @Description get all posts from specified user or all if user is empty
 // @Tags Posts
 // @Param  userID query string false "User ID"
+// @Param  parentID query string false "Parent ID"
+// @Param  page query string false "Page"
+// @Param  pageSize query string false "Page Size"
 // @Success 200 {array} entities.PostRes{}
 // @Failure 404
 // @Failure 500
 // @Router /posts [get]
-func (handler *PostHandler) GetAllPostsByUserID(c *fiber.Ctx) error {
+func (handler *PostHandler) GetAllPosts(c *fiber.Ctx) error {
 	userID := c.QueryInt("userID")
+	parentID := c.QueryInt("parentID")
+	page := c.QueryInt("page")
+	pageSize := c.QueryInt("pageSize")
+
+	if page <= 0 {
+		page = 1
+	}
+
+	switch {
+	case pageSize > 100:
+		pageSize = 100
+	case pageSize <= 0:
+		pageSize = 10
+	}
+
 	var posts []entities.Post
 
-	toResponse := func(posts []entities.Post) []entities.PostRes {
+	toResponse := func(posts []entities.Post) entities.PostPaginationResponse {
 		postReponse := []entities.PostRes{}
 
 		for _, post := range posts {
@@ -59,12 +77,18 @@ func (handler *PostHandler) GetAllPostsByUserID(c *fiber.Ctx) error {
 			postReponse = append(postReponse, postRes)
 		}
 
-		return postReponse
+		postPaginationReponse := entities.PostPaginationResponse{
+			Posts:    postReponse,
+			Page:     page,
+			PageSize: pageSize,
+			Total:    len(postReponse),
+		}
 
+		return postPaginationReponse
 	}
 
-	if userID == 0 {
-		posts, err := handler.usecase.GetAllPosts()
+	if userID == 0 && parentID == 0 {
+		posts, err := handler.usecase.GetAllPosts(page, pageSize)
 
 		if err != nil {
 			return fiber.NewError(fiber.StatusNotFound, "failed to get all posts")
@@ -73,61 +97,13 @@ func (handler *PostHandler) GetAllPostsByUserID(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(toResponse(posts))
 	}
 
-	posts, err := handler.usecase.GetAllPostsByUserID(uint(userID))
+	posts, err := handler.usecase.GetAllPostsByQuery(uint(userID), uint(parentID), page, pageSize)
 
 	if err != nil {
 		return fiber.NewError(fiber.StatusNotFound, "failed to get all posts")
 	}
 
 	return c.Status(fiber.StatusOK).JSON(toResponse(posts))
-}
-
-// @GetAllPostsByParentID godoc
-// @Summary Show a post series
-// @Description get a post series
-// @Tags Posts
-// @Param  parentID path int true "Parent ID"
-// @Success 200 {array} entities.PostRes{}
-// @Failure 400
-// @Failure 404
-// @Failure 500
-// @Router /posts/series/{parentID} [get]
-func (handler *PostHandler) GetAllPostsByParentID(c *fiber.Ctx) error {
-	parentID, err := c.ParamsInt("parentID")
-
-	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "invalid parent ID")
-	}
-
-	postReponse := []entities.PostRes{}
-
-	posts, err := handler.usecase.GetPostsByParentID(uint(parentID))
-
-	for _, post := range posts {
-		user, _ := handler.userUsecase.GetUserById(post.UserID)
-		parent, _ := handler.usecase.GetPostByID(*post.ParentID)
-
-		postRes := entities.PostRes{
-			ID:          post.ID,
-			User:        user,
-			Parent:      parent,
-			Slug:        post.Slug,
-			Title:       post.Title,
-			Content:     post.Content,
-			Published:   post.Published,
-			PublishedAt: post.PublishedAt,
-			CreatedAt:   post.CreatedAt,
-			UpdatedAt:   post.UpdatedAt,
-		}
-
-		postReponse = append(postReponse, postRes)
-	}
-
-	if err != nil {
-		return fiber.NewError(fiber.StatusNotFound, "failed to get post series")
-	}
-
-	return c.Status(fiber.StatusOK).JSON(postReponse)
 }
 
 // @GetPostByID godoc
@@ -189,7 +165,7 @@ func (handler *PostHandler) CreatePost(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request body")
 	}
 
-	if userPosts, err := handler.usecase.GetAllPostsByUserID(authID); err == nil {
+	if userPosts, err := handler.usecase.GetAllPosts(0, 1); err == nil {
 		for _, post := range userPosts {
 			if post.Title == req.Title {
 				return fiber.NewError(fiber.StatusConflict, "duplicate post title")
