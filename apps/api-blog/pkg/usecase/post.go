@@ -9,6 +9,7 @@ import (
 type PostUsecase interface {
 	GetAllPosts() ([]entities.Post, error)
 	GetAllPostsByUserID(userID uint) ([]entities.Post, error)
+	GetPostByID(id uint) (*entities.Post, error)
 	GetPostBySlug(slug string) (*entities.Post, error)
 	GetPostsByParentID(parentID uint) ([]entities.Post, error)
 	CreatePost(userID uint, postSlug string, body *entities.PostReq) (uint, error)
@@ -26,6 +27,10 @@ func NewPostUseCase(repo repository.PostRepository) PostUsecase {
 
 func (usecase *postUsecase) GetAllPosts() ([]entities.Post, error) {
 	return usecase.repo.GetAllPosts()
+}
+
+func (usecase *postUsecase) GetPostByID(id uint) (*entities.Post, error) {
+	return usecase.repo.GetPostByID(id)
 }
 
 func (usecase *postUsecase) GetAllPostsByUserID(userID uint) ([]entities.Post, error) {

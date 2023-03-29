@@ -97,7 +97,7 @@ func main() {
 	//post
 	postRepo := gorm_repository.NewPostGormRepository(db)
 	postUC := usecase.NewPostUseCase(postRepo)
-	postHandler := handler.NewPostHandler(postUC, slugUC)
+	postHandler := handler.NewPostHandler(postUC, slugUC, userUC)
 
 	//app
 	app := fiber.New()

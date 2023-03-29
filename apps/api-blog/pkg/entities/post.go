@@ -7,9 +7,9 @@ import (
 type Post struct {
 	ID          uint
 	UserID      uint
-	User        User
+	User        User `json:"-"`
 	ParentID    *uint
-	Parent      *Post
+	Parent      *Post  `json:"-"`
 	Title       string `gorm:"size:250"`
 	Slug        string
 	Content     string `gorm:"size:5000"`
@@ -29,8 +29,8 @@ type PostReq struct {
 
 type PostRes struct {
 	ID          uint       `json:"id"`
-	UserID      uint       `json:"user_id"`
-	ParentID    *uint      `json:"parent_id"`
+	User        *User      `json:"user"`
+	Parent      *Post      `json:"parent"`
 	Title       string     `json:"title"`
 	Slug        string     `json:"slug"`
 	Content     string     `json:"content"`
