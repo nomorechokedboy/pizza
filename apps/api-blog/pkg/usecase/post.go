@@ -7,11 +7,10 @@ import (
 )
 
 type PostUsecase interface {
-	GetAllPosts() ([]entities.Post, error)
-	GetAllPostsByUserID(userID uint) ([]entities.Post, error)
+	GetAllPosts(page int, pageSize int) ([]entities.Post, error)
+	GetAllPostsByQuery(userID uint, parentID uint, page int, pageSize int) ([]entities.Post, error)
 	GetPostByID(id uint) (*entities.Post, error)
 	GetPostBySlug(slug string) (*entities.Post, error)
-	GetPostsByParentID(parentID uint) ([]entities.Post, error)
 	CreatePost(userID uint, postSlug string, body *entities.PostReq) (uint, error)
 	UpdatePost(id uint, postSlug string, body *entities.PostReq) error
 	DeletePost(id uint) error
@@ -25,16 +24,16 @@ func NewPostUseCase(repo repository.PostRepository) PostUsecase {
 	return &postUsecase{repo: repo}
 }
 
-func (usecase *postUsecase) GetAllPosts() ([]entities.Post, error) {
-	return usecase.repo.GetAllPosts()
+func (usecase *postUsecase) GetAllPosts(page int, pageSize int) ([]entities.Post, error) {
+	return usecase.repo.GetAllPosts(page, pageSize)
 }
 
 func (usecase *postUsecase) GetPostByID(id uint) (*entities.Post, error) {
 	return usecase.repo.GetPostByID(id)
 }
 
-func (usecase *postUsecase) GetAllPostsByUserID(userID uint) ([]entities.Post, error) {
-	return usecase.repo.GetAllPostsByUserID(userID)
+func (usecase *postUsecase) GetAllPostsByQuery(userID uint, parentID uint, page int, pageSize int) ([]entities.Post, error) {
+	return usecase.repo.GetAllPostsByQuery(userID, parentID, page, pageSize)
 }
 
 func (usecase *postUsecase) GetPostBySlug(slug string) (*entities.Post, error) {
@@ -61,10 +60,6 @@ func (usecase *postUsecase) CreatePost(userID uint, postSlug string, body *entit
 
 	return usecase.repo.CreatePost(post)
 
-}
-
-func (usecase *postUsecase) GetPostsByParentID(parentID uint) ([]entities.Post, error) {
-	return usecase.repo.GetAllPostsByParentID(parentID)
 }
 
 func (usecase *postUsecase) UpdatePost(id uint, postSlug string, body *entities.PostReq) error {

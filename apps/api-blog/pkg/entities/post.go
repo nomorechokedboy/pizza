@@ -2,6 +2,8 @@ package entities
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Post struct {
@@ -17,7 +19,7 @@ type Post struct {
 	PublishedAt *time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
-	DeletedAt   *time.Time
+	DeletedAt   gorm.DeletedAt
 }
 
 type PostReq struct {
@@ -40,16 +42,9 @@ type PostRes struct {
 	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
-type Comment struct {
-	ID        uint
-	UserID    uint
-	User      User
-	PostID    uint
-	Post      Post
-	ParentID  uint
-	Parent    *Comment
-	Content   string `gorm:"size:1000"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt *time.Time
+type PostPaginationResponse struct {
+	Posts    []PostRes `json:"posts"`
+	Page     int       `json:"page"`
+	PageSize int       `json:"page_size"`
+	Total    int       `json:"total"`
 }
