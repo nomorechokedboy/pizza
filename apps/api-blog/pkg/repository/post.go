@@ -6,6 +6,7 @@ import (
 
 type PostRepository interface {
 	GetAllPosts() ([]entities.Post, error)
+	GetPostByID(id uint) (*entities.Post, error)
 	GetAllPostsByUserID(userID uint) ([]entities.Post, error)
 	GetAllPostsByParentID(parentID uint) ([]entities.Post, error)
 	GetPostBySlug(slug string) (*entities.Post, error)

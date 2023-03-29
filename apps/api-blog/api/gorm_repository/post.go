@@ -28,6 +28,13 @@ func (r *PostGormRepo) CreatePost(post *entities.Post) (uint, error) {
 	return post.ID, createdPost.Error
 }
 
+func (r *PostGormRepo) GetPostByID(id uint) (*entities.Post, error) {
+	post := entities.Post{ID: id}
+	foundPost := r.db.First(&post)
+
+	return &post, foundPost.Error
+}
+
 func (r *PostGormRepo) GetPostBySlug(slug string) (*entities.Post, error) {
 	var post entities.Post
 

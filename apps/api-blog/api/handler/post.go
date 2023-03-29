@@ -12,12 +12,14 @@ import (
 type PostHandler struct {
 	usecase     usecase.PostUsecase
 	slugUsecase usecase.SlugUsecase
+	userUsecase usecase.UserUsecase
 }
 
-func NewPostHandler(usecase usecase.PostUsecase, slugUsecase usecase.SlugUsecase) *PostHandler {
+func NewPostHandler(usecase usecase.PostUsecase, slugUsecase usecase.SlugUsecase, userUsecase usecase.UserUsecase) *PostHandler {
 	return &PostHandler{
 		usecase:     usecase,
 		slugUsecase: slugUsecase,
+		userUsecase: userUsecase,
 	}
 }
 
@@ -38,10 +40,13 @@ func (handler *PostHandler) GetAllPostsByUserID(c *fiber.Ctx) error {
 		postReponse := []entities.PostRes{}
 
 		for _, post := range posts {
+			user, _ := handler.userUsecase.GetUserById(post.UserID)
+			parent, _ := handler.usecase.GetPostByID(*post.ParentID)
+
 			postRes := entities.PostRes{
 				ID:          post.ID,
-				UserID:      post.UserID,
-				ParentID:    post.ParentID,
+				User:        user,
+				Parent:      parent,
 				Slug:        post.Slug,
 				Title:       post.Title,
 				Content:     post.Content,
@@ -99,12 +104,15 @@ func (handler *PostHandler) GetAllPostsByParentID(c *fiber.Ctx) error {
 	posts, err := handler.usecase.GetPostsByParentID(uint(parentID))
 
 	for _, post := range posts {
+		user, _ := handler.userUsecase.GetUserById(post.UserID)
+		parent, _ := handler.usecase.GetPostByID(*post.ParentID)
+
 		postRes := entities.PostRes{
 			ID:          post.ID,
-			UserID:      post.UserID,
-			ParentID:    post.ParentID,
-			Title:       post.Title,
+			User:        user,
+			Parent:      parent,
 			Slug:        post.Slug,
+			Title:       post.Title,
 			Content:     post.Content,
 			Published:   post.Published,
 			PublishedAt: post.PublishedAt,
@@ -143,12 +151,15 @@ func (handler *PostHandler) GetPostBySlug(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusNotFound, "failed to get post")
 	}
 
+	user, _ := handler.userUsecase.GetUserById(post.UserID)
+	parent, _ := handler.usecase.GetPostByID(*post.ParentID)
+
 	postRes := entities.PostRes{
 		ID:          post.ID,
-		UserID:      post.UserID,
-		ParentID:    post.ParentID,
-		Title:       post.Title,
+		User:        user,
+		Parent:      parent,
 		Slug:        post.Slug,
+		Title:       post.Title,
 		Content:     post.Content,
 		Published:   post.Published,
 		PublishedAt: post.PublishedAt,
