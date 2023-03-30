@@ -31,7 +31,7 @@ func NewPostHandler(usecase usecase.PostUsecase, slugUsecase usecase.SlugUsecase
 // @Param  parentID query string false "Parent ID"
 // @Param  page query string false "Page"
 // @Param  pageSize query string false "Page Size"
-// @Success 200 {array} entities.PostRes{}
+// @Success 200 {array} entities.Post{}
 // @Failure 404
 // @Failure 500
 // @Router /posts [get]
@@ -52,58 +52,26 @@ func (handler *PostHandler) GetAllPosts(c *fiber.Ctx) error {
 		pageSize = 10
 	}
 
-	var posts []entities.Post
-
-	toResponse := func(posts []entities.Post) entities.PostPaginationResponse {
-		postReponse := []entities.PostRes{}
-
-		for _, post := range posts {
-			user, _ := handler.userUsecase.GetUserById(post.UserID)
-			parent, _ := handler.usecase.GetPostByID(*post.ParentID)
-
-			postRes := entities.PostRes{
-				ID:          post.ID,
-				User:        user,
-				Parent:      parent,
-				Slug:        post.Slug,
-				Title:       post.Title,
-				Content:     post.Content,
-				Published:   post.Published,
-				PublishedAt: post.PublishedAt,
-				CreatedAt:   post.CreatedAt,
-				UpdatedAt:   post.UpdatedAt,
-			}
-
-			postReponse = append(postReponse, postRes)
-		}
-
-		postPaginationReponse := entities.PostPaginationResponse{
-			Posts:    postReponse,
-			Page:     page,
-			PageSize: pageSize,
-			Total:    len(postReponse),
-		}
-
-		return postPaginationReponse
-	}
-
-	if userID == 0 && parentID == 0 {
-		posts, err := handler.usecase.GetAllPosts(page, pageSize)
-
-		if err != nil {
-			return fiber.NewError(fiber.StatusNotFound, "failed to get all posts")
-		}
-
-		return c.Status(fiber.StatusOK).JSON(toResponse(posts))
-	}
-
-	posts, err := handler.usecase.GetAllPostsByQuery(uint(userID), uint(parentID), page, pageSize)
+	posts, err := handler.usecase.GetAllPosts(uint(userID), uint(parentID), page, pageSize)
 
 	if err != nil {
 		return fiber.NewError(fiber.StatusNotFound, "failed to get all posts")
 	}
 
-	return c.Status(fiber.StatusOK).JSON(toResponse(posts))
+	postRes := []entities.PostRes{}
+
+	for _, post := range posts {
+		postRes = append(postRes, post.ToResponse())
+	}
+
+	postPaginationResponse := entities.PostPaginationResponse{
+		Posts:    postRes,
+		Page:     page,
+		PageSize: pageSize,
+		Total:    len(postRes),
+	}
+
+	return c.Status(fiber.StatusOK).JSON(postPaginationResponse)
 }
 
 // @GetPostByID godoc
@@ -113,6 +81,7 @@ func (handler *PostHandler) GetAllPosts(c *fiber.Ctx) error {
 // @Param slug path string true "Post Slug"
 // @Success 200 {object} entities.PostReq{}
 // @Failure 400
+// @Failure 404
 // @Router /posts/{slug} [get]
 func (handler *PostHandler) GetPostBySlug(c *fiber.Ctx) error {
 	slug := c.Params("slug")
@@ -127,23 +96,7 @@ func (handler *PostHandler) GetPostBySlug(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusNotFound, "failed to get post")
 	}
 
-	user, _ := handler.userUsecase.GetUserById(post.UserID)
-	parent, _ := handler.usecase.GetPostByID(*post.ParentID)
-
-	postRes := entities.PostRes{
-		ID:          post.ID,
-		User:        user,
-		Parent:      parent,
-		Slug:        post.Slug,
-		Title:       post.Title,
-		Content:     post.Content,
-		Published:   post.Published,
-		PublishedAt: post.PublishedAt,
-		CreatedAt:   post.CreatedAt,
-		UpdatedAt:   post.UpdatedAt,
-	}
-
-	return c.Status(fiber.StatusOK).JSON(postRes)
+	return c.Status(fiber.StatusOK).JSON(post)
 }
 
 // @CreatePost godoc
@@ -154,6 +107,7 @@ func (handler *PostHandler) GetPostBySlug(c *fiber.Ctx) error {
 // @Param post body entities.PostReq true "Post"
 // @Success 200
 // @Failure 400
+// @Failure 409
 // @Failure 500
 // @Security ApiKeyAuth
 // @Router /posts/ [post]
@@ -165,7 +119,7 @@ func (handler *PostHandler) CreatePost(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request body")
 	}
 
-	if userPosts, err := handler.usecase.GetAllPosts(0, 1); err == nil {
+	if userPosts, err := handler.usecase.GetAllPosts(0, 0, 2, -1); err == nil {
 		for _, post := range userPosts {
 			if post.Title == req.Title {
 				return fiber.NewError(fiber.StatusConflict, "duplicate post title")
