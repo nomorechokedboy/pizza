@@ -19,13 +19,9 @@ func NewSlugGormRepository(db *gorm.DB) repository.SlugRepository {
 
 func (r *SlugGormRepo) GetSlugCount(slug string) (int64, error) {
 	var slugs []entities.Slug
-	var count int64
+	foundSlugs := r.db.Find(&slugs, "slug LIKE ?", slug+"%")
 
-	if err := r.db.Where("slug LIKE ?", "%"+slug+"%").Find(&slugs).Count(&count).Error; err != nil {
-		return 0, err
-	}
-
-	return count, nil
+	return foundSlugs.RowsAffected, foundSlugs.Error
 }
 
 func (r *SlugGormRepo) CreateSlug(slug *entities.Slug) error {

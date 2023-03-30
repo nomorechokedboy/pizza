@@ -5,6 +5,7 @@ import (
 	"api-blog/pkg/repository"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type PostGormRepo struct {
@@ -17,8 +18,40 @@ func NewPostGormRepository(db *gorm.DB) repository.PostRepository {
 	}
 }
 
-func (r *PostGormRepo) CreateSlug(slug *entities.Slug) error {
-	return r.db.Create(&slug).Error
+func (r *PostGormRepo) GetAllPosts(userID uint, parentID uint, page int, pageSize int) ([]entities.Post, error) {
+	var posts []entities.Post
+	offset := (page - 1) * pageSize
+	addrParentID := &parentID
+
+	if parentID == 0 {
+		addrParentID = nil
+	}
+
+	cond := entities.Post{UserID: userID, ParentID: addrParentID}
+
+	if err := r.db.
+		Offset(offset).
+		Limit(pageSize).
+		Order("id ASC").
+		Preload(clause.Associations).
+		Find(&posts, cond).Error; err != nil {
+		return nil, err
+	}
+
+	return posts, nil
+}
+
+func (r *PostGormRepo) GetPostBySlug(slug string) (*entities.Post, error) {
+	var post entities.Post
+
+	if err := r.db.
+		Preload(clause.Associations).
+		Joins("JOIN slugs ON slugs.post_id = posts.id AND slugs.slug = ?", slug).
+		First(&post).Error; err != nil {
+		return nil, err
+	}
+
+	return &post, nil
 }
 
 func (r *PostGormRepo) CreatePost(post *entities.Post) (uint, error) {
@@ -27,74 +60,21 @@ func (r *PostGormRepo) CreatePost(post *entities.Post) (uint, error) {
 	return post.ID, createdPost.Error
 }
 
-func (r *PostGormRepo) GetPostByID(id uint) (*entities.Post, error) {
-	post := entities.Post{ID: id}
-	foundPost := r.db.First(&post)
-
-	return &post, foundPost.Error
-}
-
-func (r *PostGormRepo) GetPostBySlug(slug string) (*entities.Post, error) {
-	var post entities.Post
-
-	if err := r.db.Joins("JOIN slugs ON slugs.post_id = posts.id AND slugs.slug = ?", slug).First(&post).Error; err != nil {
-		return nil, err
-	}
-
-	return &post, nil
-}
-
-func (r *PostGormRepo) GetAllPosts(page int, pageSize int) ([]entities.Post, error) {
-	var posts []entities.Post
-	offset := (page - 1) * pageSize
-
-	if err := r.db.Offset(offset).Limit(pageSize).Find(&posts).Error; err != nil {
-		return nil, err
-	}
-
-	return posts, nil
-}
-
-func (r *PostGormRepo) GetAllPostsByQuery(userID uint, parentID uint, page int, pageSize int) ([]entities.Post, error) {
-	var posts []entities.Post
-	offset := (page - 1) * pageSize
-	query := &entities.Post{UserID: userID, ParentID: &parentID}
-
-	if parentID == 0 {
-		query = &entities.Post{UserID: userID}
-	}
-
-	if err := r.db.Offset(offset).Limit(pageSize).Find(&posts, query).Error; err != nil {
-		return nil, err
-	}
-
-	return posts, nil
-}
-
-func (r *PostGormRepo) GetAllPostsByUserID(userID uint) ([]entities.Post, error) {
-	var posts []entities.Post
-
-	if err := r.db.Find(&posts, "user_id = ?", userID).Error; err != nil {
-		return nil, err
-	}
-
-	return posts, nil
-}
-
 func (r *PostGormRepo) UpdatePost(post *entities.Post) error {
 	return r.db.Model(&post).Updates(
-		&entities.Post{
-			Title:    post.Title,
-			ParentID: post.ParentID,
-			Slug:     post.Slug,
-			Content:  post.Content,
-		}).Updates(
 		map[string]interface{}{
+			"title":        post.Title,
+			"parent_id":    post.ParentID,
+			"slug":         post.Slug,
+			"content":      post.Content,
 			"published":    post.Published,
 			"published_at": post.PublishedAt,
 		}).Error
 }
 
 func (r *PostGormRepo) DeletePost(id uint) error {
-	return r.db.Delete(&entities.Post{ID: id}).Update("parent_id", nil).Error
+	return r.db.
+		Delete(&entities.Post{ID: id}).
+		Model(&entities.Post{ParentID: &id}).
+		Update("parent_id", nil).Error
 }
