@@ -20,5 +20,4 @@ func publicRouter(app fiber.Router, handler handler.UserHandler) {
 func privateRouter(app fiber.Router, handler handler.UserHandler, middle middleware.JWTMiddleware) {
 	app.Use(middle.Protected())
 	app.Put("/update", handler.UpdateUserById)
-	app.Put("/update-password", handler.UpdatePassword)
 }

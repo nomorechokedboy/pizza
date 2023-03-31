@@ -81,7 +81,7 @@ func main() {
 	v1 := api.Group("/v1")
 	routes.UserRouter(v1, *userHandler, *middle)
 	routes.AuthRouter(v1, *authHandler, *userHandler, *middle)
-	routes.MediaRouter(v1, *mediaHandler)
+	routes.MediaRouter(v1, *mediaHandler, *middle)
 	port := fmt.Sprintf(":%v", cfg.Server.Port)
 	log.Printf("Server started on port %v", cfg.Server.Port)
 	app.Listen(port)
