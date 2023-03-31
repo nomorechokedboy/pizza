@@ -22,7 +22,9 @@ func NewCommentHandler(usecase usecase.CommentUsecase) *CommentHandler {
 // @Param  userID query int false "User ID"
 // @Param  postID query int false "Post ID"
 // @Param  parentID query int false "Parent ID"
-// @Success 200 {array} entities.CommentRes{}
+// @Param  page query int false "Page"
+// @Param  pageSize query int false "Page Size"
+// @Success 200 {array} entities.Comment{}
 // @Failure 404
 // @Failure 500
 // @Router /comments/ [get]
@@ -30,44 +32,40 @@ func (handler *CommentHandler) GetAllComment(c *fiber.Ctx) error {
 	userID := c.QueryInt("userID")
 	postID := c.QueryInt("postID")
 	parentID := c.QueryInt("parentID")
+	page := c.QueryInt("page")
+	pageSize := c.QueryInt("pageSize")
 
-	toResponse := func(comments []entities.Comment) []entities.CommentRes {
-		commentReponse := []entities.CommentRes{}
-
-		for _, comment := range comments {
-			commentRes := entities.CommentRes{
-				ID:        comment.ID,
-				UserID:    comment.UserID,
-				PostID:    comment.PostID,
-				ParentID:  comment.ParentID,
-				Content:   comment.Content,
-				CreatedAt: comment.CreatedAt,
-				UpdatedAt: comment.UpdatedAt,
-			}
-
-			commentReponse = append(commentReponse, commentRes)
-		}
-
-		return commentReponse
+	if page <= 0 {
+		page = 1
 	}
 
-	if userID == 0 && parentID == 0 && postID == 0 {
-		comments, err := handler.usecase.GetAllComments()
-
-		if err != nil {
-			return fiber.NewError(fiber.StatusNotFound, "failed to get all comments")
-		}
-
-		return c.Status(fiber.StatusOK).JSON(toResponse(comments))
+	switch {
+	case pageSize > 100:
+		pageSize = 100
+	case pageSize <= 0:
+		pageSize = 10
 	}
 
-	comments, err := handler.usecase.GetAllCommentsByQuery(uint(userID), uint(postID), uint(parentID))
+	comments, err := handler.usecase.GetAllComments(uint(userID), uint(postID), uint(parentID), page, pageSize)
 
 	if err != nil {
 		return fiber.NewError(fiber.StatusNotFound, "failed to get all comments")
 	}
 
-	return c.Status(fiber.StatusOK).JSON(toResponse(comments))
+	commentRes := []entities.CommentRes{}
+
+	for _, comment := range comments {
+		commentRes = append(commentRes, comment.ToResponse())
+	}
+
+	commentPaginationResponse := entities.CommentPaginationResponse{
+		Comments: commentRes,
+		Page:     page,
+		PageSize: pageSize,
+		Total:    len(commentRes),
+	}
+
+	return c.Status(fiber.StatusOK).JSON(commentPaginationResponse)
 }
 
 // @CreateComment godoc

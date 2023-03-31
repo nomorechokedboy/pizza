@@ -5,8 +5,7 @@ import (
 )
 
 type CommentRepository interface {
-	GetAllComments() ([]entities.Comment, error)
-	GetAllCommentsByQuery(userID uint, postID uint, parentID uint) ([]entities.Comment, error)
+	GetAllComments(userID uint, postID uint, parentID uint, page int, pageSize int) ([]entities.Comment, error)
 	CreateComment(comment *entities.Comment) error
 	UpdateComment(comment *entities.Comment) error
 	DeleteComment(id uint) error
