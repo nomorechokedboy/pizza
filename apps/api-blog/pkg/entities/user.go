@@ -11,7 +11,7 @@ type User struct {
 	Username    string `gorm:"unique; size:50; default:null"`
 	Fullname    string `gorm:"size:50; not null"`
 	PhoneNumber string `gorm:"size:50; not null"`
-	Email       string `gorm:"size:50; not null"`
+	Email       string `gorm:"unique; size:50; not null"`
 	Avatar      string `gorm:"size:250; not null"`
 	CreatedAt   time.Time
 	UpdateAt    time.Time
