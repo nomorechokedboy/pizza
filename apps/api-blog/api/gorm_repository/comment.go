@@ -5,6 +5,7 @@ import (
 	"api-blog/pkg/repository"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type CommentGormRepo struct {
@@ -17,25 +18,23 @@ func NewCommentGormRepository(db *gorm.DB) repository.CommentRepository {
 	}
 }
 
-func (r *CommentGormRepo) GetAllComments() ([]entities.Comment, error) {
+func (r *CommentGormRepo) GetAllComments(userID uint, postID uint, parentID uint, page int, pageSize int) ([]entities.Comment, error) {
 	var comments []entities.Comment
-
-	if err := r.db.Find(&comments).Error; err != nil {
-		return nil, err
-	}
-
-	return comments, nil
-}
-
-func (r *CommentGormRepo) GetAllCommentsByQuery(userID uint, postID uint, parentID uint) ([]entities.Comment, error) {
-	var comments []entities.Comment
-	query := &entities.Comment{UserID: userID, PostID: postID, ParentID: &parentID}
+	offset := (page - 1) * pageSize
+	addrParentID := &parentID
 
 	if parentID == 0 {
-		query = &entities.Comment{UserID: userID, PostID: postID}
+		addrParentID = nil
 	}
 
-	if err := r.db.Where(&query).Find(&comments).Error; err != nil {
+	cond := &entities.Comment{UserID: userID, PostID: postID, ParentID: addrParentID}
+
+	if err := r.db.Debug().
+		Offset(offset).
+		Limit(pageSize).
+		Order("id ASC").
+		Preload(clause.Associations).
+		Find(&comments, cond).Error; err != nil {
 		return nil, err
 	}
 
