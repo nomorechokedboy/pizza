@@ -61,7 +61,7 @@ onUnmounted(cancelDelay)
 			></path>
 		</svg>
 		<span class="sr-only">Info</span>
-		<div class="text-sm font-medium">
+		<div class="text-sm font-medium capitalize">
 			{{ content }}
 		</div>
 		<ActionIcon
