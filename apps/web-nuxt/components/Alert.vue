@@ -1,21 +1,19 @@
 <script setup lang="ts">
 import { ActionIcon, ActionIconProps } from 'ui-vue'
+import { removeNotification } from '~~/composables/useNotification'
 
 export interface AlertProps {
 	type: 'success' | 'error' | 'warning'
 	content: string
-	key: string
+	k: string
 }
 
-const notificationList = useNotification()
-const { content, type, key } = defineProps<AlertProps>()
+const { content, type, k } = defineProps<AlertProps>()
 const iconColor: ActionIconProps['color'] =
 	type === 'error' ? 'red' : type === 'warning' ? 'yellow' : 'green'
 const timeout = ref<NodeJS.Timeout>()
 function handleClose() {
-	notificationList.value = notificationList.value.filter(
-		(n) => n.key !== key
-	)
+	removeNotification(k)
 }
 function handleAutoClose() {
 	timeout.value = setTimeout(handleClose, 5000)
