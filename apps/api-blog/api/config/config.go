@@ -27,6 +27,13 @@ type Config struct {
 	AppAPI struct {
 		Link string `envconfig:"API_LINK" default:"Hello"`
 	}
+	Minio struct {
+		EndPoint        string `envconfig:"END_POINT" default:"localhost:9000"`
+		AccessKeyID     string `envconfig:"ACCESSKEYID" default:"admin"`
+		SecretAccessKey string `envconfig:"SECRET_ACCESS_KEY" default:"admin123"`
+		UseSSL          bool   `envconfig:"USESSL" default:"false"`
+		BucketName      string `envconfig:"BUCKET_NAME" default:"general"`
+	}
 }
 
 func LoadConfig() (*Config, error) {

@@ -100,7 +100,7 @@ func (handler *UserHandler) Login(c *fiber.Ctx) error {
 // @Description Get UserInfo by accessToken
 // @Tags Auth
 // @Accept json
-// @Success 200 {object} entities.User{}
+// @Success 200 {object} entities.UserResponse{}
 // @Security ApiKeyAuth
 // @Router /auth/me [get]
 func (handler *UserHandler) GetAuthUserById(c *fiber.Ctx) error {
@@ -238,7 +238,12 @@ func (handler *UserHandler) ResetPassword(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
-	if err := handler.usecase.UpdatePasswordById(newPassword.Password, userId); err != nil {
+
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword.Password), 14)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError)
+	}
+	if err := handler.usecase.UpdatePasswordById(string(hashPassword), userId); err != nil {
 		return fiber.NewError(fiber.ErrInternalServerError.Code, err.Error())
 	}
 	return c.Status(http.StatusOK).SendString("Password is reseted")
