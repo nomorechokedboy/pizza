@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"api-blog/pkg/common"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
 	"fmt"
@@ -23,15 +24,17 @@ func NewPostHandler(usecase usecase.PostUsecase, slugUsecase usecase.SlugUsecase
 	}
 }
 
-// @GetAllPostsByUserID godoc
+// @GetAllPosts godoc
 // @Summary Show all posts
-// @Description get all posts from specified user or all if user is empty
+// @Description get all posts
 // @Tags Posts
-// @Param  userID query string false "User ID"
-// @Param  parentID query string false "Parent ID"
-// @Param  page query string false "Page"
-// @Param  pageSize query string false "Page Size"
-// @Success 200 {array} entities.Post{}
+// @Param  userID query int false "User ID"
+// @Param  parentID query int false "Parent ID"
+// @Param  page query int false "Page"
+// @Param  pageSize query int false "Page Size"
+// @Param  sort query string false "Sort"
+// @Param  sortBy query string false "Sort By"
+// @Success 200 {array} common.BasePaginationResponse[entities.Post]{}
 // @Failure 404
 // @Failure 500
 // @Router /posts [get]
@@ -40,38 +43,34 @@ func (handler *PostHandler) GetAllPosts(c *fiber.Ctx) error {
 	parentID := c.QueryInt("parentID")
 	page := c.QueryInt("page")
 	pageSize := c.QueryInt("pageSize")
+	sort := c.Query("sort")
+	sortBy := c.Query("sortBy")
 
-	if page <= 0 {
-		page = 1
-	}
-
-	switch {
-	case pageSize > 100:
-		pageSize = 100
-	case pageSize <= 0:
-		pageSize = 10
-	}
-
-	posts, err := handler.usecase.GetAllPosts(uint(userID), uint(parentID), page, pageSize)
+	posts, err := handler.usecase.GetAllPosts(&entities.PostQuery{
+		UserID:   uint(userID),
+		ParentID: uint(parentID),
+		BaseQuery: common.BaseQuery{
+			Page:     page,
+			PageSize: pageSize,
+			Sort:     sort,
+			SortBy:   sortBy,
+		},
+	})
 
 	if err != nil {
 		return fiber.NewError(fiber.StatusNotFound, "failed to get all posts")
 	}
 
-	postRes := []entities.PostRes{}
+	postRes := common.BasePaginationResponse[entities.PostRes]{}
+	postRes.Page = posts.Page
+	postRes.PageSize = posts.PageSize
+	postRes.Total = posts.Total
 
-	for _, post := range posts {
-		postRes = append(postRes, post.ToResponse())
+	for _, post := range posts.Items {
+		postRes.Items = append(postRes.Items, post.ToResponse())
 	}
 
-	postPaginationResponse := entities.PostPaginationResponse{
-		Posts:    postRes,
-		Page:     page,
-		PageSize: pageSize,
-		Total:    len(postRes),
-	}
-
-	return c.Status(fiber.StatusOK).JSON(postPaginationResponse)
+	return c.Status(fiber.StatusOK).JSON(postRes)
 }
 
 // @GetPostByID godoc
@@ -119,8 +118,8 @@ func (handler *PostHandler) CreatePost(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request body")
 	}
 
-	if userPosts, err := handler.usecase.GetAllPosts(0, 0, 2, -1); err == nil {
-		for _, post := range userPosts {
+	if userPosts, err := handler.usecase.GetAllPosts(nil); err == nil {
+		for _, post := range userPosts.Items {
 			if post.Title == req.Title {
 				return fiber.NewError(fiber.StatusConflict, "duplicate post title")
 			}

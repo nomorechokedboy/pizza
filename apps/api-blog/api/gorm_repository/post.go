@@ -1,6 +1,8 @@
 package gorm_repository
 
 import (
+	"api-blog/api/scopes"
+	"api-blog/pkg/common"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/repository"
 
@@ -18,27 +20,35 @@ func NewPostGormRepository(db *gorm.DB) repository.PostRepository {
 	}
 }
 
-func (r *PostGormRepo) GetAllPosts(userID uint, parentID uint, page int, pageSize int) ([]entities.Post, error) {
+func (r *PostGormRepo) GetAllPosts(query *entities.PostQuery) (common.BasePaginationResponse[entities.Post], error) {
 	var posts []entities.Post
-	offset := (page - 1) * pageSize
-	addrParentID := &parentID
+	res := common.BasePaginationResponse[entities.Post]{}
 
-	if parentID == 0 {
-		addrParentID = nil
+	if query != nil {
+		parentIDaddr := &query.ParentID
+
+		if query.ParentID == 0 {
+			parentIDaddr = nil
+		}
+
+		cond := entities.Post{UserID: query.UserID, ParentID: parentIDaddr}
+
+		if err := r.db.Scopes(scopes.Pagination(r.db, entities.Post{}, query.BaseQuery, &res)).
+			Preload(clause.Associations).
+			Find(&posts, cond).Error; err != nil {
+			return res, err
+		}
+	} else {
+		if err := r.db.
+			Preload(clause.Associations).
+			Find(&posts).Error; err != nil {
+			return res, err
+		}
 	}
 
-	cond := entities.Post{UserID: userID, ParentID: addrParentID}
+	res.Items = posts
 
-	if err := r.db.
-		Offset(offset).
-		Limit(pageSize).
-		Order("id ASC").
-		Preload(clause.Associations).
-		Find(&posts, cond).Error; err != nil {
-		return nil, err
-	}
-
-	return posts, nil
+	return res, nil
 }
 
 func (r *PostGormRepo) GetPostBySlug(slug string) (*entities.Post, error) {
@@ -74,7 +84,7 @@ func (r *PostGormRepo) UpdatePost(post *entities.Post) error {
 
 func (r *PostGormRepo) DeletePost(id uint) error {
 	return r.db.
-		Delete(&entities.Post{ID: id}).
-		Model(&entities.Post{ParentID: &id}).
+		Delete(entities.Post{ID: id}).
+		Model(entities.Post{ParentID: &id}).
 		Update("parent_id", nil).Error
 }

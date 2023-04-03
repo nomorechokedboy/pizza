@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"api-blog/pkg/common"
 	"gorm.io/gorm"
 	"time"
 )
@@ -56,9 +57,8 @@ type PostReq struct {
 	Published bool   `json:"published"`
 }
 
-type PostPaginationResponse struct {
-	Posts    []PostRes `json:"posts"`
-	Page     int       `json:"page"`
-	PageSize int       `json:"page_size"`
-	Total    int       `json:"total"`
+type PostQuery struct {
+	common.BaseQuery
+	UserID   uint
+	ParentID uint
 }

@@ -1,13 +1,14 @@
 package usecase
 
 import (
+	"api-blog/pkg/common"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/repository"
 	"time"
 )
 
 type PostUsecase interface {
-	GetAllPosts(userID uint, parentID uint, page int, pageSize int) ([]entities.Post, error)
+	GetAllPosts(query *entities.PostQuery) (common.BasePaginationResponse[entities.Post], error)
 	GetPostBySlug(slug string) (*entities.Post, error)
 	CreatePost(userID uint, postSlug string, body *entities.PostReq) (uint, error)
 	UpdatePost(id uint, postSlug string, body *entities.PostReq) error
@@ -22,8 +23,8 @@ func NewPostUseCase(repo repository.PostRepository) PostUsecase {
 	return &postUsecase{repo: repo}
 }
 
-func (usecase *postUsecase) GetAllPosts(userID uint, parentID uint, page int, pageSize int) ([]entities.Post, error) {
-	return usecase.repo.GetAllPosts(userID, parentID, page, pageSize)
+func (usecase *postUsecase) GetAllPosts(query *entities.PostQuery) (common.BasePaginationResponse[entities.Post], error) {
+	return usecase.repo.GetAllPosts(query)
 }
 
 func (usecase *postUsecase) GetPostBySlug(slug string) (*entities.Post, error) {
