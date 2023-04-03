@@ -1,5 +1,11 @@
 <script setup lang="ts">
 const notificationList = useNotification()
+
+useHead({
+	bodyAttrs: {
+		class: 'bg-neutral-100'
+	}
+})
 </script>
 
 <template>
@@ -10,9 +16,13 @@ const notificationList = useNotification()
 		<div
 			class="fixed flex flex-col gap-5 top-20 right-0 max-w-xs lg:mr-5"
 		>
-			<Alert v-for="props in notificationList" :="props" />
+			<Alert
+				v-for="props in notificationList"
+				:key="props.k"
+				:="props"
+			/>
 		</div>
 		<slot />
-		<footer class="min-h-[233px]"></footer>
+		<footer class="min-h-[233px] bg-neutral-200">Footer</footer>
 	</div>
 </template>
