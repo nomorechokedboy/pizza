@@ -24,4 +24,5 @@ func publicAuthRouter(app fiber.Router, userHandler handler.UserHandler, authHan
 func privateAuthRouter(app fiber.Router, userHandler handler.UserHandler, middleware middleware.JWTMiddleware) {
 	app.Use(middleware.Protected())
 	app.Get("/me", userHandler.GetAuthUserById)
+	app.Put("/update-password", userHandler.UpdatePassword)
 }
