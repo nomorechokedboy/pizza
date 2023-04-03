@@ -34,7 +34,7 @@ func NewPostHandler(usecase usecase.PostUsecase, slugUsecase usecase.SlugUsecase
 // @Param  pageSize query int false "Page Size"
 // @Param  sort query string false "Sort"
 // @Param  sortBy query string false "Sort By"
-// @Success 200 {array} common.BasePaginationResponse[entities.Post]{}
+// @Success 200 {array} common.BasePaginationResponse[entities.Post]
 // @Failure 404
 // @Failure 500
 // @Router /posts [get]
@@ -61,7 +61,9 @@ func (handler *PostHandler) GetAllPosts(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusNotFound, "failed to get all posts")
 	}
 
-	postRes := common.BasePaginationResponse[entities.PostRes]{}
+	postRes := common.BasePaginationResponse[entities.PostRes]{
+		Items: []entities.PostRes{},
+	}
 	postRes.Page = posts.Page
 	postRes.PageSize = posts.PageSize
 	postRes.Total = posts.Total
