@@ -22,7 +22,7 @@ type Config struct {
 	}
 	AuthEmail struct {
 		Email    string `envconfig:"EMAIL" default:"kristiannguyen276@gmail.com"`
-		Password string `envconfig:"EMAIL_PASSWORD" default:"Whf07sqVw6vSO8dJ "`
+		Password string `envconfig:"EMAIL_PASSWORD" default:"figjbdfsggwhcvbr"`
 	}
 	AppAPI struct {
 		Link string `envconfig:"API_LINK" default:"Hello"`
