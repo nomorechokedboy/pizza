@@ -203,15 +203,15 @@ func (handler *UserHandler) ForgotPassword(c *fiber.Ctx) error {
 	mine := "MINE-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 	msg := []byte(subject + mine + buff.String())
 
-	smtp.SendMail(
+	sendMailErr := smtp.SendMail(
 		"smtp.gmail.com:587",
 		auth,
 		handler.config.AuthEmail.Email,
 		[]string{reqEmail.Email},
 		msg,
 	)
-	if err != nil {
-		return fiber.NewError(fiber.ErrInternalServerError.Code, err.Error())
+	if sendMailErr != nil {
+		return fiber.NewError(fiber.ErrInternalServerError.Code, sendMailErr.Error())
 	}
 	return c.SendString("Please check your email")
 }
