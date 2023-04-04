@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios'
-import { notify } from '~~/composables/useNotification'
 import { AlertProps } from '~~/components/Alert.vue'
+import { notify } from '~~/composables/useNotification'
 
 export function notifyError(e: unknown) {
 	if (e instanceof AxiosError) {
@@ -11,7 +11,7 @@ export function notifyError(e: unknown) {
 		}
 
 		if (e.response?.data) {
-			notification.content = e.response.data
+			notification.content = checkErrorType(e.response.data)
 		} else if (e.message) {
 			notification.content = e.message
 		} else {
@@ -20,4 +20,12 @@ export function notifyError(e: unknown) {
 
 		notify(notification)
 	}
+}
+
+function checkErrorType(e: unknown): string {
+	if (typeof e === 'string') {
+		return e
+	}
+
+	return JSON.stringify(e)
 }
