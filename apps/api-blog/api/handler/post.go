@@ -32,28 +32,27 @@ func NewPostHandler(usecase usecase.PostUsecase, slugUsecase usecase.SlugUsecase
 // @Param  parentID query int false "Parent ID"
 // @Param  page query int false "Page"
 // @Param  pageSize query int false "Page Size"
-// @Param  sort query string false "Sort"
-// @Param  sortBy query string false "Sort By"
+// @Param sort query string false "Sort direction" Enums(asc, desc) default(desc)
+// @Param sortBy query string false "Sort by" Enums(id, title, slug, user_id, parent_id) default(id)
 // @Success 200 {array} common.BasePaginationResponse[entities.Post]
 // @Failure 404
 // @Failure 500
 // @Router /posts [get]
 func (handler *PostHandler) GetAllPosts(c *fiber.Ctx) error {
-	userID := c.QueryInt("userID")
-	parentID := c.QueryInt("parentID")
-	page := c.QueryInt("page")
-	pageSize := c.QueryInt("pageSize")
-	sort := c.Query("sort")
-	sortBy := c.Query("sortBy")
+	query := new(entities.PostQuery)
+
+	if err := c.QueryParser(query); err != nil {
+		return err
+	}
 
 	posts, err := handler.usecase.GetAllPosts(&entities.PostQuery{
-		UserID:   uint(userID),
-		ParentID: uint(parentID),
+		UserID:   uint(query.UserID),
+		ParentID: uint(query.ParentID),
 		BaseQuery: common.BaseQuery{
-			Page:     page,
-			PageSize: pageSize,
-			Sort:     sort,
-			SortBy:   sortBy,
+			Page:     query.Page,
+			PageSize: query.PageSize,
+			Sort:     query.Sort,
+			SortBy:   query.SortBy,
 		},
 	})
 

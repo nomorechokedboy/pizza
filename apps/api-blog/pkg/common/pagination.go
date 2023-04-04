@@ -2,9 +2,9 @@ package common
 
 type BaseQuery struct {
 	Page     int    `query:"page"`
-	PageSize int    `query:"page_size"`
+	PageSize int    `query:"pageSize"`
 	Sort     string `query:"sort" validate:"oneof=asc ASC desc DESC"`
-	SortBy   string `query:"sort_by"`
+	SortBy   string `query:"sortBy"`
 }
 
 type BasePaginationResponse[T any] struct {
