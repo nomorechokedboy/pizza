@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import VueMarkdown from 'markdown-vue'
-
 // const route = useRoute()
 const tags = ['tag1', 'tag2']
 const source = `# Turborepo starter

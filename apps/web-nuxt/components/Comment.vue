@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import VueMarkdown from 'markdown-vue'
 import { ActionIcon, Button } from 'ui-vue'
 import EllipsisIcon from '~icons/mdi/ellipsis-horizontal'
 import ChatIcon from '~icons/ri/chat-1-line'
