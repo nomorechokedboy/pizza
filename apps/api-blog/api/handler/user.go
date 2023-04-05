@@ -76,7 +76,7 @@ func (handler *UserHandler) Login(c *fiber.Ctx) error {
 	}
 	user, err := handler.usecase.GetUserByIdentifier(req.Identifier)
 	if err != nil {
-		return fiber.NewError(fiber.ErrUnauthorized.Code, "Identifier does not exist")
+		return fiber.NewError(fiber.StatusForbidden, "Identifier does not exist")
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
 		return fiber.NewError(fiber.StatusForbidden, "incorrect password")
