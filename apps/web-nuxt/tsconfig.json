@@ -6,7 +6,8 @@
 			"vitest/globals",
 			"vitest/importMeta",
 			"@nuxt/types",
-			"@nuxt/image-edge"
+			"@nuxt/image-edge",
+			"unplugin-icons/types/vue"
 		]
 	}
 }
