@@ -17,6 +17,7 @@ RUN $GOPATH/bin/swag init && \
 FROM scratch
 
 COPY --from=builder ["build/api-blog", "/"]
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 ENTRYPOINT ["/api-blog"]
 
