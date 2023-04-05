@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"api-blog/pkg/common"
 	"time"
 
 	"gorm.io/gorm"
@@ -8,15 +9,15 @@ import (
 
 type Comment struct {
 	ID        uint           `json:"id"`
-	UserID    uint           `json:"user_id"`
+	UserID    uint           `json:"userId"`
 	User      User           `json:"-"`
-	PostID    uint           `json:"post_id"`
+	PostID    uint           `json:"postId"`
 	Post      Post           `json:"-"`
-	ParentID  *uint          `json:"parent_id"`
+	ParentID  *uint          `json:"parentId"`
 	Parent    *Comment       `json:"-"`
 	Content   string         `gorm:"size:1000" json:"content"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
+	CreatedAt time.Time      `json:"createdAt"`
+	UpdatedAt time.Time      `json:"updatedAt"`
 	DeletedAt gorm.DeletedAt `json:"-"`
 }
 
@@ -24,10 +25,10 @@ type CommentRes struct {
 	ID        uint      `json:"id"`
 	User      User      `json:"user"`
 	Parent    *Comment  `json:"parent"`
-	PostID    uint      `json:"post_id"`
+	PostID    uint      `json:"postId"`
 	Content   string    `gorm:"size:1000" json:"content"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 func (comment *Comment) ToResponse() CommentRes {
@@ -43,14 +44,14 @@ func (comment *Comment) ToResponse() CommentRes {
 }
 
 type CommentReq struct {
-	PostID   uint   `json:"post_id"`
-	ParentID *uint  `json:"parent_id"`
+	PostID   uint   `json:"postId"`
+	ParentID *uint  `json:"parentId"`
 	Content  string `json:"content"`
 }
 
-type CommentPaginationResponse struct {
-	Comments []CommentRes `json:"comments"`
-	Page     int          `json:"page"`
-	PageSize int          `json:"page_size"`
-	Total    int          `json:"total"`
+type CommentQuery struct {
+	common.BaseQuery
+	ParentID uint
+	UserID   uint
+	PostID   uint
 }

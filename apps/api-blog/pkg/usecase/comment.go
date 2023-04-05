@@ -1,12 +1,13 @@
 package usecase
 
 import (
+	"api-blog/pkg/common"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/repository"
 )
 
 type CommentUsecase interface {
-	GetAllComments(userID uint, postID uint, parentID uint, page int, pageSize int) ([]entities.Comment, error)
+	GetAllComments(query *entities.CommentQuery) (common.BasePaginationResponse[entities.Comment], error)
 	CreateComment(userID uint, body *entities.CommentReq) error
 	UpdateComment(id uint, content string) error
 	DeleteComment(id uint) error
@@ -20,8 +21,8 @@ func NewCommentUseCase(repo repository.CommentRepository) CommentUsecase {
 	return &commentUsecase{repo: repo}
 }
 
-func (usecase *commentUsecase) GetAllComments(userID uint, postID uint, parentID uint, page int, pageSize int) ([]entities.Comment, error) {
-	return usecase.repo.GetAllComments(userID, postID, parentID, page, pageSize)
+func (usecase *commentUsecase) GetAllComments(query *entities.CommentQuery) (common.BasePaginationResponse[entities.Comment], error) {
+	return usecase.repo.GetAllComments(query)
 }
 
 func (usecase *commentUsecase) CreateComment(userID uint, body *entities.CommentReq) error {

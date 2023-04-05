@@ -1,6 +1,8 @@
 package gorm_repository
 
 import (
+	"api-blog/api/scopes"
+	"api-blog/pkg/common"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/repository"
 
@@ -18,27 +20,26 @@ func NewCommentGormRepository(db *gorm.DB) repository.CommentRepository {
 	}
 }
 
-func (r *CommentGormRepo) GetAllComments(userID uint, postID uint, parentID uint, page int, pageSize int) ([]entities.Comment, error) {
+func (r *CommentGormRepo) GetAllComments(query *entities.CommentQuery) (common.BasePaginationResponse[entities.Comment], error) {
 	var comments []entities.Comment
-	offset := (page - 1) * pageSize
-	addrParentID := &parentID
+	res := common.BasePaginationResponse[entities.Comment]{}
 
-	if parentID == 0 {
-		addrParentID = nil
+	parentIDaddr := &query.ParentID
+
+	if query.ParentID == 0 {
+		parentIDaddr = nil
 	}
 
-	cond := &entities.Comment{UserID: userID, PostID: postID, ParentID: addrParentID}
+	cond := &entities.Comment{UserID: query.UserID, PostID: query.PostID, ParentID: parentIDaddr}
 
-	if err := r.db.Debug().
-		Offset(offset).
-		Limit(pageSize).
-		Order("id ASC").
+	if err := r.db.Scopes(scopes.Pagination(r.db, entities.Comment{}, query.BaseQuery, &res)).
 		Preload(clause.Associations).
 		Find(&comments, cond).Error; err != nil {
-		return nil, err
+		return res, err
 	}
+	res.Items = comments
 
-	return comments, nil
+	return res, nil
 }
 
 func (r *CommentGormRepo) CreateComment(comment *entities.Comment) error {
