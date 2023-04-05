@@ -40,6 +40,8 @@ func main() {
 		panic("Cannot connect Database: %v")
 	}
 	db.AutoMigrate(&entities.User{})
+	db.AutoMigrate(&entities.Post{})
+	db.AutoMigrate(&entities.Slug{})
 
 	//Minio
 	minioClient, err := util.ConnectMinio(cfg)
@@ -61,6 +63,15 @@ func main() {
 	//Media
 	mediaHandler := handler.NewMediaHandler(*cfg, minioClient)
 
+	// slug
+	slugRepo := gorm_repository.NewSlugGormRepository(db)
+	slugUC := usecase.NewSlugUseCase(slugRepo)
+
+	//post
+	postRepo := gorm_repository.NewPostGormRepository(db)
+	postUC := usecase.NewPostUseCase(postRepo)
+	postHandler := handler.NewPostHandler(postUC, slugUC, userUC)
+
 	//app
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
@@ -71,7 +82,6 @@ func main() {
 	app.Get("/healthCheck", func(c *fiber.Ctx) error {
 		return c.SendString("Hello world")
 	})
-
 	app.Get("/docs/*", swagger.HandlerDefault)
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Redirect("/docs/")
@@ -82,6 +92,8 @@ func main() {
 	routes.UserRouter(v1, *userHandler, *middle)
 	routes.AuthRouter(v1, *authHandler, *userHandler, *middle)
 	routes.MediaRouter(v1, *mediaHandler, *middle)
+	routes.PostRouter(v1, *postHandler, *middle)
+
 	port := fmt.Sprintf(":%v", cfg.Server.Port)
 	log.Printf("Server started on port %v", cfg.Server.Port)
 	app.Listen(port)
