@@ -16,7 +16,7 @@ func NewCommentHandler(usecase usecase.CommentUsecase) *CommentHandler {
 	return &CommentHandler{usecase: usecase}
 }
 
-// @GetAllCommentsBycommentID godoc
+// @GetAllComments godoc
 // @Summary Show all comments from comment
 // @Description get all comments from specfied comment
 // @Tags Comments
@@ -26,12 +26,12 @@ func NewCommentHandler(usecase usecase.CommentUsecase) *CommentHandler {
 // @Param  page query int false "Page"
 // @Param  pageSize query int false "Page Size"
 // @Param sort query string false "Sort direction" Enums(asc, desc) default(desc)
-// @Param sortBy query string false "Sort by" Enums(id, title, slug, user_id, parent_id) default(id)
+// @Param sortBy query string false "Sort by" Enums(id, user_id, parent_id) default(id)
 // @Success 200 {array} common.BasePaginationResponse[entities.Comment]
 // @Failure 404
 // @Failure 500
 // @Router /comments/ [get]
-func (handler *CommentHandler) GetAllComment(c *fiber.Ctx) error {
+func (handler *CommentHandler) GetAllComments(c *fiber.Ctx) error {
 	query := new(entities.CommentQuery)
 
 	if err := c.QueryParser(query); err != nil {
@@ -39,6 +39,9 @@ func (handler *CommentHandler) GetAllComment(c *fiber.Ctx) error {
 	}
 
 	comments, err := handler.usecase.GetAllComments(&entities.CommentQuery{
+		UserID:   query.UserID,
+		PostID:   query.PostID,
+		ParentID: query.ParentID,
 		BaseQuery: common.BaseQuery{
 			Page:     query.Page,
 			PageSize: query.PageSize,

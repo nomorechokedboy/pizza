@@ -15,7 +15,7 @@ func CommentRouter(app fiber.Router, handler handler.CommentHandler, jwtSecret m
 }
 
 func publicCommentRouter(app fiber.Router, handler handler.CommentHandler) {
-	app.Get("/", handler.GetAllComment)
+	app.Get("/", handler.GetAllComments)
 }
 
 func privateCommentRouter(app fiber.Router, handler handler.CommentHandler, middle middleware.JWTMiddleware) {

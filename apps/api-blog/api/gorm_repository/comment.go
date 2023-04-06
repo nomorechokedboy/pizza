@@ -51,5 +51,5 @@ func (r *CommentGormRepo) UpdateComment(comment *entities.Comment) error {
 }
 
 func (r *CommentGormRepo) DeleteComment(id uint) error {
-	return r.db.Where("parent_id = ? OR id = ?", id, id).Delete(&entities.Comment{}).Error
+	return r.db.Delete(&entities.Comment{}, "id = ? OR parent_id = ?", id, id).Error
 }
