@@ -27,25 +27,6 @@ func GenerateAccessClaims(uId uint, jwtSecret []byte, timeNumber time.Duration) 
 	return tokenString
 }
 
-func GetAuthCookies(accessToken, refreshToken string) (*fiber.Cookie, *fiber.Cookie) {
-
-	accessCookie := &fiber.Cookie{
-		Name:     "access_token",
-		Value:    accessToken,
-		Expires:  time.Now().Add(24 * time.Hour),
-		HTTPOnly: true,
-	}
-
-	refreshCookie := &fiber.Cookie{
-		Name:     "refresh_token",
-		Value:    refreshToken,
-		Expires:  time.Now().Add(10 * 24 * time.Hour),
-		HTTPOnly: true,
-	}
-
-	return accessCookie, refreshCookie
-}
-
 func ParseToken(tokenString string, jwtSecret []byte) (uint, error) {
 	var userId uint
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {

@@ -80,9 +80,7 @@ func main() {
 		return c.Next()
 	})
 	app.Use(recover.New())
-	app.Use(logger.New(logger.Config{
-		Format: "[${time}] ${ip}  ${status} - ${latency} ${method} ${path}\n",
-	}))
+	app.Use(logger.New())
 	app.Get("/metrics", monitor.New(monitor.Config{Title: "MyService Metrics Page"}))
 	app.Use(compress.New())
 	app.Use(etag.New())
