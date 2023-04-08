@@ -27,7 +27,7 @@ func NewCommentHandler(usecase usecase.CommentUsecase) *CommentHandler {
 // @Param  pageSize query int false "Page Size"
 // @Param sort query string false "Sort direction" Enums(asc, desc) default(desc)
 // @Param sortBy query string false "Sort by" Enums(id, user_id, parent_id) default(id)
-// @Success 200 {object} common.BasePaginationResponse[entities.Comment]
+// @Success 200 {object} common.BasePaginationResponse[entities.CommentRes]
 // @Failure 404
 // @Failure 500
 // @Router /comments/ [get]
