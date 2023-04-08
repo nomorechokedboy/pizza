@@ -34,7 +34,7 @@ func NewPostHandler(usecase usecase.PostUsecase, slugUsecase usecase.SlugUsecase
 // @Param  pageSize query int false "Page Size"
 // @Param sort query string false "Sort direction" Enums(asc, desc) default(desc)
 // @Param sortBy query string false "Sort by" Enums(id, title, slug, user_id, parent_id) default(id)
-// @Success 200 {array} common.BasePaginationResponse[entities.Post]
+// @Success 200 {object} common.BasePaginationResponse[entities.Post]
 // @Failure 404
 // @Failure 500
 // @Router /posts [get]
