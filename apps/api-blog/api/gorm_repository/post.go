@@ -76,6 +76,7 @@ func (r *PostGormRepo) UpdatePost(post *entities.Post) error {
 			"title":        post.Title,
 			"parent_id":    post.ParentID,
 			"slug":         post.Slug,
+			"image":        post.Image,
 			"content":      post.Content,
 			"published":    post.Published,
 			"published_at": post.PublishedAt,

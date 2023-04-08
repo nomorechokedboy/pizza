@@ -43,6 +43,7 @@ func (usecase *postUsecase) CreatePost(userID uint, postSlug string, body *entit
 		UserID:      userID,
 		Title:       body.Title,
 		ParentID:    body.ParentID,
+		Image:       body.Image,
 		Slug:        postSlug,
 		Content:     body.Content,
 		Published:   body.Published,
