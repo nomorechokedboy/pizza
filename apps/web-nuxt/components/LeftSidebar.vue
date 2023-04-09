@@ -1,6 +1,6 @@
 <template>
 	<aside
-		class="absolute top-0 left-0 w-full h-screen bg-black/50 z-50 md:!relative md:max-w-[212px] md:z-10"
+		class="absolute hidden top-0 left-0 w-full h-screen bg-black/50 z-50 md:!relative md:max-w-[212px] md:z-10 md:block"
 	>
 		<div class="w-4/5 h-full bg-green-500 flex flex-col md:w-full">
 			<header class="bg-blue-300 h-14"></header>
