@@ -64,10 +64,10 @@ func (r *PostGormRepo) GetPostBySlug(slug string) (*entities.Post, error) {
 	return &post, nil
 }
 
-func (r *PostGormRepo) CreatePost(post *entities.Post) (uint, error) {
-	createdPost := r.db.Create(&post)
+func (r *PostGormRepo) CreatePost(post *entities.Post) (*entities.Post, error) {
+	createdPost := r.db.Joins(clause.Associations).Create(&post)
 
-	return post.ID, createdPost.Error
+	return post, createdPost.Error
 }
 
 func (r *PostGormRepo) UpdatePost(post *entities.Post) error {

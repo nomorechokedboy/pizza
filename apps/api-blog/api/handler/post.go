@@ -79,24 +79,19 @@ func (handler *PostHandler) GetAllPosts(c *fiber.Ctx) error {
 // @Description Get post by slug
 // @Tags Posts
 // @Param slug path string true "Post Slug"
-// @Success 200 {object} entities.PostReq{}
+// @Success 200 {object} entities.PostRes
 // @Failure 400
 // @Failure 404
 // @Router /posts/{slug} [get]
 func (handler *PostHandler) GetPostBySlug(c *fiber.Ctx) error {
 	slug := c.Params("slug")
-
-	if slug == "" {
-		return fiber.NewError(fiber.StatusBadRequest, "invalid post slug")
-	}
-
 	post, err := handler.usecase.GetPostBySlug(slug)
 
 	if err != nil {
 		return fiber.NewError(fiber.StatusNotFound, "failed to get post")
 	}
 
-	return c.Status(fiber.StatusOK).JSON(post)
+	return c.Status(fiber.StatusOK).JSON(post.ToResponse())
 }
 
 // @CreatePost godoc
@@ -105,7 +100,7 @@ func (handler *PostHandler) GetPostBySlug(c *fiber.Ctx) error {
 // @Tags Posts
 // @Accept json
 // @Param post body entities.PostReq true "Post"
-// @Success 200
+// @Success 200 {object} entities.PostRes
 // @Failure 400
 // @Failure 409
 // @Failure 500
@@ -133,17 +128,17 @@ func (handler *PostHandler) CreatePost(c *fiber.Ctx) error {
 		postSlug = fmt.Sprintf("%s-%d", postSlug, slugCount)
 	}
 
-	postID, err := handler.usecase.CreatePost(authID, postSlug, req)
+	post, err := handler.usecase.CreatePost(authID, postSlug, req)
 
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to create new post")
 	}
 
-	if err := handler.slugUsecase.CreateSlug(postID, postSlug); err != nil {
+	if err := handler.slugUsecase.CreateSlug(post.ID, postSlug); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to create post slug")
 	}
 
-	return c.Status(fiber.StatusCreated).SendString("Created successfully")
+	return c.Status(fiber.StatusCreated).JSON(post.ToResponse())
 }
 
 // @UpdatePost godoc

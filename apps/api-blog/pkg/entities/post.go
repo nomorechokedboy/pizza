@@ -2,8 +2,9 @@ package entities
 
 import (
 	"api-blog/pkg/common"
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Post struct {
