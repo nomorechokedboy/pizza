@@ -4,16 +4,7 @@
 		"build": {
 			"dependsOn": ["^build"],
 			"outputs": ["dist/**", ".next/**"],
-			"env": [
-				"PIZZA_SERVER_PORT",
-				"MORGAN",
-				"MONGODB",
-				"SECRET_KEY",
-				"refreshTokenKey",
-				"REDIS_HOST",
-				"REDIS_PORT",
-				"TAURI_DEBUG"
-			],
+			"env": ["TAURI_DEBUG", "CI"],
 			"cache": false
 		},
 		"lint": {
