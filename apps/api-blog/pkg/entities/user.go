@@ -5,16 +5,16 @@ import (
 )
 
 type User struct {
-	Id          uint   `gorm:"primaryKey"`
-	Identifier  string `gorm:"unique;size:50; not null"`
-	Password    string `gorm:"size:250; not null"`
-	Username    string `gorm:"unique; size:50; default:null"`
-	Fullname    string `gorm:"size:50; not null"`
-	PhoneNumber string `gorm:"size:50; not null"`
-	Email       string `gorm:"unique; size:50; not null"`
-	Avatar      string `gorm:"size:250; not null"`
-	CreatedAt   time.Time
-	UpdateAt    time.Time
+	Id          uint      `gorm:"primaryKey" json:"id"`
+	Identifier  string    `gorm:"unique;size:50; not null" json:"identifier"`
+	Password    string    `gorm:"size:250; not null" json:"-"`
+	Username    string    `gorm:"unique; size:50; default:null" json:"userName"`
+	Fullname    string    `gorm:"size:50; not null" json:"fullName"`
+	PhoneNumber string    `gorm:"size:50; not null" json:"phoneNumber"`
+	Email       string    `gorm:"unique; size:50; not null" json:"email"`
+	Avatar      string    `gorm:"size:250; not null" json:"avatar"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdateAt    time.Time `json:"updatedAt"`
 }
 
 type UserReq struct {
