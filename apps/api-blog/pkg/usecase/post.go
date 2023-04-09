@@ -10,7 +10,7 @@ import (
 type PostUsecase interface {
 	GetAllPosts(query *entities.PostQuery) (common.BasePaginationResponse[entities.Post], error)
 	GetPostBySlug(slug string) (*entities.Post, error)
-	CreatePost(userID uint, postSlug string, body *entities.PostReq) (uint, error)
+	CreatePost(userID uint, postSlug string, body *entities.PostReq) (*entities.Post, error)
 	UpdatePost(id uint, postSlug string, body *entities.PostReq) error
 	DeletePost(id uint) error
 }
@@ -31,7 +31,7 @@ func (usecase *postUsecase) GetPostBySlug(slug string) (*entities.Post, error) {
 	return usecase.repo.GetPostBySlug(slug)
 }
 
-func (usecase *postUsecase) CreatePost(userID uint, postSlug string, body *entities.PostReq) (uint, error) {
+func (usecase *postUsecase) CreatePost(userID uint, postSlug string, body *entities.PostReq) (*entities.Post, error) {
 	var publishedAt *time.Time = nil
 
 	if body.Published {
@@ -43,6 +43,7 @@ func (usecase *postUsecase) CreatePost(userID uint, postSlug string, body *entit
 		UserID:      userID,
 		Title:       body.Title,
 		ParentID:    body.ParentID,
+		Image:       body.Image,
 		Slug:        postSlug,
 		Content:     body.Content,
 		Published:   body.Published,
