@@ -16,7 +16,7 @@ func PostRouter(app fiber.Router, handler handler.PostHandler, jwtSecret middlew
 
 func publicPostRouter(app fiber.Router, handler handler.PostHandler) {
 	app.Get("/", handler.GetAllPosts)
-	app.Get("/:slug", handler.GetPostBySlug)
+	app.Get("/:slug<min(1)>", handler.GetPostBySlug)
 }
 
 func privatePostRouter(app fiber.Router, handler handler.PostHandler, middle middleware.JWTMiddleware) {
