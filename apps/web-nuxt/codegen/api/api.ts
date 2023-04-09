@@ -12,35 +12,88 @@
  * Do not edit the class manually.
  */
 
-import { Configuration } from './configuration'
 import globalAxios, {
-	AxiosPromise,
 	AxiosInstance,
+	AxiosPromise,
 	AxiosRequestConfig
 } from 'axios'
+import { Configuration } from './configuration'
 // Some imports not used depending on template conditions
 // @ts-ignore
 import {
-	DUMMY_BASE_URL,
 	assertParamExists,
-	setApiKeyToObject,
-	setBasicAuthToObject,
-	setBearerAuthToObject,
-	setOAuthToObject,
-	setSearchParams,
+	createRequestFunction,
+	DUMMY_BASE_URL,
 	serializeDataIfNeeded,
-	toPathString,
-	createRequestFunction
+	setApiKeyToObject,
+	setSearchParams,
+	toPathString
 } from './common'
 // @ts-ignore
-import {
-	BASE_PATH,
-	COLLECTION_FORMATS,
-	RequestArgs,
-	BaseAPI,
-	RequiredError
-} from './base'
+import { BaseAPI, BASE_PATH, RequestArgs } from './base'
 
+/**
+ *
+ * @export
+ * @interface CommonBasePaginationResponseEntitiesCommentRes
+ */
+export interface CommonBasePaginationResponseEntitiesCommentRes {
+	/**
+	 *
+	 * @type {Array<EntitiesCommentRes>}
+	 * @memberof CommonBasePaginationResponseEntitiesCommentRes
+	 */
+	items?: Array<EntitiesCommentRes>
+	/**
+	 *
+	 * @type {number}
+	 * @memberof CommonBasePaginationResponseEntitiesCommentRes
+	 */
+	page?: number
+	/**
+	 *
+	 * @type {number}
+	 * @memberof CommonBasePaginationResponseEntitiesCommentRes
+	 */
+	page_size?: number
+	/**
+	 *
+	 * @type {number}
+	 * @memberof CommonBasePaginationResponseEntitiesCommentRes
+	 */
+	total?: number
+}
+/**
+ *
+ * @export
+ * @interface CommonBasePaginationResponseEntitiesPostRes
+ */
+export interface CommonBasePaginationResponseEntitiesPostRes {
+	/**
+	 *
+	 * @type {Array<EntitiesPostRes>}
+	 * @memberof CommonBasePaginationResponseEntitiesPostRes
+	 */
+	items?: Array<EntitiesPostRes>
+	/**
+	 *
+	 * @type {number}
+	 * @memberof CommonBasePaginationResponseEntitiesPostRes
+	 */
+	page?: number
+	/**
+	 *
+	 * @type {number}
+	 * @memberof CommonBasePaginationResponseEntitiesPostRes
+	 */
+	page_size?: number
+	/**
+	 *
+	 * @type {number}
+	 * @memberof CommonBasePaginationResponseEntitiesPostRes
+	 */
+	total?: number
+}
 /**
  *
  * @export
@@ -59,6 +112,324 @@ export interface EntitiesAuth {
 	 * @memberof EntitiesAuth
 	 */
 	token?: string
+}
+/**
+ *
+ * @export
+ * @interface EntitiesComment
+ */
+export interface EntitiesComment {
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesComment
+	 */
+	content?: string
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesComment
+	 */
+	createdAt?: string
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EntitiesComment
+	 */
+	id?: number
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EntitiesComment
+	 */
+	parentId?: number
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EntitiesComment
+	 */
+	postId?: number
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesComment
+	 */
+	updatedAt?: string
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EntitiesComment
+	 */
+	userId?: number
+}
+/**
+ *
+ * @export
+ * @interface EntitiesCommentReq
+ */
+export interface EntitiesCommentReq {
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesCommentReq
+	 */
+	content?: string
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EntitiesCommentReq
+	 */
+	parentId?: number
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EntitiesCommentReq
+	 */
+	postId?: number
+}
+/**
+ *
+ * @export
+ * @interface EntitiesCommentRes
+ */
+export interface EntitiesCommentRes {
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesCommentRes
+	 */
+	content?: string
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesCommentRes
+	 */
+	createdAt?: string
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EntitiesCommentRes
+	 */
+	id?: number
+	/**
+	 *
+	 * @type {EntitiesComment}
+	 * @memberof EntitiesCommentRes
+	 */
+	parent?: EntitiesComment
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EntitiesCommentRes
+	 */
+	postId?: number
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesCommentRes
+	 */
+	updatedAt?: string
+	/**
+	 *
+	 * @type {EntitiesUser}
+	 * @memberof EntitiesCommentRes
+	 */
+	user?: EntitiesUser
+}
+/**
+ *
+ * @export
+ * @interface EntitiesPost
+ */
+export interface EntitiesPost {
+	/**
+	 *
+	 * @type {Array<EntitiesComment>}
+	 * @memberof EntitiesPost
+	 */
+	comments?: Array<EntitiesComment>
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPost
+	 */
+	content?: string
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPost
+	 */
+	createdAt?: string
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EntitiesPost
+	 */
+	id?: number
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPost
+	 */
+	image?: string
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EntitiesPost
+	 */
+	parentId?: number
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof EntitiesPost
+	 */
+	published?: boolean
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPost
+	 */
+	publishedAt?: string
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPost
+	 */
+	slug?: string
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPost
+	 */
+	title?: string
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPost
+	 */
+	updatedAt?: string
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EntitiesPost
+	 */
+	userId?: number
+}
+/**
+ *
+ * @export
+ * @interface EntitiesPostReq
+ */
+export interface EntitiesPostReq {
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPostReq
+	 */
+	content?: string
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPostReq
+	 */
+	image?: string
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EntitiesPostReq
+	 */
+	parentId?: number
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof EntitiesPostReq
+	 */
+	published?: boolean
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPostReq
+	 */
+	title?: string
+}
+/**
+ *
+ * @export
+ * @interface EntitiesPostRes
+ */
+export interface EntitiesPostRes {
+	/**
+	 *
+	 * @type {Array<EntitiesComment>}
+	 * @memberof EntitiesPostRes
+	 */
+	comments?: Array<EntitiesComment>
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPostRes
+	 */
+	content?: string
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPostRes
+	 */
+	createdAt?: string
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EntitiesPostRes
+	 */
+	id?: number
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPostRes
+	 */
+	image?: string
+	/**
+	 *
+	 * @type {EntitiesPost}
+	 * @memberof EntitiesPostRes
+	 */
+	parent?: EntitiesPost
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof EntitiesPostRes
+	 */
+	published?: boolean
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPostRes
+	 */
+	publishedAt?: string
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPostRes
+	 */
+	slug?: string
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPostRes
+	 */
+	title?: string
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPostRes
+	 */
+	updatedAt?: string
+	/**
+	 *
+	 * @type {EntitiesUser}
+	 * @memberof EntitiesPostRes
+	 */
+	user?: EntitiesUser
 }
 /**
  *
@@ -94,6 +465,25 @@ export interface EntitiesSignUpBody {
 /**
  *
  * @export
+ * @interface EntitiesUpdatePassword
+ */
+export interface EntitiesUpdatePassword {
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesUpdatePassword
+	 */
+	newPassword?: string
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesUpdatePassword
+	 */
+	oldPassword?: string
+}
+/**
+ *
+ * @export
  * @interface EntitiesUser
  */
 export interface EntitiesUser {
@@ -120,7 +510,7 @@ export interface EntitiesUser {
 	 * @type {string}
 	 * @memberof EntitiesUser
 	 */
-	fullname?: string
+	fullName?: string
 	/**
 	 *
 	 * @type {number}
@@ -138,25 +528,19 @@ export interface EntitiesUser {
 	 * @type {string}
 	 * @memberof EntitiesUser
 	 */
-	password?: string
-	/**
-	 *
-	 * @type {string}
-	 * @memberof EntitiesUser
-	 */
 	phoneNumber?: string
 	/**
 	 *
 	 * @type {string}
 	 * @memberof EntitiesUser
 	 */
-	updateAt?: string
+	updatedAt?: string
 	/**
 	 *
 	 * @type {string}
 	 * @memberof EntitiesUser
 	 */
-	username?: string
+	userName?: string
 }
 /**
  *
@@ -201,12 +585,6 @@ export interface EntitiesUserReq {
 	 * @memberof EntitiesUserReq
 	 */
 	fullname?: string
-	/**
-	 *
-	 * @type {string}
-	 * @memberof EntitiesUserReq
-	 */
-	password?: string
 	/**
 	 *
 	 * @type {string}
@@ -307,6 +685,19 @@ export interface HandlerResetPasswordResetPasswordReq {
 	 * @memberof HandlerResetPasswordResetPasswordReq
 	 */
 	token?: string
+}
+/**
+ *
+ * @export
+ * @interface HandlerUpdateCommentCommentReq
+ */
+export interface HandlerUpdateCommentCommentReq {
+	/**
+	 *
+	 * @type {string}
+	 * @memberof HandlerUpdateCommentCommentReq
+	 */
+	content?: string
 }
 
 /**
@@ -655,6 +1046,68 @@ export const AuthApiAxiosParamCreator = function (
 				url: toPathString(localVarUrlObj),
 				options: localVarRequestOptions
 			}
+		},
+		/**
+		 * Update Password
+		 * @param {EntitiesUpdatePassword} todo Updated Password
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		authUpdatePasswordPut: async (
+			todo: EntitiesUpdatePassword,
+			options: AxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'todo' is not null or undefined
+			assertParamExists('authUpdatePasswordPut', 'todo', todo)
+			const localVarPath = `/auth/update-password`
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(
+				localVarPath,
+				DUMMY_BASE_URL
+			)
+			let baseOptions
+			if (configuration) {
+				baseOptions = configuration.baseOptions
+			}
+
+			const localVarRequestOptions = {
+				method: 'PUT',
+				...baseOptions,
+				...options
+			}
+			const localVarHeaderParameter = {} as any
+			const localVarQueryParameter = {} as any
+
+			// authentication ApiKeyAuth required
+			await setApiKeyToObject(
+				localVarHeaderParameter,
+				'Authorization',
+				configuration
+			)
+
+			localVarHeaderParameter['Content-Type'] =
+				'application/json'
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter)
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers
+					? baseOptions.headers
+					: {}
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers
+			}
+			localVarRequestOptions.data = serializeDataIfNeeded(
+				todo,
+				localVarRequestOptions,
+				configuration
+			)
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions
+			}
 		}
 	}
 }
@@ -735,7 +1188,7 @@ export const AuthApiFp = function (configuration?: Configuration) {
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<EntitiesUser>
+			) => AxiosPromise<EntitiesUserResponse>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.authMeGet(
@@ -831,6 +1284,33 @@ export const AuthApiFp = function (configuration?: Configuration) {
 				BASE_PATH,
 				configuration
 			)
+		},
+		/**
+		 * Update Password
+		 * @param {EntitiesUpdatePassword} todo Updated Password
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async authUpdatePasswordPut(
+			todo: EntitiesUpdatePassword,
+			options?: AxiosRequestConfig
+		): Promise<
+			(
+				axios?: AxiosInstance,
+				basePath?: string
+			) => AxiosPromise<void>
+		> {
+			const localVarAxiosArgs =
+				await localVarAxiosParamCreator.authUpdatePasswordPut(
+					todo,
+					options
+				)
+			return createRequestFunction(
+				localVarAxiosArgs,
+				globalAxios,
+				BASE_PATH,
+				configuration
+			)
 		}
 	}
 }
@@ -882,7 +1362,7 @@ export const AuthApiFactory = function (
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
-		authMeGet(options?: any): AxiosPromise<EntitiesUser> {
+		authMeGet(options?: any): AxiosPromise<EntitiesUserResponse> {
 			return localVarFp
 				.authMeGet(options)
 				.then((request) => request(axios, basePath))
@@ -930,6 +1410,20 @@ export const AuthApiFactory = function (
 		): AxiosPromise<void> {
 			return localVarFp
 				.authResetPasswordPut(todo, options)
+				.then((request) => request(axios, basePath))
+		},
+		/**
+		 * Update Password
+		 * @param {EntitiesUpdatePassword} todo Updated Password
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		authUpdatePasswordPut(
+			todo: EntitiesUpdatePassword,
+			options?: any
+		): AxiosPromise<void> {
+			return localVarFp
+				.authUpdatePasswordPut(todo, options)
 				.then((request) => request(axios, basePath))
 		}
 	}
@@ -1037,6 +1531,1677 @@ export class AuthApi extends BaseAPI {
 	) {
 		return AuthApiFp(this.configuration)
 			.authResetPasswordPut(todo, options)
+			.then((request) => request(this.axios, this.basePath))
+	}
+
+	/**
+	 * Update Password
+	 * @param {EntitiesUpdatePassword} todo Updated Password
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof AuthApi
+	 */
+	public authUpdatePasswordPut(
+		todo: EntitiesUpdatePassword,
+		options?: AxiosRequestConfig
+	) {
+		return AuthApiFp(this.configuration)
+			.authUpdatePasswordPut(todo, options)
+			.then((request) => request(this.axios, this.basePath))
+	}
+}
+
+/**
+ * CommentsApi - axios parameter creator
+ * @export
+ */
+export const CommentsApiAxiosParamCreator = function (
+	configuration?: Configuration
+) {
+	return {
+		/**
+		 * get all comments from specfied comment
+		 * @summary Show all comments from comment
+		 * @param {number} [userID] User ID
+		 * @param {number} [postID] Post ID
+		 * @param {number} [parentID] Parent ID
+		 * @param {number} [page] Page
+		 * @param {number} [pageSize] Page Size
+		 * @param {'asc' | 'desc'} [sort] Sort direction
+		 * @param {'id' | 'user_id' | 'parent_id'} [sortBy] Sort by
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		commentsGet: async (
+			userID?: number,
+			postID?: number,
+			parentID?: number,
+			page?: number,
+			pageSize?: number,
+			sort?: 'asc' | 'desc',
+			sortBy?: 'id' | 'user_id' | 'parent_id',
+			options: AxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			const localVarPath = `/comments/`
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(
+				localVarPath,
+				DUMMY_BASE_URL
+			)
+			let baseOptions
+			if (configuration) {
+				baseOptions = configuration.baseOptions
+			}
+
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options
+			}
+			const localVarHeaderParameter = {} as any
+			const localVarQueryParameter = {} as any
+
+			if (userID !== undefined) {
+				localVarQueryParameter['userID'] = userID
+			}
+
+			if (postID !== undefined) {
+				localVarQueryParameter['postID'] = postID
+			}
+
+			if (parentID !== undefined) {
+				localVarQueryParameter['parentID'] = parentID
+			}
+
+			if (page !== undefined) {
+				localVarQueryParameter['page'] = page
+			}
+
+			if (pageSize !== undefined) {
+				localVarQueryParameter['pageSize'] = pageSize
+			}
+
+			if (sort !== undefined) {
+				localVarQueryParameter['sort'] = sort
+			}
+
+			if (sortBy !== undefined) {
+				localVarQueryParameter['sortBy'] = sortBy
+			}
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter)
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers
+					? baseOptions.headers
+					: {}
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers
+			}
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions
+			}
+		},
+		/**
+		 * Delete comment
+		 * @summary Delete specified comment
+		 * @param {number} id Comment ID
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		commentsIdDelete: async (
+			id: number,
+			options: AxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'id' is not null or undefined
+			assertParamExists('commentsIdDelete', 'id', id)
+			const localVarPath = `/comments/{id}`.replace(
+				`{${'id'}}`,
+				encodeURIComponent(String(id))
+			)
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(
+				localVarPath,
+				DUMMY_BASE_URL
+			)
+			let baseOptions
+			if (configuration) {
+				baseOptions = configuration.baseOptions
+			}
+
+			const localVarRequestOptions = {
+				method: 'DELETE',
+				...baseOptions,
+				...options
+			}
+			const localVarHeaderParameter = {} as any
+			const localVarQueryParameter = {} as any
+
+			// authentication ApiKeyAuth required
+			await setApiKeyToObject(
+				localVarHeaderParameter,
+				'Authorization',
+				configuration
+			)
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter)
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers
+					? baseOptions.headers
+					: {}
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers
+			}
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions
+			}
+		},
+		/**
+		 * Update comment
+		 * @summary Update comment with new message
+		 * @param {number} id Comment ID
+		 * @param {HandlerUpdateCommentCommentReq} comment Comment
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		commentsIdPut: async (
+			id: number,
+			comment: HandlerUpdateCommentCommentReq,
+			options: AxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'id' is not null or undefined
+			assertParamExists('commentsIdPut', 'id', id)
+			// verify required parameter 'comment' is not null or undefined
+			assertParamExists('commentsIdPut', 'comment', comment)
+			const localVarPath = `/comments/{id}`.replace(
+				`{${'id'}}`,
+				encodeURIComponent(String(id))
+			)
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(
+				localVarPath,
+				DUMMY_BASE_URL
+			)
+			let baseOptions
+			if (configuration) {
+				baseOptions = configuration.baseOptions
+			}
+
+			const localVarRequestOptions = {
+				method: 'PUT',
+				...baseOptions,
+				...options
+			}
+			const localVarHeaderParameter = {} as any
+			const localVarQueryParameter = {} as any
+
+			// authentication ApiKeyAuth required
+			await setApiKeyToObject(
+				localVarHeaderParameter,
+				'Authorization',
+				configuration
+			)
+
+			localVarHeaderParameter['Content-Type'] =
+				'application/json'
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter)
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers
+					? baseOptions.headers
+					: {}
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers
+			}
+			localVarRequestOptions.data = serializeDataIfNeeded(
+				comment,
+				localVarRequestOptions,
+				configuration
+			)
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions
+			}
+		},
+		/**
+		 * Create comment
+		 * @summary Create comment
+		 * @param {EntitiesCommentReq} comment Comment
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		commentsPost: async (
+			comment: EntitiesCommentReq,
+			options: AxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'comment' is not null or undefined
+			assertParamExists('commentsPost', 'comment', comment)
+			const localVarPath = `/comments/`
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(
+				localVarPath,
+				DUMMY_BASE_URL
+			)
+			let baseOptions
+			if (configuration) {
+				baseOptions = configuration.baseOptions
+			}
+
+			const localVarRequestOptions = {
+				method: 'POST',
+				...baseOptions,
+				...options
+			}
+			const localVarHeaderParameter = {} as any
+			const localVarQueryParameter = {} as any
+
+			// authentication ApiKeyAuth required
+			await setApiKeyToObject(
+				localVarHeaderParameter,
+				'Authorization',
+				configuration
+			)
+
+			localVarHeaderParameter['Content-Type'] =
+				'application/json'
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter)
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers
+					? baseOptions.headers
+					: {}
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers
+			}
+			localVarRequestOptions.data = serializeDataIfNeeded(
+				comment,
+				localVarRequestOptions,
+				configuration
+			)
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions
+			}
+		}
+	}
+}
+
+/**
+ * CommentsApi - functional programming interface
+ * @export
+ */
+export const CommentsApiFp = function (configuration?: Configuration) {
+	const localVarAxiosParamCreator =
+		CommentsApiAxiosParamCreator(configuration)
+	return {
+		/**
+		 * get all comments from specfied comment
+		 * @summary Show all comments from comment
+		 * @param {number} [userID] User ID
+		 * @param {number} [postID] Post ID
+		 * @param {number} [parentID] Parent ID
+		 * @param {number} [page] Page
+		 * @param {number} [pageSize] Page Size
+		 * @param {'asc' | 'desc'} [sort] Sort direction
+		 * @param {'id' | 'user_id' | 'parent_id'} [sortBy] Sort by
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async commentsGet(
+			userID?: number,
+			postID?: number,
+			parentID?: number,
+			page?: number,
+			pageSize?: number,
+			sort?: 'asc' | 'desc',
+			sortBy?: 'id' | 'user_id' | 'parent_id',
+			options?: AxiosRequestConfig
+		): Promise<
+			(
+				axios?: AxiosInstance,
+				basePath?: string
+			) => AxiosPromise<CommonBasePaginationResponseEntitiesCommentRes>
+		> {
+			const localVarAxiosArgs =
+				await localVarAxiosParamCreator.commentsGet(
+					userID,
+					postID,
+					parentID,
+					page,
+					pageSize,
+					sort,
+					sortBy,
+					options
+				)
+			return createRequestFunction(
+				localVarAxiosArgs,
+				globalAxios,
+				BASE_PATH,
+				configuration
+			)
+		},
+		/**
+		 * Delete comment
+		 * @summary Delete specified comment
+		 * @param {number} id Comment ID
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async commentsIdDelete(
+			id: number,
+			options?: AxiosRequestConfig
+		): Promise<
+			(
+				axios?: AxiosInstance,
+				basePath?: string
+			) => AxiosPromise<void>
+		> {
+			const localVarAxiosArgs =
+				await localVarAxiosParamCreator.commentsIdDelete(
+					id,
+					options
+				)
+			return createRequestFunction(
+				localVarAxiosArgs,
+				globalAxios,
+				BASE_PATH,
+				configuration
+			)
+		},
+		/**
+		 * Update comment
+		 * @summary Update comment with new message
+		 * @param {number} id Comment ID
+		 * @param {HandlerUpdateCommentCommentReq} comment Comment
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async commentsIdPut(
+			id: number,
+			comment: HandlerUpdateCommentCommentReq,
+			options?: AxiosRequestConfig
+		): Promise<
+			(
+				axios?: AxiosInstance,
+				basePath?: string
+			) => AxiosPromise<void>
+		> {
+			const localVarAxiosArgs =
+				await localVarAxiosParamCreator.commentsIdPut(
+					id,
+					comment,
+					options
+				)
+			return createRequestFunction(
+				localVarAxiosArgs,
+				globalAxios,
+				BASE_PATH,
+				configuration
+			)
+		},
+		/**
+		 * Create comment
+		 * @summary Create comment
+		 * @param {EntitiesCommentReq} comment Comment
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async commentsPost(
+			comment: EntitiesCommentReq,
+			options?: AxiosRequestConfig
+		): Promise<
+			(
+				axios?: AxiosInstance,
+				basePath?: string
+			) => AxiosPromise<void>
+		> {
+			const localVarAxiosArgs =
+				await localVarAxiosParamCreator.commentsPost(
+					comment,
+					options
+				)
+			return createRequestFunction(
+				localVarAxiosArgs,
+				globalAxios,
+				BASE_PATH,
+				configuration
+			)
+		}
+	}
+}
+
+/**
+ * CommentsApi - factory interface
+ * @export
+ */
+export const CommentsApiFactory = function (
+	configuration?: Configuration,
+	basePath?: string,
+	axios?: AxiosInstance
+) {
+	const localVarFp = CommentsApiFp(configuration)
+	return {
+		/**
+		 * get all comments from specfied comment
+		 * @summary Show all comments from comment
+		 * @param {number} [userID] User ID
+		 * @param {number} [postID] Post ID
+		 * @param {number} [parentID] Parent ID
+		 * @param {number} [page] Page
+		 * @param {number} [pageSize] Page Size
+		 * @param {'asc' | 'desc'} [sort] Sort direction
+		 * @param {'id' | 'user_id' | 'parent_id'} [sortBy] Sort by
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		commentsGet(
+			userID?: number,
+			postID?: number,
+			parentID?: number,
+			page?: number,
+			pageSize?: number,
+			sort?: 'asc' | 'desc',
+			sortBy?: 'id' | 'user_id' | 'parent_id',
+			options?: any
+		): AxiosPromise<CommonBasePaginationResponseEntitiesCommentRes> {
+			return localVarFp
+				.commentsGet(
+					userID,
+					postID,
+					parentID,
+					page,
+					pageSize,
+					sort,
+					sortBy,
+					options
+				)
+				.then((request) => request(axios, basePath))
+		},
+		/**
+		 * Delete comment
+		 * @summary Delete specified comment
+		 * @param {number} id Comment ID
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		commentsIdDelete(
+			id: number,
+			options?: any
+		): AxiosPromise<void> {
+			return localVarFp
+				.commentsIdDelete(id, options)
+				.then((request) => request(axios, basePath))
+		},
+		/**
+		 * Update comment
+		 * @summary Update comment with new message
+		 * @param {number} id Comment ID
+		 * @param {HandlerUpdateCommentCommentReq} comment Comment
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		commentsIdPut(
+			id: number,
+			comment: HandlerUpdateCommentCommentReq,
+			options?: any
+		): AxiosPromise<void> {
+			return localVarFp
+				.commentsIdPut(id, comment, options)
+				.then((request) => request(axios, basePath))
+		},
+		/**
+		 * Create comment
+		 * @summary Create comment
+		 * @param {EntitiesCommentReq} comment Comment
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		commentsPost(
+			comment: EntitiesCommentReq,
+			options?: any
+		): AxiosPromise<void> {
+			return localVarFp
+				.commentsPost(comment, options)
+				.then((request) => request(axios, basePath))
+		}
+	}
+}
+
+/**
+ * CommentsApi - object-oriented interface
+ * @export
+ * @class CommentsApi
+ * @extends {BaseAPI}
+ */
+export class CommentsApi extends BaseAPI {
+	/**
+	 * get all comments from specfied comment
+	 * @summary Show all comments from comment
+	 * @param {number} [userID] User ID
+	 * @param {number} [postID] Post ID
+	 * @param {number} [parentID] Parent ID
+	 * @param {number} [page] Page
+	 * @param {number} [pageSize] Page Size
+	 * @param {'asc' | 'desc'} [sort] Sort direction
+	 * @param {'id' | 'user_id' | 'parent_id'} [sortBy] Sort by
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof CommentsApi
+	 */
+	public commentsGet(
+		userID?: number,
+		postID?: number,
+		parentID?: number,
+		page?: number,
+		pageSize?: number,
+		sort?: 'asc' | 'desc',
+		sortBy?: 'id' | 'user_id' | 'parent_id',
+		options?: AxiosRequestConfig
+	) {
+		return CommentsApiFp(this.configuration)
+			.commentsGet(
+				userID,
+				postID,
+				parentID,
+				page,
+				pageSize,
+				sort,
+				sortBy,
+				options
+			)
+			.then((request) => request(this.axios, this.basePath))
+	}
+
+	/**
+	 * Delete comment
+	 * @summary Delete specified comment
+	 * @param {number} id Comment ID
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof CommentsApi
+	 */
+	public commentsIdDelete(id: number, options?: AxiosRequestConfig) {
+		return CommentsApiFp(this.configuration)
+			.commentsIdDelete(id, options)
+			.then((request) => request(this.axios, this.basePath))
+	}
+
+	/**
+	 * Update comment
+	 * @summary Update comment with new message
+	 * @param {number} id Comment ID
+	 * @param {HandlerUpdateCommentCommentReq} comment Comment
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof CommentsApi
+	 */
+	public commentsIdPut(
+		id: number,
+		comment: HandlerUpdateCommentCommentReq,
+		options?: AxiosRequestConfig
+	) {
+		return CommentsApiFp(this.configuration)
+			.commentsIdPut(id, comment, options)
+			.then((request) => request(this.axios, this.basePath))
+	}
+
+	/**
+	 * Create comment
+	 * @summary Create comment
+	 * @param {EntitiesCommentReq} comment Comment
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof CommentsApi
+	 */
+	public commentsPost(
+		comment: EntitiesCommentReq,
+		options?: AxiosRequestConfig
+	) {
+		return CommentsApiFp(this.configuration)
+			.commentsPost(comment, options)
+			.then((request) => request(this.axios, this.basePath))
+	}
+}
+
+/**
+ * MediaApi - axios parameter creator
+ * @export
+ */
+export const MediaApiAxiosParamCreator = function (
+	configuration?: Configuration
+) {
+	return {
+		/**
+		 *
+		 * @summary Post to save image
+		 * @param {File} image upfile
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		image: async (
+			image: File,
+			options: AxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'image' is not null or undefined
+			assertParamExists('image', 'image', image)
+			const localVarPath = `/media/upload`
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(
+				localVarPath,
+				DUMMY_BASE_URL
+			)
+			let baseOptions
+			if (configuration) {
+				baseOptions = configuration.baseOptions
+			}
+
+			const localVarRequestOptions = {
+				method: 'POST',
+				...baseOptions,
+				...options
+			}
+			const localVarHeaderParameter = {} as any
+			const localVarQueryParameter = {} as any
+			const localVarFormParams = new ((configuration &&
+				configuration.formDataCtor) ||
+				FormData)()
+
+			// authentication ApiKeyAuth required
+			await setApiKeyToObject(
+				localVarHeaderParameter,
+				'Authorization',
+				configuration
+			)
+
+			if (image !== undefined) {
+				localVarFormParams.append('image', image as any)
+			}
+
+			localVarHeaderParameter['Content-Type'] =
+				'multipart/form-data'
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter)
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers
+					? baseOptions.headers
+					: {}
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers
+			}
+			localVarRequestOptions.data = localVarFormParams
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions
+			}
+		},
+		/**
+		 *
+		 * @summary get Media
+		 * @param {string} uuId ID
+		 * @param {string} objectName object name
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		mediaUuIdObjectNameGet: async (
+			uuId: string,
+			objectName: string,
+			options: AxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'uuId' is not null or undefined
+			assertParamExists(
+				'mediaUuIdObjectNameGet',
+				'uuId',
+				uuId
+			)
+			// verify required parameter 'objectName' is not null or undefined
+			assertParamExists(
+				'mediaUuIdObjectNameGet',
+				'objectName',
+				objectName
+			)
+			const localVarPath = `/media/{uuId}/{objectName}`
+				.replace(
+					`{${'uuId'}}`,
+					encodeURIComponent(String(uuId))
+				)
+				.replace(
+					`{${'objectName'}}`,
+					encodeURIComponent(String(objectName))
+				)
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(
+				localVarPath,
+				DUMMY_BASE_URL
+			)
+			let baseOptions
+			if (configuration) {
+				baseOptions = configuration.baseOptions
+			}
+
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options
+			}
+			const localVarHeaderParameter = {} as any
+			const localVarQueryParameter = {} as any
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter)
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers
+					? baseOptions.headers
+					: {}
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers
+			}
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions
+			}
+		}
+	}
+}
+
+/**
+ * MediaApi - functional programming interface
+ * @export
+ */
+export const MediaApiFp = function (configuration?: Configuration) {
+	const localVarAxiosParamCreator =
+		MediaApiAxiosParamCreator(configuration)
+	return {
+		/**
+		 *
+		 * @summary Post to save image
+		 * @param {File} image upfile
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async image(
+			image: File,
+			options?: AxiosRequestConfig
+		): Promise<
+			(
+				axios?: AxiosInstance,
+				basePath?: string
+			) => AxiosPromise<void>
+		> {
+			const localVarAxiosArgs =
+				await localVarAxiosParamCreator.image(
+					image,
+					options
+				)
+			return createRequestFunction(
+				localVarAxiosArgs,
+				globalAxios,
+				BASE_PATH,
+				configuration
+			)
+		},
+		/**
+		 *
+		 * @summary get Media
+		 * @param {string} uuId ID
+		 * @param {string} objectName object name
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async mediaUuIdObjectNameGet(
+			uuId: string,
+			objectName: string,
+			options?: AxiosRequestConfig
+		): Promise<
+			(
+				axios?: AxiosInstance,
+				basePath?: string
+			) => AxiosPromise<void>
+		> {
+			const localVarAxiosArgs =
+				await localVarAxiosParamCreator.mediaUuIdObjectNameGet(
+					uuId,
+					objectName,
+					options
+				)
+			return createRequestFunction(
+				localVarAxiosArgs,
+				globalAxios,
+				BASE_PATH,
+				configuration
+			)
+		}
+	}
+}
+
+/**
+ * MediaApi - factory interface
+ * @export
+ */
+export const MediaApiFactory = function (
+	configuration?: Configuration,
+	basePath?: string,
+	axios?: AxiosInstance
+) {
+	const localVarFp = MediaApiFp(configuration)
+	return {
+		/**
+		 *
+		 * @summary Post to save image
+		 * @param {File} image upfile
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		image(image: File, options?: any): AxiosPromise<void> {
+			return localVarFp
+				.image(image, options)
+				.then((request) => request(axios, basePath))
+		},
+		/**
+		 *
+		 * @summary get Media
+		 * @param {string} uuId ID
+		 * @param {string} objectName object name
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		mediaUuIdObjectNameGet(
+			uuId: string,
+			objectName: string,
+			options?: any
+		): AxiosPromise<void> {
+			return localVarFp
+				.mediaUuIdObjectNameGet(
+					uuId,
+					objectName,
+					options
+				)
+				.then((request) => request(axios, basePath))
+		}
+	}
+}
+
+/**
+ * MediaApi - object-oriented interface
+ * @export
+ * @class MediaApi
+ * @extends {BaseAPI}
+ */
+export class MediaApi extends BaseAPI {
+	/**
+	 *
+	 * @summary Post to save image
+	 * @param {File} image upfile
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof MediaApi
+	 */
+	public image(image: File, options?: AxiosRequestConfig) {
+		return MediaApiFp(this.configuration)
+			.image(image, options)
+			.then((request) => request(this.axios, this.basePath))
+	}
+
+	/**
+	 *
+	 * @summary get Media
+	 * @param {string} uuId ID
+	 * @param {string} objectName object name
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof MediaApi
+	 */
+	public mediaUuIdObjectNameGet(
+		uuId: string,
+		objectName: string,
+		options?: AxiosRequestConfig
+	) {
+		return MediaApiFp(this.configuration)
+			.mediaUuIdObjectNameGet(uuId, objectName, options)
+			.then((request) => request(this.axios, this.basePath))
+	}
+}
+
+/**
+ * PostsApi - axios parameter creator
+ * @export
+ */
+export const PostsApiAxiosParamCreator = function (
+	configuration?: Configuration
+) {
+	return {
+		/**
+		 * get all posts
+		 * @summary Show all posts
+		 * @param {number} [userID] User ID
+		 * @param {number} [parentID] Parent ID
+		 * @param {number} [page] Page
+		 * @param {number} [pageSize] Page Size
+		 * @param {'asc' | 'desc'} [sort] Sort direction
+		 * @param {'id' | 'title' | 'slug' | 'user_id' | 'parent_id'} [sortBy] Sort by
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		postsGet: async (
+			userID?: number,
+			parentID?: number,
+			page?: number,
+			pageSize?: number,
+			sort?: 'asc' | 'desc',
+			sortBy?:
+				| 'id'
+				| 'title'
+				| 'slug'
+				| 'user_id'
+				| 'parent_id',
+			options: AxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			const localVarPath = `/posts`
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(
+				localVarPath,
+				DUMMY_BASE_URL
+			)
+			let baseOptions
+			if (configuration) {
+				baseOptions = configuration.baseOptions
+			}
+
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options
+			}
+			const localVarHeaderParameter = {} as any
+			const localVarQueryParameter = {} as any
+
+			if (userID !== undefined) {
+				localVarQueryParameter['userID'] = userID
+			}
+
+			if (parentID !== undefined) {
+				localVarQueryParameter['parentID'] = parentID
+			}
+
+			if (page !== undefined) {
+				localVarQueryParameter['page'] = page
+			}
+
+			if (pageSize !== undefined) {
+				localVarQueryParameter['pageSize'] = pageSize
+			}
+
+			if (sort !== undefined) {
+				localVarQueryParameter['sort'] = sort
+			}
+
+			if (sortBy !== undefined) {
+				localVarQueryParameter['sortBy'] = sortBy
+			}
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter)
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers
+					? baseOptions.headers
+					: {}
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers
+			}
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions
+			}
+		},
+		/**
+		 * Delete post
+		 * @summary Delete specified post
+		 * @param {number} id Post ID
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		postsIdDelete: async (
+			id: number,
+			options: AxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'id' is not null or undefined
+			assertParamExists('postsIdDelete', 'id', id)
+			const localVarPath = `/posts/{id}`.replace(
+				`{${'id'}}`,
+				encodeURIComponent(String(id))
+			)
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(
+				localVarPath,
+				DUMMY_BASE_URL
+			)
+			let baseOptions
+			if (configuration) {
+				baseOptions = configuration.baseOptions
+			}
+
+			const localVarRequestOptions = {
+				method: 'DELETE',
+				...baseOptions,
+				...options
+			}
+			const localVarHeaderParameter = {} as any
+			const localVarQueryParameter = {} as any
+
+			// authentication ApiKeyAuth required
+			await setApiKeyToObject(
+				localVarHeaderParameter,
+				'Authorization',
+				configuration
+			)
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter)
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers
+					? baseOptions.headers
+					: {}
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers
+			}
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions
+			}
+		},
+		/**
+		 * Update post
+		 * @summary Update post with new info
+		 * @param {number} id Post ID
+		 * @param {EntitiesPostReq} post Post
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		postsIdPut: async (
+			id: number,
+			post: EntitiesPostReq,
+			options: AxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'id' is not null or undefined
+			assertParamExists('postsIdPut', 'id', id)
+			// verify required parameter 'post' is not null or undefined
+			assertParamExists('postsIdPut', 'post', post)
+			const localVarPath = `/posts/{id}`.replace(
+				`{${'id'}}`,
+				encodeURIComponent(String(id))
+			)
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(
+				localVarPath,
+				DUMMY_BASE_URL
+			)
+			let baseOptions
+			if (configuration) {
+				baseOptions = configuration.baseOptions
+			}
+
+			const localVarRequestOptions = {
+				method: 'PUT',
+				...baseOptions,
+				...options
+			}
+			const localVarHeaderParameter = {} as any
+			const localVarQueryParameter = {} as any
+
+			// authentication ApiKeyAuth required
+			await setApiKeyToObject(
+				localVarHeaderParameter,
+				'Authorization',
+				configuration
+			)
+
+			localVarHeaderParameter['Content-Type'] =
+				'application/json'
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter)
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers
+					? baseOptions.headers
+					: {}
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers
+			}
+			localVarRequestOptions.data = serializeDataIfNeeded(
+				post,
+				localVarRequestOptions,
+				configuration
+			)
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions
+			}
+		},
+		/**
+		 * Create post
+		 * @summary Create post
+		 * @param {EntitiesPostReq} post Post
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		postsPost: async (
+			post: EntitiesPostReq,
+			options: AxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'post' is not null or undefined
+			assertParamExists('postsPost', 'post', post)
+			const localVarPath = `/posts/`
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(
+				localVarPath,
+				DUMMY_BASE_URL
+			)
+			let baseOptions
+			if (configuration) {
+				baseOptions = configuration.baseOptions
+			}
+
+			const localVarRequestOptions = {
+				method: 'POST',
+				...baseOptions,
+				...options
+			}
+			const localVarHeaderParameter = {} as any
+			const localVarQueryParameter = {} as any
+
+			// authentication ApiKeyAuth required
+			await setApiKeyToObject(
+				localVarHeaderParameter,
+				'Authorization',
+				configuration
+			)
+
+			localVarHeaderParameter['Content-Type'] =
+				'application/json'
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter)
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers
+					? baseOptions.headers
+					: {}
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers
+			}
+			localVarRequestOptions.data = serializeDataIfNeeded(
+				post,
+				localVarRequestOptions,
+				configuration
+			)
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions
+			}
+		},
+		/**
+		 * Get post by slug
+		 * @summary Get post
+		 * @param {string} slug Post Slug
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		postsSlugGet: async (
+			slug: string,
+			options: AxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'slug' is not null or undefined
+			assertParamExists('postsSlugGet', 'slug', slug)
+			const localVarPath = `/posts/{slug}`.replace(
+				`{${'slug'}}`,
+				encodeURIComponent(String(slug))
+			)
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(
+				localVarPath,
+				DUMMY_BASE_URL
+			)
+			let baseOptions
+			if (configuration) {
+				baseOptions = configuration.baseOptions
+			}
+
+			const localVarRequestOptions = {
+				method: 'GET',
+				...baseOptions,
+				...options
+			}
+			const localVarHeaderParameter = {} as any
+			const localVarQueryParameter = {} as any
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter)
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers
+					? baseOptions.headers
+					: {}
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers
+			}
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions
+			}
+		}
+	}
+}
+
+/**
+ * PostsApi - functional programming interface
+ * @export
+ */
+export const PostsApiFp = function (configuration?: Configuration) {
+	const localVarAxiosParamCreator =
+		PostsApiAxiosParamCreator(configuration)
+	return {
+		/**
+		 * get all posts
+		 * @summary Show all posts
+		 * @param {number} [userID] User ID
+		 * @param {number} [parentID] Parent ID
+		 * @param {number} [page] Page
+		 * @param {number} [pageSize] Page Size
+		 * @param {'asc' | 'desc'} [sort] Sort direction
+		 * @param {'id' | 'title' | 'slug' | 'user_id' | 'parent_id'} [sortBy] Sort by
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async postsGet(
+			userID?: number,
+			parentID?: number,
+			page?: number,
+			pageSize?: number,
+			sort?: 'asc' | 'desc',
+			sortBy?:
+				| 'id'
+				| 'title'
+				| 'slug'
+				| 'user_id'
+				| 'parent_id',
+			options?: AxiosRequestConfig
+		): Promise<
+			(
+				axios?: AxiosInstance,
+				basePath?: string
+			) => AxiosPromise<CommonBasePaginationResponseEntitiesPostRes>
+		> {
+			const localVarAxiosArgs =
+				await localVarAxiosParamCreator.postsGet(
+					userID,
+					parentID,
+					page,
+					pageSize,
+					sort,
+					sortBy,
+					options
+				)
+			return createRequestFunction(
+				localVarAxiosArgs,
+				globalAxios,
+				BASE_PATH,
+				configuration
+			)
+		},
+		/**
+		 * Delete post
+		 * @summary Delete specified post
+		 * @param {number} id Post ID
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async postsIdDelete(
+			id: number,
+			options?: AxiosRequestConfig
+		): Promise<
+			(
+				axios?: AxiosInstance,
+				basePath?: string
+			) => AxiosPromise<void>
+		> {
+			const localVarAxiosArgs =
+				await localVarAxiosParamCreator.postsIdDelete(
+					id,
+					options
+				)
+			return createRequestFunction(
+				localVarAxiosArgs,
+				globalAxios,
+				BASE_PATH,
+				configuration
+			)
+		},
+		/**
+		 * Update post
+		 * @summary Update post with new info
+		 * @param {number} id Post ID
+		 * @param {EntitiesPostReq} post Post
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async postsIdPut(
+			id: number,
+			post: EntitiesPostReq,
+			options?: AxiosRequestConfig
+		): Promise<
+			(
+				axios?: AxiosInstance,
+				basePath?: string
+			) => AxiosPromise<void>
+		> {
+			const localVarAxiosArgs =
+				await localVarAxiosParamCreator.postsIdPut(
+					id,
+					post,
+					options
+				)
+			return createRequestFunction(
+				localVarAxiosArgs,
+				globalAxios,
+				BASE_PATH,
+				configuration
+			)
+		},
+		/**
+		 * Create post
+		 * @summary Create post
+		 * @param {EntitiesPostReq} post Post
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async postsPost(
+			post: EntitiesPostReq,
+			options?: AxiosRequestConfig
+		): Promise<
+			(
+				axios?: AxiosInstance,
+				basePath?: string
+			) => AxiosPromise<EntitiesPostRes>
+		> {
+			const localVarAxiosArgs =
+				await localVarAxiosParamCreator.postsPost(
+					post,
+					options
+				)
+			return createRequestFunction(
+				localVarAxiosArgs,
+				globalAxios,
+				BASE_PATH,
+				configuration
+			)
+		},
+		/**
+		 * Get post by slug
+		 * @summary Get post
+		 * @param {string} slug Post Slug
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async postsSlugGet(
+			slug: string,
+			options?: AxiosRequestConfig
+		): Promise<
+			(
+				axios?: AxiosInstance,
+				basePath?: string
+			) => AxiosPromise<EntitiesPostRes>
+		> {
+			const localVarAxiosArgs =
+				await localVarAxiosParamCreator.postsSlugGet(
+					slug,
+					options
+				)
+			return createRequestFunction(
+				localVarAxiosArgs,
+				globalAxios,
+				BASE_PATH,
+				configuration
+			)
+		}
+	}
+}
+
+/**
+ * PostsApi - factory interface
+ * @export
+ */
+export const PostsApiFactory = function (
+	configuration?: Configuration,
+	basePath?: string,
+	axios?: AxiosInstance
+) {
+	const localVarFp = PostsApiFp(configuration)
+	return {
+		/**
+		 * get all posts
+		 * @summary Show all posts
+		 * @param {number} [userID] User ID
+		 * @param {number} [parentID] Parent ID
+		 * @param {number} [page] Page
+		 * @param {number} [pageSize] Page Size
+		 * @param {'asc' | 'desc'} [sort] Sort direction
+		 * @param {'id' | 'title' | 'slug' | 'user_id' | 'parent_id'} [sortBy] Sort by
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		postsGet(
+			userID?: number,
+			parentID?: number,
+			page?: number,
+			pageSize?: number,
+			sort?: 'asc' | 'desc',
+			sortBy?:
+				| 'id'
+				| 'title'
+				| 'slug'
+				| 'user_id'
+				| 'parent_id',
+			options?: any
+		): AxiosPromise<CommonBasePaginationResponseEntitiesPostRes> {
+			return localVarFp
+				.postsGet(
+					userID,
+					parentID,
+					page,
+					pageSize,
+					sort,
+					sortBy,
+					options
+				)
+				.then((request) => request(axios, basePath))
+		},
+		/**
+		 * Delete post
+		 * @summary Delete specified post
+		 * @param {number} id Post ID
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		postsIdDelete(id: number, options?: any): AxiosPromise<void> {
+			return localVarFp
+				.postsIdDelete(id, options)
+				.then((request) => request(axios, basePath))
+		},
+		/**
+		 * Update post
+		 * @summary Update post with new info
+		 * @param {number} id Post ID
+		 * @param {EntitiesPostReq} post Post
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		postsIdPut(
+			id: number,
+			post: EntitiesPostReq,
+			options?: any
+		): AxiosPromise<void> {
+			return localVarFp
+				.postsIdPut(id, post, options)
+				.then((request) => request(axios, basePath))
+		},
+		/**
+		 * Create post
+		 * @summary Create post
+		 * @param {EntitiesPostReq} post Post
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		postsPost(
+			post: EntitiesPostReq,
+			options?: any
+		): AxiosPromise<EntitiesPostRes> {
+			return localVarFp
+				.postsPost(post, options)
+				.then((request) => request(axios, basePath))
+		},
+		/**
+		 * Get post by slug
+		 * @summary Get post
+		 * @param {string} slug Post Slug
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		postsSlugGet(
+			slug: string,
+			options?: any
+		): AxiosPromise<EntitiesPostRes> {
+			return localVarFp
+				.postsSlugGet(slug, options)
+				.then((request) => request(axios, basePath))
+		}
+	}
+}
+
+/**
+ * PostsApi - object-oriented interface
+ * @export
+ * @class PostsApi
+ * @extends {BaseAPI}
+ */
+export class PostsApi extends BaseAPI {
+	/**
+	 * get all posts
+	 * @summary Show all posts
+	 * @param {number} [userID] User ID
+	 * @param {number} [parentID] Parent ID
+	 * @param {number} [page] Page
+	 * @param {number} [pageSize] Page Size
+	 * @param {'asc' | 'desc'} [sort] Sort direction
+	 * @param {'id' | 'title' | 'slug' | 'user_id' | 'parent_id'} [sortBy] Sort by
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof PostsApi
+	 */
+	public postsGet(
+		userID?: number,
+		parentID?: number,
+		page?: number,
+		pageSize?: number,
+		sort?: 'asc' | 'desc',
+		sortBy?: 'id' | 'title' | 'slug' | 'user_id' | 'parent_id',
+		options?: AxiosRequestConfig
+	) {
+		return PostsApiFp(this.configuration)
+			.postsGet(
+				userID,
+				parentID,
+				page,
+				pageSize,
+				sort,
+				sortBy,
+				options
+			)
+			.then((request) => request(this.axios, this.basePath))
+	}
+
+	/**
+	 * Delete post
+	 * @summary Delete specified post
+	 * @param {number} id Post ID
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof PostsApi
+	 */
+	public postsIdDelete(id: number, options?: AxiosRequestConfig) {
+		return PostsApiFp(this.configuration)
+			.postsIdDelete(id, options)
+			.then((request) => request(this.axios, this.basePath))
+	}
+
+	/**
+	 * Update post
+	 * @summary Update post with new info
+	 * @param {number} id Post ID
+	 * @param {EntitiesPostReq} post Post
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof PostsApi
+	 */
+	public postsIdPut(
+		id: number,
+		post: EntitiesPostReq,
+		options?: AxiosRequestConfig
+	) {
+		return PostsApiFp(this.configuration)
+			.postsIdPut(id, post, options)
+			.then((request) => request(this.axios, this.basePath))
+	}
+
+	/**
+	 * Create post
+	 * @summary Create post
+	 * @param {EntitiesPostReq} post Post
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof PostsApi
+	 */
+	public postsPost(post: EntitiesPostReq, options?: AxiosRequestConfig) {
+		return PostsApiFp(this.configuration)
+			.postsPost(post, options)
+			.then((request) => request(this.axios, this.basePath))
+	}
+
+	/**
+	 * Get post by slug
+	 * @summary Get post
+	 * @param {string} slug Post Slug
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof PostsApi
+	 */
+	public postsSlugGet(slug: string, options?: AxiosRequestConfig) {
+		return PostsApiFp(this.configuration)
+			.postsSlugGet(slug, options)
 			.then((request) => request(this.axios, this.basePath))
 	}
 }
