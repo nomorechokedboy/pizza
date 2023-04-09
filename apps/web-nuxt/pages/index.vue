@@ -1,97 +1,50 @@
 <script setup lang="ts">
-import { ArticleProps } from '~~/components/Article.vue'
+import { CommonBasePaginationResponseEntitiesPostRes } from '~~/codegen/api'
 
 type HeaderNav = {
 	content: string
 	match: string
 }
 
+type BaseQuery = {
+	page?: number
+	pageSize?: number
+	q?: string
+	sort?: 'asc' | 'desc'
+	sortBy?: string
+}
+
+async function getPosts() {
+	let queryParams = ''
+	for (const [key, val] of Object.entries(baseQuery)) {
+		if (val !== undefined) {
+			queryParams += `${key}=${val}&`
+		}
+	}
+
+	return $fetch<CommonBasePaginationResponseEntitiesPostRes>(
+		`https://api-blog-dev-nomorechokedboy.cloud.okteto.net/api/v1/posts?${queryParams}`
+	)
+}
+
+const baseQuery = reactive<BaseQuery>({
+	sort: 'desc',
+	sortBy: 'id',
+	q: undefined,
+	pageSize: 20,
+	page: 0
+})
 const headerNav: HeaderNav[] = [
-	{ content: 'Relevant', match: '/' },
-	{ content: 'Latest', match: '/latest' },
-	{ content: 'Top', match: '/top' }
+	{ content: 'Relevant', match: '/' }
+	/* { content: 'Latest', match: '/latest' },
+    { content: 'Top', match: '/top' } */
 ]
 const route = useRoute()
-const articles: ArticleProps[] = [
-	{
-		comments: 0,
-		publishedAt: 'Apr 1',
-		like: 13,
-		owner: {
-			name: 'Duong Le',
-			src: 'https://api.dicebear.com/6.x/icons/svg?seed=CheeseRaa'
-		},
-		tags: ['tags 1', 'tags 2'],
-		title: 'Learn How to Use Artifactory as a Docker Registry',
-		src: 'https://res.cloudinary.com/practicaldev/image/fetch/s--h0iBOiYw--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qxfnu4dptk7iazjv6mjg.png',
-		slug: 'test-1'
-	},
-	{
-		comments: 13,
-		publishedAt: 'Apr 1',
-		like: 0,
-		owner: {
-			name: 'Duong Le',
-			src: 'https://api.dicebear.com/6.x/icons/svg?seed=CheeseRaa'
-		},
-		tags: [],
-		title: 'Learn How to Use Artifactory as a Docker Registry',
-		src: 'https://res.cloudinary.com/practicaldev/image/fetch/s--h0iBOiYw--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qxfnu4dptk7iazjv6mjg.png',
-		slug: 'test-2'
-	},
-	{
-		comments: 0,
-		publishedAt: 'Apr 1',
-		like: 13,
-		owner: {
-			name: 'Duong Le',
-			src: 'https://api.dicebear.com/6.x/icons/svg?seed=CheeseRaa'
-		},
-		tags: ['tags 1', 'tags 2'],
-		title: 'Learn How to Use Artifactory as a Docker Registry',
-		src: 'https://res.cloudinary.com/practicaldev/image/fetch/s--h0iBOiYw--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qxfnu4dptk7iazjv6mjg.png',
-		slug: 'test-3'
-	},
-	{
-		comments: 0,
-		publishedAt: 'Apr 1',
-		like: 13,
-		owner: {
-			name: 'Duong Le',
-			src: 'https://api.dicebear.com/6.x/icons/svg?seed=CheeseRaa'
-		},
-		tags: ['tags 1', 'tags 2'],
-		title: 'Learn How to Use Artifactory as a Docker Registry',
-		src: 'https://res.cloudinary.com/practicaldev/image/fetch/s--h0iBOiYw--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qxfnu4dptk7iazjv6mjg.png',
-		slug: 'test-3'
-	},
-	{
-		comments: 0,
-		publishedAt: 'Apr 1',
-		like: 13,
-		owner: {
-			name: 'Duong Le',
-			src: 'https://api.dicebear.com/6.x/icons/svg?seed=CheeseRaa'
-		},
-		tags: ['tags 1', 'tags 2'],
-		title: 'Learn How to Use Artifactory as a Docker Registry',
-		src: 'https://res.cloudinary.com/practicaldev/image/fetch/s--h0iBOiYw--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qxfnu4dptk7iazjv6mjg.png',
-		slug: 'test-3'
-	},
-	{
-		comments: 0,
-		publishedAt: 'Apr 1',
-		like: 13,
-		owner: {
-			name: 'Duong Le',
-			src: 'https://api.dicebear.com/6.x/icons/svg?seed=CheeseRaa'
-		},
-		tags: ['tags 1', 'tags 2'],
-		title: 'Learn How to Use Artifactory as a Docker Registry',
-		src: 'https://res.cloudinary.com/practicaldev/image/fetch/s--h0iBOiYw--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qxfnu4dptk7iazjv6mjg.png',
-		slug: 'test-3'
-	}
-]
+const { data: posts } =
+	await useAsyncData<CommonBasePaginationResponseEntitiesPostRes>(
+		`posts-${baseQuery.page}-${baseQuery.pageSize}`,
+		getPosts
+	)
 </script>
 
 <template>
@@ -141,11 +94,35 @@ const articles: ArticleProps[] = [
 					</nav>
 				</header>
 				<div class="flex flex-col gap-2">
+					<!-- <div v-if="loading">Loading...</div> -->
 					<Article
-						v-for="(props, i) in articles"
-						:="props"
+						v-for="(
+							{
+								user,
+								id,
+								publishedAt,
+								title,
+								slug
+							},
+							i
+						) in posts?.items || []"
+						src="https://res.cloudinary.com/practicaldev/image/fetch/s--iJh8Y2cI--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qqi78z7yx9q6koq6dmrc.png"
+						:owner="{
+							src:
+								user?.avatar ||
+								'https://res.cloudinary.com/practicaldev/image/fetch/s--5VEqFAA8--/c_fill,f_auto,fl_progressive,h_90,q_66,w_90/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/909049/9a19683f-1e9f-4933-bdba-e7ea2fe5e71c.gif',
+							name:
+								user?.username ||
+								'User name'
+						}"
+						:slug="slug || ''"
+						:tags="['tags']"
+						:publishedAt="publishedAt || ''"
+						:title="title || ''"
 						:showImage="i === 0"
-						:key="i"
+						:comments="0"
+						:like="0"
+						:key="id"
 					/>
 				</div>
 			</div>
