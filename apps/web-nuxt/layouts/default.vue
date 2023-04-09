@@ -14,7 +14,7 @@ useHead({
 			<Header />
 		</header>
 		<div
-			class="fixed flex flex-col gap-5 top-20 right-0 max-w-xs lg:mr-5"
+			class="fixed flex flex-col gap-5 top-20 right-0 z-40 max-w-xs lg:mr-5"
 		>
 			<Alert
 				v-for="props in notificationList"

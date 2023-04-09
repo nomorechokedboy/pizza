@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { ActionIcon, Button } from 'ui-vue'
-import BookmarkIcon from '~icons/mdi/bookmark-outline'
+import { Button } from 'ui-vue'
 import ChatIcon from '~icons/ri/chat-1-line'
 import HeartIcon from '~icons/solar/heart-angle-bold'
 
@@ -42,7 +41,7 @@ const { comment, like } = defineProps<ArticleFooterProps>()
 				</span>
 			</Button>
 		</div>
-		<div class="flex items-center gap-2">
+		<!-- <div class="flex items-center gap-2">
 			<p class="text-xs text-neutral-600">3 min read</p>
 			<ActionIcon
 				class="!text-neutral-800"
@@ -52,6 +51,6 @@ const { comment, like } = defineProps<ArticleFooterProps>()
 			>
 				<BookmarkIcon width="24" height="24" />
 			</ActionIcon>
-		</div>
+		</div> -->
 	</div>
 </template>

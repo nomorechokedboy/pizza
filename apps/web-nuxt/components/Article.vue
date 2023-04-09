@@ -18,7 +18,7 @@ const {
 	comments,
 	publishedAt,
 	title,
-	tags,
+	// tags,
 	like,
 	owner,
 	src,
@@ -36,7 +36,7 @@ const to = computed(calculateTo)
 </script>
 
 <template>
-	<div class="bg-white shadow">
+	<div class="bg-white shadow rounded overflow-hidden">
 		<nuxt-img v-if="showImage" :src="src" />
 		<div class="flex flex-col gap-3 p-4">
 			<NoClue
@@ -52,7 +52,7 @@ const to = computed(calculateTo)
 						{{ title }}</NuxtLink
 					>
 				</h2>
-				<Tags :tags="tags" />
+				<!-- <Tags :tags="tags" /> -->
 				<ArticleFooter
 					:comment="comment"
 					:like="like"

@@ -1,25 +1,27 @@
 <script setup lang="ts">
+<<<<<<< HEAD
 import { ActionIcon, Button } from 'ui-vue'
 import { reactive } from 'vue'
 import IconBell from '~icons/ph/bell-simple'
 import Avatar from './Avatar.vue'
 import Dropdown from './Dropdown.vue'
+import { Button } from 'ui-vue'
 
 const token = useAuthToken()
 const isLoggedIn = computed(
-	() => token.value.accessToken && token.value.refreshToken
+    () => token.value.accessToken && token.value.refreshToken
 )
 const { $blogApi } = useNuxtApp()
 const toggle = reactive({
-	open: false,
-	onChange() {
-		this.open = !this.open
-	}
+    open: false,
+    onChange() {
+        this.open = !this.open
+    }
 })
 watchEffect(() => {
-	if (isLoggedIn.value) {
-		$blogApi.auth.authMeGet()
-	}
+    if (isLoggedIn.value) {
+        $blogApi.auth.authMeGet()
+    }
 })
 </script>
 
@@ -40,7 +42,7 @@ watchEffect(() => {
 						>Create Post</Button
 					>
 				</NuxtLink>
-				<ActionIcon
+				<!-- <ActionIcon
 					color="indigo"
 					class="group"
 					size="lg"
