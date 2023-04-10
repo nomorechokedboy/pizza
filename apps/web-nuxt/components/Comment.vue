@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { ActionIcon, Button } from 'ui-vue'
-import EllipsisIcon from '~icons/mdi/ellipsis-horizontal'
+import { Button } from 'ui-vue'
 import ChatIcon from '~icons/ri/chat-1-line'
 import HeartIcon from '~icons/solar/heart-angle-linear'
 
@@ -58,14 +57,14 @@ const { content, updated, like, replies, createdAt } =
 								Edited
 							</template>
 						</section>
-						<ActionIcon
+						<!-- <ActionIcon
 							color="indigo"
 							variant="subtle"
 						>
 							<EllipsisIcon
 								class="text-neutral-700"
 							/>
-						</ActionIcon>
+						</ActionIcon> -->
 					</header>
 					<main>
 						<VueMarkdown

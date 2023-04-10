@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ActionIcon, Button } from 'ui-vue'
+import { ActionIcon } from 'ui-vue'
 import ChevronIcon from '~icons/mdi/chevron-up-down'
 import { CommentProps } from './Comment.vue'
 
@@ -98,7 +98,10 @@ const comments: CommentProps[] = [
 </script>
 
 <template>
-	<section class="p-4 border-t border-t-neutral-200 flex flex-col gap-6">
+	<section
+		id="comments"
+		class="p-4 border-t border-t-neutral-200 flex flex-col gap-6"
+	>
 		<header class="flex items-center justify-between">
 			<div class="flex items-center">
 				<h2 class="text-xl text-neutral-800 font-bold">
@@ -115,23 +118,19 @@ const comments: CommentProps[] = [
 					/>
 				</ActionIcon>
 			</div>
-			<Button>Subscribe</Button>
+			<!-- <Button>Subscribe</Button> -->
 		</header>
 		<Comment
 			v-for="(comment, i) in comments"
 			v-bind="comment"
 			:key="i"
 		/>
-		<nav
-			class="flex items-center justify-center text-neutral-500 text-sm"
-		>
-			<p>Code of conduct</p>
-			<div class="py-2 px-3">
-				<div
-					class="h-1 w-1 rounded-full bg-[rgb(189,189,189)]"
-				/>
-			</div>
-			<p>Report abuse</p>
-		</nav>
+		<!-- <nav class="flex items-center justify-center text-neutral-500 text-sm">
+            <p>Code of conduct</p>
+            <div class="py-2 px-3">
+                <div class="h-1 w-1 rounded-full bg-[rgb(189,189,189)]" />
+            </div>
+            <p>Report abuse</p>
+        </nav> -->
 	</section>
 </template>
