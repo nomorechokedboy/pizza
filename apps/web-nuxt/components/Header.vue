@@ -31,7 +31,14 @@ watchEffect(() => {
 			class="max-w-7xl w-full flex flex-row items-center justify-between px-2"
 		>
 			<div class="flex items-center gap-4 w-1/2">
-				<div class="w-[50px] h-10 bg-black"></div>
+				<NuxtLink to="/">
+					<nuxt-img
+						alt="Accessiblog logo"
+						src="/logo.png"
+						width="50"
+						height="40"
+					/>
+				</NuxtLink>
 				<div
 					class="bg-sky-500 h-10 lg:w-full lg:max-w-md"
 				></div>

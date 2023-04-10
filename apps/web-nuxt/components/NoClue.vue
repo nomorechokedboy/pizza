@@ -3,14 +3,23 @@ export interface NoClueProps {
 	src: string
 	title: string
 	description: string
+	alt: string
 }
 
-const { description, src, title } = defineProps<NoClueProps>()
+const { description, src, title, alt } = defineProps<NoClueProps>()
 </script>
 
 <template>
 	<div class="flex flex-row gap-2">
-		<nuxt-img class="rounded-full" :src="src" width="32" />
+		<div>
+			<nuxt-img
+				:alt="alt"
+				class="rounded-full"
+				:src="src"
+				width="32"
+				height="32"
+			/>
+		</div>
 		<div class="flex flex-col">
 			<p class="text-sm font-medium text-neutral-700">
 				{{ title }}
