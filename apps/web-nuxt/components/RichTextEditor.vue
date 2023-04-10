@@ -1,4 +1,12 @@
 <script lang="ts" setup>
+import { ActionIcon } from 'ui-vue'
+import CodeBlockIcon from '~icons/material-symbols/code-blocks-rounded'
+import CodeIcon from '~icons/mdi/code-tags'
+import BoldIcon from '~icons/mdi/format-bold'
+import ItalicIcon from '~icons/mdi/format-italic'
+import StrikethroughIcon from '~icons/mdi/format-strikethrough'
+import UnderlineIcon from '~icons/mdi/format-underline'
+
 export interface RichTextEditorProps {
 	modelValue?: string
 }
@@ -54,31 +62,46 @@ function code() {
 	wrapSelection('`')
 }
 
+function codeBlock() {
+	wrapSelection('```\n', '\n```')
+}
+
 const input = ref<HTMLTextAreaElement | null>(null)
 const emit = defineEmits(['update:modelValue'])
 const { modelValue } = defineProps<RichTextEditorProps>()
+const icons = [
+	{ icon: BoldIcon, handler: bold },
+	{ icon: ItalicIcon, handler: italic },
+	{ icon: UnderlineIcon, handler: underline },
+	{ icon: StrikethroughIcon, handler: strikethrough },
+	{ icon: CodeIcon, handler: code },
+	{ icon: CodeBlockIcon, handler: codeBlock }
+]
 </script>
 
 <template>
 	<div
-		class="flex-1 flex flex-col gap-2 max-w-1/2 h-full overflow-auto break-words bg-white rounded-l"
+		class="flex-1 flex flex-col gap-2 max-w-1/2 overflow-auto break-words bg-white rounded-l"
 		ref="editor"
 	>
-		<!-- <div class="pt-8">
-                    <Codemirror class="codemirror" v-model="content" keymap="vim" />
-                </div> -->
-		<div class="flex items-center gap-2 p-2 bg-neutral-300">
-			<button @click.prevent="bold">Bold</button>
-			<button @click.prevent="italic">Italic</button>
-			<button @click.prevent="underline">Underline</button>
-			<button @click.prevent="strikethrough">
-				Strikethrough
-			</button>
-			<button @click.prevent="code">Code</button>
+		<div class="flex items-center gap-3 p-2 bg-neutral-300">
+			<ActionIcon
+				v-for="{ handler, icon } of icons"
+				@click.prevent="handler"
+				color="gray"
+				variant="subtle"
+			>
+				<span class="text-black">
+					<component :is="icon" />
+				</span>
+			</ActionIcon>
 		</div>
 		<textarea
-			class="rounded-l-md w-full h-full focus:outline-none resize-none p-2"
+			class="rounded-l-md flex-1 w-full h-full focus:outline-none resize-none p-2"
 			:value="modelValue"
+			@keydown.ctrl.b.prevent="bold"
+			@keydown.ctrl.i.prevent="italic"
+			@keydown.ctrl.u.prevent="underline"
 			@input="
 				$emit(
 					'update:modelValue',
