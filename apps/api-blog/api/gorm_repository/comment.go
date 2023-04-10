@@ -42,14 +42,28 @@ func (r *CommentGormRepo) GetAllComments(query *entities.CommentQuery) (common.B
 	return res, nil
 }
 
-func (r *CommentGormRepo) CreateComment(comment *entities.Comment) error {
-	return r.db.Create(&comment).Error
+func (r *CommentGormRepo) CreateComment(comment *entities.Comment) (*entities.Comment, error) {
+	tx := r.db.Create(&comment)
+
+	r.db.Preload(clause.Associations).First(&comment)
+
+	return comment, tx.Error
 }
 
-func (r *CommentGormRepo) UpdateComment(comment *entities.Comment) error {
-	return r.db.Model(&comment).Update("content", comment.Content).Error
+func (r *CommentGormRepo) UpdateComment(comment *entities.Comment) (*entities.Comment, error) {
+	tx := r.db.Model(&comment).Update("content", comment.Content)
+
+	r.db.Preload(clause.Associations).First(&comment)
+
+	return comment, tx.Error
 }
 
-func (r *CommentGormRepo) DeleteComment(id uint) error {
-	return r.db.Delete(&entities.Comment{}, "id = ? OR parent_id = ?", id, id).Error
+func (r *CommentGormRepo) DeleteComment(id uint) (*entities.Comment, error) {
+	comment := entities.Comment{ID: id}
+
+	r.db.Preload(clause.Associations).First(&comment)
+
+	tx := r.db.Delete(&entities.Comment{}, "id = ? OR parent_id = ?", id, id)
+
+	return &comment, tx.Error
 }

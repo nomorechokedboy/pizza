@@ -10,9 +10,9 @@ import (
 type PostUsecase interface {
 	GetAllPosts(query *entities.PostQuery) (common.BasePaginationResponse[entities.Post], error)
 	GetPostBySlug(slug string) (*entities.Post, error)
-	CreatePost(userID uint, postSlug string, body *entities.PostReq) (*entities.Post, error)
-	UpdatePost(id uint, postSlug string, body *entities.PostReq) error
-	DeletePost(id uint) error
+	CreatePost(userID uint, postSlug string, body *entities.PostRequest) (*entities.Post, error)
+	UpdatePost(id uint, postSlug string, body *entities.PostRequest) (*entities.Post, error)
+	DeletePost(id uint) (*entities.Post, error)
 }
 
 type postUsecase struct {
@@ -31,7 +31,7 @@ func (usecase *postUsecase) GetPostBySlug(slug string) (*entities.Post, error) {
 	return usecase.repo.GetPostBySlug(slug)
 }
 
-func (usecase *postUsecase) CreatePost(userID uint, postSlug string, body *entities.PostReq) (*entities.Post, error) {
+func (usecase *postUsecase) CreatePost(userID uint, postSlug string, body *entities.PostRequest) (*entities.Post, error) {
 	var publishedAt *time.Time = nil
 
 	if body.Published {
@@ -54,7 +54,7 @@ func (usecase *postUsecase) CreatePost(userID uint, postSlug string, body *entit
 
 }
 
-func (usecase *postUsecase) UpdatePost(id uint, postSlug string, body *entities.PostReq) error {
+func (usecase *postUsecase) UpdatePost(id uint, postSlug string, body *entities.PostRequest) (*entities.Post, error) {
 	var publishedAt *time.Time = nil
 
 	if body.Published {
@@ -67,6 +67,7 @@ func (usecase *postUsecase) UpdatePost(id uint, postSlug string, body *entities.
 		Title:       body.Title,
 		ParentID:    body.ParentID,
 		Slug:        postSlug,
+		Image:       body.Image,
 		Content:     body.Content,
 		Published:   body.Published,
 		PublishedAt: publishedAt,
@@ -75,6 +76,6 @@ func (usecase *postUsecase) UpdatePost(id uint, postSlug string, body *entities.
 	return usecase.repo.UpdatePost(post)
 }
 
-func (usecase *postUsecase) DeletePost(id uint) error {
+func (usecase *postUsecase) DeletePost(id uint) (*entities.Post, error) {
 	return usecase.repo.DeletePost(id)
 }
