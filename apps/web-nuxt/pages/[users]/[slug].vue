@@ -1,5 +1,18 @@
 <script lang="ts" setup>
 import { EntitiesPostRes } from '~~/codegen/api'
+import { baseURL, dicebearMedia } from '~~/constants'
+
+function getPostDetails(): Promise<EntitiesPostRes> {
+	return $fetch(`${baseURL}/api/v1/posts/${slug}`)
+}
+
+function computePostedOn() {
+	return `${
+		postDetails.value?.published ? 'Posted on' : 'Created on'
+	} ${convertDate(
+		postDetails.value?.publishedAt ?? postDetails.value?.createdAt
+	)}`
+}
 
 const route = useRoute()
 // const tags = ['tag1', 'tag2']
@@ -12,11 +25,11 @@ if (typeof route.params.slug === 'object') {
 
 const { data: postDetails } = await useAsyncData<EntitiesPostRes>(
 	`${slug}-details`,
-	() =>
-		$fetch(
-			`https://api-blog-dev-nomorechokedboy.cloud.okteto.net/api/v1/posts/${slug}`
-		)
+	getPostDetails
 )
+const postedOn = computed(computePostedOn)
+
+useHead({ title: postDetails.value?.title })
 </script>
 
 <template>
@@ -35,16 +48,28 @@ const { data: postDetails } = await useAsyncData<EntitiesPostRes>(
 					class="bg-white border border-neutral-200"
 				>
 					<nuxt-img
+						v-if="postDetails?.image"
 						sizes="sm:100vw md:680px, 806px"
-						src="https://res.cloudinary.com/practicaldev/image/fetch/s--h0iBOiYw--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qxfnu4dptk7iazjv6mjg.png"
+						:src="postDetails.image"
 					/>
 					<section
 						class="flex flex-col gap-3 p-4"
 					>
 						<NoClue
-							description="Lmao"
-							src="https://api.dicebear.com/6.x/icons/svg?seed=CheeseRaa"
-							title="owner.name"
+							:alt="`${postDetails?.user?.fullName} avatar`"
+							:description="postedOn"
+							:src="
+								postDetails
+									?.user
+									?.avatar ||
+								`${dicebearMedia}${postDetails?.user?.fullName}`
+							"
+							:title="
+								postDetails
+									?.user
+									?.fullName ||
+								'User name'
+							"
 						/>
 						<h1
 							class="text-3xl font-bold text-neutral-900"
