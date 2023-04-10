@@ -6,9 +6,12 @@ import HeartIcon from '~icons/solar/heart-angle-bold'
 export interface ArticleFooterProps {
 	like: number
 	comment: string
+	user: string
+	slug: string
 }
 
-const { comment, like } = defineProps<ArticleFooterProps>()
+const { comment, like, slug, user } = defineProps<ArticleFooterProps>()
+const articleCommentsSection = `/${user}/${slug}#comments`
 </script>
 
 <template>
@@ -28,18 +31,20 @@ const { comment, like } = defineProps<ArticleFooterProps>()
 					</span>
 				</template>
 			</Button>
-			<Button
-				class="!text-neutral-800"
-				color="gray"
-				variant="subtle"
-			>
-				<ChatIcon />
-				<span
-					class="hidden text-sm font-normal text-neutral-700 sm:inline"
+			<NuxtLink :to="articleCommentsSection">
+				<Button
+					class="!text-neutral-800"
+					color="gray"
+					variant="subtle"
 				>
-					{{ comment }}
-				</span>
-			</Button>
+					<ChatIcon />
+					<span
+						class="hidden text-sm font-normal text-neutral-700 sm:inline"
+					>
+						{{ comment }}
+					</span>
+				</Button>
+			</NuxtLink>
 		</div>
 		<!-- <div class="flex items-center gap-2">
 			<p class="text-xs text-neutral-600">3 min read</p>

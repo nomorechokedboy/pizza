@@ -4,6 +4,7 @@ export interface ArticleProps {
 	owner: {
 		name: string
 		src: string
+		id: number
 	}
 	publishedAt: string
 	title: string
@@ -31,20 +32,22 @@ function haveComments() {
 function calculateTo() {
 	return `/${owner.name}/${slug}`
 }
+
 const comment = computed(haveComments)
 const to = computed(calculateTo)
 </script>
 
 <template>
 	<div class="bg-white shadow rounded overflow-hidden">
-		<nuxt-img v-if="showImage" :src="src" />
+		<nuxt-img v-if="showImage && src" :src="src" />
 		<div class="flex flex-col gap-3 p-4">
 			<NoClue
+				:alt="`${owner.name} avatar`"
 				:description="publishedAt"
 				:src="owner.src"
 				:title="owner.name"
 			/>
-			<div class="flex flex-col">
+			<div class="flex flex-col pl-8">
 				<h2
 					class="mb-1 text-xl font-bold text-neutral-900"
 				>
@@ -54,6 +57,8 @@ const to = computed(calculateTo)
 				</h2>
 				<!-- <Tags :tags="tags" /> -->
 				<ArticleFooter
+					:user="owner.name"
+					:slug="slug"
 					:comment="comment"
 					:like="like"
 				/>
