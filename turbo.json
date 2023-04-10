@@ -4,7 +4,7 @@
 		"build": {
 			"dependsOn": ["^build"],
 			"outputs": ["dist/**", ".next/**"],
-			"env": ["TAURI_DEBUG", "CI"],
+			"env": ["TAURI_DEBUG", "CI", "TAURI_ENV"],
 			"cache": false
 		},
 		"lint": {

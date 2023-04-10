@@ -87,12 +87,12 @@ export default defineNuxtPlugin(() => {
 							error.response.config
 						)
 					})
-					.catch((e) => {
+					.catch(async (e) => {
 						token.value.accessToken =
 							undefined
 						token.value.refreshToken =
 							undefined
-						navigateTo('/login')
+						await navigateTo('/login')
 						return Promise.reject(e)
 					})
 					.finally(createAxiosResponseInterceptor)

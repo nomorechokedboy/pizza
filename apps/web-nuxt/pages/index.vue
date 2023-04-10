@@ -1,5 +1,10 @@
 <script setup lang="ts">
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import { CommonBasePaginationResponseEntitiesPostRes } from '~~/codegen/api'
+import { baseURL, dicebearMedia } from '~~/constants'
+
+dayjs.extend(relativeTime)
 
 type HeaderNav = {
 	content: string
@@ -23,7 +28,7 @@ async function getPosts() {
 	}
 
 	return $fetch<CommonBasePaginationResponseEntitiesPostRes>(
-		`https://api-blog-dev-nomorechokedboy.cloud.okteto.net/api/v1/posts?${queryParams}`
+		`${baseURL}/api/v1/posts?${queryParams}`
 	)
 }
 
@@ -40,11 +45,12 @@ const headerNav: HeaderNav[] = [
     { content: 'Top', match: '/top' } */
 ]
 const route = useRoute()
-const { data: posts } =
+const { data: posts, pending: isPostsPending } =
 	await useAsyncData<CommonBasePaginationResponseEntitiesPostRes>(
 		`posts-${baseQuery.page}-${baseQuery.pageSize}`,
 		getPosts
 	)
+useHead({ title: 'Accessiblog' })
 </script>
 
 <template>
@@ -94,7 +100,9 @@ const { data: posts } =
 					</nav>
 				</header>
 				<div class="flex flex-col gap-2">
-					<!-- <div v-if="loading">Loading...</div> -->
+					<div v-if="isPostsPending">
+						Loading...
+					</div>
 					<Article
 						v-for="(
 							{
@@ -102,25 +110,32 @@ const { data: posts } =
 								id,
 								publishedAt,
 								title,
-								slug
+								slug,
+								comments
 							},
 							i
 						) in posts?.items || []"
-						src="https://res.cloudinary.com/practicaldev/image/fetch/s--iJh8Y2cI--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qqi78z7yx9q6koq6dmrc.png"
 						:owner="{
 							src:
 								user?.avatar ||
-								'https://res.cloudinary.com/practicaldev/image/fetch/s--5VEqFAA8--/c_fill,f_auto,fl_progressive,h_90,q_66,w_90/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/909049/9a19683f-1e9f-4933-bdba-e7ea2fe5e71c.gif',
+								`${dicebearMedia}${user?.fullName}`,
 							name:
-								user?.username ||
-								'User name'
+								user?.fullName ||
+								'User name',
+							id: id ?? 0
 						}"
 						:slug="slug || ''"
 						:tags="['tags']"
-						:publishedAt="publishedAt || ''"
+						:publishedAt="`${convertDate(
+							publishedAt
+						)} (${dayjs(publishedAt).toNow(
+							true
+						)} ago)`"
 						:title="title || ''"
 						:showImage="i === 0"
-						:comments="0"
+						:comments="
+							comments?.length || 0
+						"
 						:like="0"
 						:key="id"
 					/>
