@@ -210,3 +210,19 @@ func (handler *PostHandler) DeletePost(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(post.ToResponse())
 }
+
+// @PostToSpeech godoc
+// @Description Convert post to speech
+// @Summary Convert post to speech
+// @Param content path string true "Content"
+// @Tags Posts
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /posts/text-to-speech/{content} [get]
+func (handler *PostHandler) ConvertToSpeech(c *fiber.Ctx) error {
+	content := c.Params("content")
+	url := "https://api.voicerss.org/?key=817e51130c864a4ab0d6558d46cbee24&hl=en-us&c=MP3&src=" + content
+
+	return c.Redirect(url)
+}
