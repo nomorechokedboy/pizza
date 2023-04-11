@@ -19,14 +19,14 @@
 		"api:integration": "(cd apps/api; go test ./... -run Repository -v; cd ..; cd ..)"
 	},
 	"devDependencies": {
-		"@commitlint/cli": "^17.1.2",
-		"eslint-config-custom": "workspace:*",
+		"@commitlint/cli": "^17.5.1",
+		"eslint-config-custom": "workspace:0.0.0",
 		"husky": "^7.0.4",
-		"lint-staged": "^12.1.2",
-		"nuxt": "^3.1.0",
-		"prettier": "^2.8.4",
+		"lint-staged": "^12.5.0",
+		"nuxt": "^3.3.3",
+		"prettier": "^2.8.7",
 		"prettier-plugin-organize-imports": "^3.2.2",
-		"prettier-plugin-tailwindcss": "^0.2.6",
+		"prettier-plugin-tailwindcss": "^0.2.7",
 		"turbo": "1.5.5"
 	},
 	"engines": {
