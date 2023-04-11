@@ -14,12 +14,13 @@ export default defineNuxtConfig(async () => {
 						content: 'width=device-width, initial-scale=1'
 					},
 					{
-						name: 'description',
-						content: "Accessiblog is a web application that focuses on creating accessible and inclusive blog content. With a range of tools and features, including a rich text editor and image descriptions, Accessiblog makes it easy for bloggers to create content that can be enjoyed by all users. Join our community of bloggers today and start creating content that's accessible to everyone."
-					},
-					{
 						name: 'apple-mobile-web-app-title',
 						content: 'Accessiblog'
+					},
+					{
+						key: 'og:image',
+						property: 'og:image',
+						content: '/logo.png'
 					}
 				],
 				link: [
@@ -43,12 +44,15 @@ export default defineNuxtConfig(async () => {
 				],
 				noscript: [
 					{ children: 'JavaScript is required' }
-				]
+				],
+				htmlAttrs: { lang: 'en' }
 			}
 		},
 		modules: [
 			...defaultNuxtConfig.modules,
-			['unplugin-icons/nuxt', { scale: 1.5 }]
+			['unplugin-icons/nuxt', { scale: 1.5 }],
+			'v-satori/nuxt',
+			'unplugin-font-to-buffer/nuxt'
 		],
 		css: ['ui-vue/dist/style.css'],
 		vite: {
@@ -75,7 +79,8 @@ export default defineNuxtConfig(async () => {
 		image: {
 			dir: 'assets/'
 		},
-		ssr: process.env.TAURI_ENV === undefined
+		ssr: process.env.TAURI_ENV === undefined,
+		plugins: [{ src: '~/plugins/vercel.ts', mode: 'client' }]
 	}
 
 	return config

@@ -50,7 +50,11 @@ const { data: posts, pending: isPostsPending } =
 		`posts-${baseQuery.page}-${baseQuery.pageSize}`,
 		getPosts
 	)
-useHead({ title: 'Accessiblog' })
+useSeoMeta({
+	title: 'Accessiblog',
+	description:
+		"Accessiblog is a web application that focuses on creating accessible and inclusive blog content. With a range of tools and features, including a rich text editor and image descriptions, Accessiblog makes it easy for bloggers to create content that can be enjoyed by all users. Join our community of bloggers today and start creating content that's accessible to everyone."
+})
 </script>
 
 <template>
