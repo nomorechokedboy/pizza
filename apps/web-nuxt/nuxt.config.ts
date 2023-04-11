@@ -16,12 +16,12 @@ export default defineNuxtConfig(async () => {
 					{
 						name: 'apple-mobile-web-app-title',
 						content: 'Accessiblog'
-					},
-					{
-						key: 'og:image',
-						property: 'og:image',
-						content: '/logo.png'
 					}
+					/* {
+                        key: 'og:image',
+                        property: 'og:image',
+                        content: '/logo.png'
+                    } */
 				],
 				link: [
 					{
