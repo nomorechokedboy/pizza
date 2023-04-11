@@ -82,7 +82,7 @@ export default defineNuxtConfig(async () => {
 		ssr: process.env.TAURI_ENV === undefined,
 		plugins: [{ src: '~/plugins/vercel.ts', mode: 'client' }],
 		webVitals: {
-			debug: true
+			debug: false
 		}
 	}
 
