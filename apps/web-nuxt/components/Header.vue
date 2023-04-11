@@ -1,13 +1,21 @@
 <script setup lang="ts">
 import { ActionIcon, Button } from 'ui-vue'
+import { reactive } from 'vue'
 import IconBell from '~icons/ph/bell-simple'
+import Avatar from './Avatar.vue'
+import Dropdown from './Dropdown.vue'
 
 const token = useAuthToken()
 const isLoggedIn = computed(
 	() => token.value.accessToken && token.value.refreshToken
 )
 const { $blogApi } = useNuxtApp()
-
+const toggle = reactive({
+	open: false,
+	onChange() {
+		this.open = !this.open
+	}
+})
 watchEffect(() => {
 	if (isLoggedIn.value) {
 		$blogApi.auth.authMeGet()
@@ -45,6 +53,34 @@ watchEffect(() => {
 						<IconBell />
 					</span>
 				</ActionIcon>
+				<div
+					class="relative inline-block"
+					v-if="isLoggedIn"
+				>
+					<ActionIcon
+						radius="xl"
+						size="lg"
+						variant="subtle"
+						class="focus:ring-4 focus:outline-none focus:ring-gray-300"
+					>
+						<Avatar
+							class="md:w-8"
+							width="24"
+							:src="'https://avatars.githubusercontent.com/u/42694704?v=4'"
+							@click="
+								toggle.onChange()
+							"
+						/>
+					</ActionIcon>
+					<Dropdown
+						:open="toggle.open"
+						:user="{
+							name: 'Đỗ Viên',
+							username: 'Cpea2506'
+						}"
+					/>
+				</div>
+
 				<NuxtLink
 					v-if="!isLoggedIn"
 					class="hidden md:inline"
