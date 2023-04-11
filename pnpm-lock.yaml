@@ -180,7 +180,7 @@ importers:
                         eslint: 8.33.0
                         eslint-config-custom: link:../../packages/eslint-config-custom
                         internal-ip: 7.0.0
-                        nuxt: 3.2.3_my5foh5jeg23du6lusbt4hk4i4
+                        nuxt: 3.2.3_vqlbkzbzw4km7gim5ci7kvytgi
                         nuxt-svgo: 1.1.0_etfipyja6odb2zc7u2ky2hicbm
                         nuxt-vitest: 0.6.4_wxz2ar5d2nqn3ga62bvmh7iw6m
                         postcss: 8.4.21
@@ -4186,7 +4186,7 @@ packages:
                         - vue-tsc
                 dev: true
 
-        /@nuxt/vite-builder/3.2.3_mdwxxdjvwop4ozmnrckl7l7l5i:
+        /@nuxt/vite-builder/3.2.3_lhrcj2pmc45mv4vib5lc4nvphy:
                 resolution:
                         {
                                 integrity: sha512-a+VZAmWUPJnUWqkZSY+bqXUCPxVfllucxXXA8MxxSdg1mgSVvrGkHUQoi6uNt1nfWrvNfkgkjlXLY0Qr+DrX+A==
@@ -4228,8 +4228,8 @@ packages:
                         strip-literal: 1.0.1
                         ufo: 1.1.1
                         unplugin: 1.3.1
-                        vite: 4.1.4
-                        vite-node: 0.29.8
+                        vite: 4.1.4_@types+node@17.0.45
+                        vite-node: 0.29.8_@types+node@17.0.45
                         vite-plugin-checker: 0.5.6_fvcwmh33jn6c54wu72r4izwi7e
                         vue: 3.2.47
                         vue-bundle-renderer: 1.0.3
@@ -6311,7 +6311,7 @@ packages:
                         '@babel/core': 7.21.4
                         '@babel/plugin-transform-typescript': 7.21.3_@babel+core@7.21.4
                         '@vue/babel-plugin-jsx': 1.1.1_@babel+core@7.21.4
-                        vite: 4.1.4
+                        vite: 4.1.4_@types+node@17.0.45
                         vue: 3.2.47
                 transitivePeerDependencies:
                         - supports-color
@@ -6369,7 +6369,7 @@ packages:
                         vite: ^4.0.0
                         vue: ^3.2.25
                 dependencies:
-                        vite: 4.1.4
+                        vite: 4.1.4_@types+node@17.0.45
                         vue: 3.2.47
                 dev: true
 
@@ -15453,7 +15453,7 @@ packages:
                         get-port-please: 3.0.1
                         perfect-debounce: 0.1.3
                         std-env: 3.3.1
-                        vite: 4.2.1
+                        vite: 4.2.1_@types+node@17.0.45
                         vitest: 0.28.3_@vitest+ui@0.28.3
                         vitest-environment-nuxt: 0.6.4_mgwguioa7ebba72hrx7rrjnk6m
                 transitivePeerDependencies:
@@ -15631,7 +15631,7 @@ packages:
                         - vue-tsc
                 dev: true
 
-        /nuxt/3.2.3_my5foh5jeg23du6lusbt4hk4i4:
+        /nuxt/3.2.3_vqlbkzbzw4km7gim5ci7kvytgi:
                 resolution:
                         {
                                 integrity: sha512-e211l9XQYvb2cUv5ji+IsX8305QyozUk5pFMyl7oAFssONzPNK4AXq7ZUzXd8qtxStsyByOgQDdAF353sQayOg==
@@ -15647,7 +15647,7 @@ packages:
                         '@nuxt/schema': 3.2.3_rollup@3.20.2
                         '@nuxt/telemetry': 2.1.10_rollup@3.20.2
                         '@nuxt/ui-templates': 1.1.1
-                        '@nuxt/vite-builder': 3.2.3_mdwxxdjvwop4ozmnrckl7l7l5i
+                        '@nuxt/vite-builder': 3.2.3_lhrcj2pmc45mv4vib5lc4nvphy
                         '@unhead/ssr': 1.1.25
                         '@vue/reactivity': 3.2.47
                         '@vue/shared': 3.2.47
@@ -20824,7 +20824,7 @@ packages:
                         - terser
                 dev: true
 
-        /vite-node/0.29.8:
+        /vite-node/0.29.8_@types+node@17.0.45:
                 resolution:
                         {
                                 integrity: sha512-b6OtCXfk65L6SElVM20q5G546yu10/kNrhg08afEoWlFRJXFq9/6glsvSVY+aI6YeC1tu2TtAqI2jHEQmOmsFw==
@@ -20837,7 +20837,7 @@ packages:
                         mlly: 1.2.0
                         pathe: 1.1.0
                         picocolors: 1.0.0
-                        vite: 4.2.1
+                        vite: 4.2.1_@types+node@17.0.45
                 transitivePeerDependencies:
                         - '@types/node'
                         - less
@@ -21005,7 +21005,7 @@ packages:
                         strip-ansi: 6.0.1
                         tiny-invariant: 1.3.1
                         typescript: 5.0.4
-                        vite: 4.1.4
+                        vite: 4.1.4_@types+node@17.0.45
                         vscode-languageclient: 7.0.0
                         vscode-languageserver: 7.0.0
                         vscode-languageserver-textdocument: 1.0.8
@@ -21198,7 +21198,7 @@ packages:
                         fsevents: 2.3.2
                 dev: true
 
-        /vite/4.1.4:
+        /vite/4.1.4_@types+node@17.0.45:
                 resolution:
                         {
                                 integrity: sha512-3knk/HsbSTKEin43zHu7jTwYWv81f8kgAL99G5NWBcA1LKvtvcVAC4JjBH1arBunO9kQka+1oGbrMKOjk4ZrBg==
@@ -21226,6 +21226,7 @@ packages:
                         terser:
                                 optional: true
                 dependencies:
+                        '@types/node': 17.0.45
                         esbuild: 0.16.17
                         postcss: 8.4.21
                         resolve: 1.22.1
@@ -21305,42 +21306,6 @@ packages:
                         resolve: 1.22.1
                         rollup: 3.19.1
                         sass: 1.58.3
-                optionalDependencies:
-                        fsevents: 2.3.2
-                dev: true
-
-        /vite/4.2.1:
-                resolution:
-                        {
-                                integrity: sha512-7MKhqdy0ISo4wnvwtqZkjke6XN4taqQ2TBaTccLIpOKv7Vp2h4Y+NpmWCnGDeSvvn45KxvWgGyb0MkHvY1vgbg==
-                        }
-                engines: { node: ^14.18.0 || >=16.0.0 }
-                hasBin: true
-                peerDependencies:
-                        '@types/node': '>= 14'
-                        less: '*'
-                        sass: '*'
-                        stylus: '*'
-                        sugarss: '*'
-                        terser: ^5.4.0
-                peerDependenciesMeta:
-                        '@types/node':
-                                optional: true
-                        less:
-                                optional: true
-                        sass:
-                                optional: true
-                        stylus:
-                                optional: true
-                        sugarss:
-                                optional: true
-                        terser:
-                                optional: true
-                dependencies:
-                        esbuild: 0.17.16
-                        postcss: 8.4.21
-                        resolve: 1.22.2
-                        rollup: 3.20.2
                 optionalDependencies:
                         fsevents: 2.3.2
                 dev: true
