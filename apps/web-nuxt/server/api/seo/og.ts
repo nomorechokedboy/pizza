@@ -1,6 +1,7 @@
 // https://github.com/wobsoriano/unplugin-font-to-buffer
 import Roboto from '@/assets/fonts/Roboto/Roboto-Regular.ttf'
 import OgImage from '@/components/OgImage.ts'
+import { Resvg } from '@resvg/resvg-js'
 import { satori } from 'v-satori'
 
 export default eventHandler(async (event) => {
@@ -23,7 +24,18 @@ export default eventHandler(async (event) => {
 		]
 	})
 
-	setHeader(event, 'Content-Type', 'image/svg+xml')
+	const resvg = new Resvg(svg, {
+		background: 'rgba(238, 235, 230, .9)'
+	})
+	const pngData = resvg.render()
+	const pngBuffer = pngData.asPng()
 
-	return svg
+	setHeader(event, 'Content-Type', 'image/png')
+	setHeader(
+		event,
+		'Cache-Control',
+		'public, immutable, no-transform, max-age=31536000'
+	)
+
+	return pngBuffer
 })
