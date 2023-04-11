@@ -27,7 +27,7 @@ func NewCommentHandler(usecase usecase.CommentUsecase) *CommentHandler {
 // @Param  pageSize query int false "Page Size"
 // @Param sort query string false "Sort direction" Enums(asc, desc) default(desc)
 // @Param sortBy query string false "Sort by" Enums(id, user_id, parent_id) default(id)
-// @Success 200 {object} common.BasePaginationResponse[entities.CommentRes]
+// @Success 200 {object} common.BasePaginationResponse[entities.CommentResponse]
 // @Failure 404
 // @Failure 500
 // @Router /comments/ [get]
@@ -54,8 +54,8 @@ func (handler *CommentHandler) GetAllComments(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusNotFound, "failed to get all comments")
 	}
 
-	commentRes := common.BasePaginationResponse[entities.CommentRes]{
-		Items: []entities.CommentRes{},
+	commentRes := common.BasePaginationResponse[entities.CommentResponse]{
+		Items: []entities.CommentResponse{},
 	}
 	commentRes.Page = comments.Page
 	commentRes.PageSize = comments.PageSize
@@ -73,40 +73,42 @@ func (handler *CommentHandler) GetAllComments(c *fiber.Ctx) error {
 // @Description Create comment
 // @Tags Comments
 // @Accept json
-// @Param comment body entities.CommentReq true "Comment"
-// @Success 200
+// @Param comment body entities.CommentRequest true "Comment"
+// @Success 201 {object} entities.CommentResponse
 // @Failure 400
 // @Failure 500
 // @Security ApiKeyAuth
 // @Router /comments/ [post]
 func (handler *CommentHandler) CreateComment(c *fiber.Ctx) error {
 	authID := c.Locals("uId").(uint)
-	req := new(entities.CommentReq)
+	req := new(entities.CommentRequest)
 
 	if err := c.BodyParser(req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request body")
 	}
 
-	if err := handler.usecase.CreateComment(authID, req); err != nil {
+	comment, err := handler.usecase.CreateComment(authID, req)
+
+	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to create new comment")
 	}
 
-	return c.Status(fiber.StatusCreated).SendString("Created successfully")
+	return c.Status(fiber.StatusCreated).JSON(comment.ToResponse())
 }
 
 // @UpdateComment godoc
 // @Description Update comment
 // @Summary Update comment with new message
 // @Param id path int true "Comment ID"
-// @Param comment body handler.UpdateComment.commentReq true "Comment"
+// @Param comment body handler.UpdateComment.commentRequest true "Comment"
 // @Tags Comments
-// @Success 200
+// @Success 200 {object} entities.CommentResponse
 // @Failure 400
 // @Failure 500
 // @Security ApiKeyAuth
 // @Router /comments/{id} [put]
 func (handler *CommentHandler) UpdateComment(c *fiber.Ctx) error {
-	type commentReq struct {
+	type commentRequest struct {
 		Content string
 	}
 
@@ -116,17 +118,19 @@ func (handler *CommentHandler) UpdateComment(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid comment ID")
 	}
 
-	req := new(commentReq)
+	req := new(commentRequest)
 
 	if err := c.BodyParser(req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request body")
 	}
 
-	if err := handler.usecase.UpdateComment(uint(id), req.Content); err != nil {
+	comment, err := handler.usecase.UpdateComment(uint(id), req.Content)
+
+	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to update specfied comment")
 	}
 
-	return c.Status(fiber.StatusOK).SendString("Updated successfully")
+	return c.Status(fiber.StatusOK).JSON(comment.ToResponse())
 }
 
 // @DeleteComment godoc
@@ -135,7 +139,7 @@ func (handler *CommentHandler) UpdateComment(c *fiber.Ctx) error {
 // @Param id path int true "Comment ID"
 // @Tags Comments
 // @Produce json
-// @Success 200
+// @Success 200 {object} entities.CommentResponse
 // @Failure 400
 // @Failure 500
 // @security ApiKeyAuth
@@ -147,9 +151,11 @@ func (handler *CommentHandler) DeleteComment(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid comment ID")
 	}
 
-	if err := handler.usecase.DeleteComment(uint(id)); err != nil {
+	comment, err := handler.usecase.DeleteComment(uint(id))
+
+	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to delete specfied comment")
 	}
 
-	return c.Status(fiber.StatusOK).SendString("Deleted successfully")
+	return c.Status(fiber.StatusOK).JSON(comment.ToResponse())
 }

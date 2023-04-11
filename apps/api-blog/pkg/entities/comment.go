@@ -21,7 +21,7 @@ type Comment struct {
 	DeletedAt gorm.DeletedAt `json:"-"`
 }
 
-type CommentRes struct {
+type CommentResponse struct {
 	ID        uint      `json:"id"`
 	User      User      `json:"user"`
 	Parent    *Comment  `json:"parent"`
@@ -31,8 +31,8 @@ type CommentRes struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-func (comment *Comment) ToResponse() CommentRes {
-	return CommentRes{
+func (comment *Comment) ToResponse() CommentResponse {
+	return CommentResponse{
 		ID:        comment.ID,
 		PostID:    comment.PostID,
 		User:      comment.User,
@@ -43,7 +43,7 @@ func (comment *Comment) ToResponse() CommentRes {
 	}
 }
 
-type CommentReq struct {
+type CommentRequest struct {
 	PostID   uint   `json:"postId"`
 	ParentID *uint  `json:"parentId"`
 	Content  string `json:"content"`
