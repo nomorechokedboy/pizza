@@ -4,6 +4,8 @@ import (
 	"api-blog/pkg/entities"
 	"api-blog/pkg/repository"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserUsecase interface {
@@ -12,7 +14,7 @@ type UserUsecase interface {
 	GetUserByUsername(username string) (*entities.User, error)
 	GetUserByIdentifier(indentifier string) (*entities.User, error)
 	GetUserByEmail(email string) (*entities.User, error)
-	UpdateUserInfo(fullName, username, phone, email, avatar string, uId uint) error
+	UpdateUserInfo(password, fullName, username, phone, email, avatar string, uId uint) error
 	UpdatePasswordById(password string, userId uint) error
 }
 
@@ -25,12 +27,13 @@ func NewUserUsecase(repo repository.UserRepository) UserUsecase {
 }
 
 func (usecase *userUsecase) CreateUser(req entities.SignUpBody) error {
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), 14)
+	if err != nil {
+		return err
+	}
 	user := &entities.User{
 		Identifier: req.Email,
-		Password:   req.Password,
-		Username:   *req.Username,
-		Email:      req.Email,
-		Fullname: 	*req.Fullname,
+		Password:   string(hashPassword),
 		CreatedAt:  time.Now(),
 		UpdateAt:   time.Now(),
 	}
@@ -54,9 +57,18 @@ func (usecase *userUsecase) GetUserByIdentifier(identifier string) (*entities.Us
 	return usecase.repo.GetUserByIdentifier(identifier)
 }
 
-func (usecase *userUsecase) UpdateUserInfo(fullName, username, phone, email, avatar string, uId uint) error {
+func (usecase *userUsecase) UpdateUserInfo(password, fullName, username, phone, email, avatar string, uId uint) error {
+	var hashPassword []byte
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	if err != nil {
+		return err
+	}
+	if password == "" {
+		hashPassword = []byte(password)
+	}
 	user := &entities.User{
 		Id:          uId,
+		Password:    string(hashPassword),
 		PhoneNumber: phone,
 		Email:       email,
 		Username:    username,
@@ -68,9 +80,15 @@ func (usecase *userUsecase) UpdateUserInfo(fullName, username, phone, email, ava
 }
 
 func (usecase *userUsecase) UpdatePasswordById(password string, userId uint) error {
+	var hashPassword []byte
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	if err != nil {
+		return err
+	}
+
 	user := &entities.User{
 		Id:       userId,
-		Password: password,
+		Password: string(hashPassword),
 	}
 	return usecase.repo.UpdateUserInfo(user)
 

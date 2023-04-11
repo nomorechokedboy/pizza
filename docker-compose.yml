@@ -24,10 +24,8 @@ services:
                         context: .
                         dockerfile: apps/api-blog/Dockerfile
                 depends_on:
-                        postgres:
-                                condition: service_healthy
-                        minio-svc:
-                                condition: service_healthy
+                        - postgres
+                        - minio-svc
                 environment:
                         - DB_PORT=5432
                         - DB_HOST=postgres
@@ -52,7 +50,7 @@ services:
                 ports:
                         - '5432:5432'
                 volumes:
-                        - postgresql-data:/var/lib/postgresql/data
+                        - ./data/postgresql:/var/lib/postgresql/data
                 healthcheck:
                         test: ['CMD-SHELL', 'pg_isready -d db_prod']
                         interval: 30s
@@ -113,9 +111,3 @@ volumes:
                         type: none
                         o: bind
                         device: ${PWD}/data/minio
-        postgresql-data:
-                driver: local
-                driver_opts:
-                        type: none
-                        o: bind
-                        device: ${PWD}/data/postgresql

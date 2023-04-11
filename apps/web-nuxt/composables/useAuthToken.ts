@@ -3,13 +3,12 @@ export type AuthToken = {
 	refreshToken?: string
 }
 
-export function useAuthToken() {
+export const useAuthToken = () => {
 	return useCookie<AuthToken>('token', {
 		default: () => ({
 			accessToken: undefined,
 			refreshToken: undefined
 		}),
-		sameSite: 'strict',
-		maxAge: 60 * 60
+		sameSite: 'strict'
 	})
 }

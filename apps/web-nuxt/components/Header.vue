@@ -16,16 +16,12 @@ watchEffect(() => {
 </script>
 
 <template>
-	<div class="grid place-items-center p-2.5 bg-white shadow-md lg:px-8">
+	<header
+		class="grid place-items-center p-2.5 bg-white shadow-md sticky top-0 z-20 lg:px-8"
+	>
 		<div
-			class="max-w-7xl w-full flex flex-row items-center justify-between px-2"
+			class="max-w-7xl w-full flex flex-row items-center justify-end px-2"
 		>
-			<div class="flex items-center gap-4 w-1/2">
-				<div class="w-[50px] h-10 bg-black"></div>
-				<div
-					class="bg-sky-500 h-10 lg:w-full lg:max-w-md"
-				></div>
-			</div>
 			<div class="flex flex-row gap-2">
 				<NuxtLink v-if="isLoggedIn" to="/new">
 					<Button color="indigo"
@@ -45,18 +41,14 @@ watchEffect(() => {
 						<IconBell />
 					</span>
 				</ActionIcon>
-				<NuxtLink
-					v-if="!isLoggedIn"
-					class="hidden md:inline"
-					to="/login"
-				>
+				<NuxtLink v-if="!isLoggedIn" to="/login">
 					<Button
 						variant="subtle"
 						color="indigo"
 						class="text-black group"
 					>
 						<span
-							class="text-neutral-700 font-normal text-base group-hover:underline group-hover:text-indigo-500"
+							class="text-neutral-700 font-normal text-base hidden group-hover:underline group-hover:text-indigo-500 md:block"
 							>Log in</span
 						>
 					</Button>
@@ -68,5 +60,5 @@ watchEffect(() => {
 				</NuxtLink>
 			</div>
 		</div>
-	</div>
+	</header>
 </template>
