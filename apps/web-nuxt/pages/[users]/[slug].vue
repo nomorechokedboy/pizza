@@ -27,7 +27,9 @@ const { data: postDetails } = await useAsyncData<EntitiesPostRes>(
 	`${slug}-details`,
 	getPostDetails
 )
-const url = `/api/seo/og?title=${postDetails.value?.title}`
+const url =
+	postDetails.value?.image ??
+	`/api/seo/og?title=${postDetails.value?.title}`
 const postedOn = computed(computePostedOn)
 useSeoMeta({
 	title: postDetails.value?.title,
