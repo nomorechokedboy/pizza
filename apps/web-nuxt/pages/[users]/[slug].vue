@@ -31,7 +31,7 @@ const postedOn = computed(computePostedOn)
 useSeoMeta({
 	title: postDetails.value?.title,
 	description: postDetails.value?.content,
-	ogImage: `/api/seo/og?title=${postDetails.value?.title}`
+	ogImageUrl: `/api/seo/og?title=${postDetails.value?.title}`
 })
 </script>
 
