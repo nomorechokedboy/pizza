@@ -7,9 +7,9 @@ import (
 	"api-blog/pkg/usecase"
 	"api-blog/templates"
 	"bytes"
+	"fmt"
 	"net/http"
 	"net/smtp"
-	"strings"
 	"text/template"
 
 	"github.com/gofiber/fiber/v2"
@@ -42,19 +42,15 @@ func (handler *UserHandler) CreateUser(c *fiber.Ctx) error {
 	if err := c.BodyParser(req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request body")
 	}
-	hashPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), 14)
-	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "something bad happened")
+
+	fmt.Println("DEBUG: ", *req)
+	if cc, err := handler.usecase.GetUserByIdentifier(req.Email); err == nil {
+		fmt.Println("DEBUG: ", cc)
+		return fiber.NewError(fiber.StatusConflict, "indentifier already existed")
 	}
-	req.Password = string(hashPassword)
-	errors := handler.usecase.CreateUser(*req)
-	if errors != nil && strings.Contains(errors.Error(), "duplicate key value violates unique") {
-		if strings.Contains(errors.Error(), "username") {
-			return fiber.NewError(fiber.StatusConflict, "Username already exist")
-		}
-		return fiber.NewError(fiber.StatusConflict, "Email already exist")
-	} else if errors != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Something bad happened")
+	err := handler.usecase.CreateUser(*req)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "failed to create New user")
 	}
 	return c.Status(http.StatusCreated).SendString("Create success")
 }
@@ -76,7 +72,7 @@ func (handler *UserHandler) Login(c *fiber.Ctx) error {
 	}
 	user, err := handler.usecase.GetUserByIdentifier(req.Identifier)
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "Identifier does not exist")
+		return fiber.NewError(fiber.ErrUnauthorized.Code, "Identifier does not exist")
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
 		return fiber.NewError(fiber.StatusForbidden, "incorrect password")
@@ -100,7 +96,7 @@ func (handler *UserHandler) Login(c *fiber.Ctx) error {
 // @Description Get UserInfo by accessToken
 // @Tags Auth
 // @Accept json
-// @Success 200 {object} entities.UserResponse{}
+// @Success 200 {object} entities.User{}
 // @Security ApiKeyAuth
 // @Router /auth/me [get]
 func (handler *UserHandler) GetAuthUserById(c *fiber.Ctx) error {
@@ -112,16 +108,7 @@ func (handler *UserHandler) GetAuthUserById(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.ErrNotFound
 	}
-
-	newUser := entities.UserResponse{
-		Id:          user.Id,
-		Email:       user.Email,
-		Avatar:      user.Avatar,
-		Username:    user.Username,
-		Fullname:    user.Fullname,
-		PhoneNumber: user.PhoneNumber,
-	}
-	return c.Status(fiber.StatusOK).JSON(newUser)
+	return c.JSON(user)
 }
 
 // UpdateUserByToken
@@ -147,15 +134,11 @@ func (handler *UserHandler) UpdateUserById(c *fiber.Ctx) error {
 	if err := c.BodyParser(req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request body")
 	}
-
-	updateErr := handler.usecase.UpdateUserInfo(req.Fullname, req.Username, req.PhoneNumber, req.Email, req.Avatar, user.Id)
-	if updateErr != nil && strings.Contains(updateErr.Error(), "duplicate key value violates unique") {
-		if strings.Contains(updateErr.Error(), "username") {
-			return fiber.NewError(fiber.StatusConflict, "Username already exist")
-		}
-		return fiber.NewError(fiber.StatusConflict, "Email already exist")
-	} else if updateErr != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Something bad happened")
+	if _, err := handler.usecase.GetUserByUsername(req.Username); err == nil {
+		return fiber.NewError(fiber.StatusConflict, "Username already existed")
+	}
+	if err := handler.usecase.UpdateUserInfo(req.Password, req.Fullname, req.Username, req.PhoneNumber, req.Email, req.Avatar, user.Id); err != nil {
+		return fiber.NewError(fiber.ErrInternalServerError.Code, "can not update")
 	}
 	newUser, err := handler.usecase.GetUserById(user.Id)
 
@@ -203,15 +186,15 @@ func (handler *UserHandler) ForgotPassword(c *fiber.Ctx) error {
 	mine := "MINE-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 	msg := []byte(subject + mine + buff.String())
 
-	sendMailErr := smtp.SendMail(
+	smtp.SendMail(
 		"smtp.gmail.com:587",
 		auth,
 		handler.config.AuthEmail.Email,
 		[]string{reqEmail.Email},
 		msg,
 	)
-	if sendMailErr != nil {
-		return fiber.NewError(fiber.ErrInternalServerError.Code, sendMailErr.Error())
+	if err != nil {
+		return fiber.NewError(fiber.ErrInternalServerError.Code, err.Error())
 	}
 	return c.SendString("Please check your email")
 }
@@ -238,12 +221,7 @@ func (handler *UserHandler) ResetPassword(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.StatusUnauthorized, err.Error())
 	}
-
-	hashPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword.Password), 14)
-	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError)
-	}
-	if err := handler.usecase.UpdatePasswordById(string(hashPassword), userId); err != nil {
+	if err := handler.usecase.UpdatePasswordById(newPassword.Password, userId); err != nil {
 		return fiber.NewError(fiber.ErrInternalServerError.Code, err.Error())
 	}
 	return c.Status(http.StatusOK).SendString("Password is reseted")
@@ -276,41 +254,4 @@ func (handler *UserHandler) FindUserById(c *fiber.Ctx) error {
 		Avatar:      user.Avatar,
 	}
 	return c.Status(http.StatusOK).JSON(userRes)
-}
-
-// UpdatePassword
-// @Update godoc
-// @Description Update Password
-// @Tags Auth
-// @Accept json
-// @Param todo body entities.UpdatePassword true "Updated Password"
-// @Success 200
-// @Security ApiKeyAuth
-// @Router /auth/update-password [put]
-func (handler *UserHandler) UpdatePassword(c *fiber.Ctx) error {
-	authId, ok := c.Locals("uId").(uint)
-	if !ok {
-		return fiber.NewError(fiber.ErrUnauthorized.Code, "Token is wrong or missing")
-	}
-	user, err := handler.usecase.GetUserById(authId)
-	if err != nil {
-		return fiber.ErrNotFound
-	}
-	var req entities.UpdatePassword
-	if err := c.BodyParser(&req); err != nil {
-		return fiber.NewError(fiber.ErrBadRequest.Code, err.Error())
-	}
-
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.OldPassword)); err != nil {
-		return fiber.NewError(fiber.StatusForbidden, "incorrect password")
-	}
-	hashPassword, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), 14)
-	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "something bad happended")
-	}
-	if err := handler.usecase.UpdatePasswordById(string(hashPassword), authId); err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
-	}
-	return c.Status(fiber.StatusOK).SendString("update success")
-
 }

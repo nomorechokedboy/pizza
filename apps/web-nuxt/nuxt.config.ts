@@ -1,6 +1,6 @@
 import { NuxtConfig } from '@nuxt/schema'
-import { internalIpV4 } from 'internal-ip'
 import defaultNuxtConfig from '../../nuxt.config'
+import { internalIpV4 } from 'internal-ip'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig(async () => {
@@ -32,7 +32,11 @@ export default defineNuxtConfig(async () => {
 				}
 			}
 		},
-		image: {}
+		image: {
+			cloudinary: {
+				baseURL: 'https://res.cloudinary.com/nuxt/image/upload/'
+			}
+		}
 	}
 
 	return config
