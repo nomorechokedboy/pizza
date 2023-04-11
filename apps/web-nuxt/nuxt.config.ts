@@ -8,21 +8,6 @@ export default defineNuxtConfig(async () => {
 	const config: NuxtConfig = {
 		app: {
 			head: {
-				meta: [
-					{
-						name: 'viewport',
-						content: 'width=device-width, initial-scale=1'
-					},
-					{
-						name: 'apple-mobile-web-app-title',
-						content: 'Accessiblog'
-					},
-					{
-						key: 'og:image',
-						property: 'og:image',
-						content: '/logo.png'
-					}
-				],
 				link: [
 					{
 						rel: 'icon',

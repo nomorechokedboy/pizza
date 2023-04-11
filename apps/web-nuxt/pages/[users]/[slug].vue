@@ -27,13 +27,11 @@ const { data: postDetails } = await useAsyncData<EntitiesPostRes>(
 	`${slug}-details`,
 	getPostDetails
 )
-const nuxtApp = useNuxtApp()
-const host = nuxtApp.ssrContext?.event.node.req.headers.host
 const postedOn = computed(computePostedOn)
 useSeoMeta({
 	title: postDetails.value?.title,
 	description: postDetails.value?.content,
-	ogImage: `${host}/api/seo/og?title=${postDetails.value?.title}`
+	ogImage: `/api/seo/og?title=${postDetails.value?.title}`
 })
 </script>
 
