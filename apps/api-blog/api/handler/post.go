@@ -34,7 +34,7 @@ func NewPostHandler(usecase usecase.PostUsecase, slugUsecase usecase.SlugUsecase
 // @Param  pageSize query int false "Page Size"
 // @Param sort query string false "Sort direction" Enums(asc, desc) default(desc)
 // @Param sortBy query string false "Sort by" Enums(id, title, slug, user_id, parent_id) default(id)
-// @Success 200 {object} common.BasePaginationResponse[entities.PostRes]
+// @Success 200 {object} common.BasePaginationResponse[entities.PostResponse]
 // @Failure 404
 // @Failure 500
 // @Router /posts [get]
@@ -60,8 +60,8 @@ func (handler *PostHandler) GetAllPosts(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusNotFound, "failed to get all posts")
 	}
 
-	postRes := common.BasePaginationResponse[entities.PostRes]{
-		Items: []entities.PostRes{},
+	postRes := common.BasePaginationResponse[entities.PostResponse]{
+		Items: []entities.PostResponse{},
 	}
 	postRes.Page = posts.Page
 	postRes.PageSize = posts.PageSize
@@ -79,7 +79,7 @@ func (handler *PostHandler) GetAllPosts(c *fiber.Ctx) error {
 // @Description Get post by slug
 // @Tags Posts
 // @Param slug path string true "Post Slug"
-// @Success 200 {object} entities.PostRes
+// @Success 200 {object} entities.PostDetailResponse
 // @Failure 400
 // @Failure 404
 // @Router /posts/{slug} [get]
@@ -91,7 +91,7 @@ func (handler *PostHandler) GetPostBySlug(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusNotFound, "failed to get post")
 	}
 
-	return c.Status(fiber.StatusOK).JSON(post.ToResponse())
+	return c.Status(fiber.StatusOK).JSON(post.ToDetailResponse())
 }
 
 // @CreatePost godoc
@@ -99,8 +99,8 @@ func (handler *PostHandler) GetPostBySlug(c *fiber.Ctx) error {
 // @Description Create post
 // @Tags Posts
 // @Accept json
-// @Param post body entities.PostReq true "Post"
-// @Success 200 {object} entities.PostRes
+// @Param post body entities.PostRequest true "Post"
+// @Success 201 {object} entities.PostDetailResponse
 // @Failure 400
 // @Failure 409
 // @Failure 500
@@ -108,7 +108,7 @@ func (handler *PostHandler) GetPostBySlug(c *fiber.Ctx) error {
 // @Router /posts/ [post]
 func (handler *PostHandler) CreatePost(c *fiber.Ctx) error {
 	authID := c.Locals("uId").(uint)
-	req := new(entities.PostReq)
+	req := new(entities.PostRequest)
 
 	if err := c.BodyParser(req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request body")
@@ -138,16 +138,16 @@ func (handler *PostHandler) CreatePost(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to create post slug")
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(post.ToResponse())
+	return c.Status(fiber.StatusCreated).JSON(post.ToDetailResponse())
 }
 
 // @UpdatePost godoc
 // @Description Update post
 // @Summary Update post with new info
 // @Param id path int true "Post ID"
-// @Param post body entities.PostReq true "Post"
+// @Param post body entities.PostRequest true "Post"
 // @Tags Posts
-// @Success 200
+// @Success 200 {object} entities.PostDetailResponse
 // @Failure 400
 // @Failure 500
 // @Security ApiKeyAuth
@@ -159,7 +159,7 @@ func (handler *PostHandler) UpdatePost(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid post ID")
 	}
 
-	req := new(entities.PostReq)
+	req := new(entities.PostRequest)
 
 	if err := c.BodyParser(req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request body")
@@ -171,7 +171,9 @@ func (handler *PostHandler) UpdatePost(c *fiber.Ctx) error {
 		postSlug = fmt.Sprintf("%s-%d", postSlug, slugCount)
 	}
 
-	if err := handler.usecase.UpdatePost(uint(id), postSlug, req); err != nil {
+	post, err := handler.usecase.UpdatePost(uint(id), postSlug, req)
+
+	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to update specfied post")
 	}
 
@@ -179,7 +181,7 @@ func (handler *PostHandler) UpdatePost(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to create new slug")
 	}
 
-	return c.Status(fiber.StatusOK).SendString("Updated successfully")
+	return c.Status(fiber.StatusOK).JSON(post.ToDetailResponse())
 }
 
 // @DeletePost godoc
@@ -188,7 +190,7 @@ func (handler *PostHandler) UpdatePost(c *fiber.Ctx) error {
 // @Param id path int true "Post ID"
 // @Tags Posts
 // @Produce json
-// @Success 200
+// @Success 200 {object} entities.PostDetailResponse
 // @Failure 400
 // @Failure 500
 // @security ApiKeyAuth
@@ -200,9 +202,11 @@ func (handler *PostHandler) DeletePost(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid post ID")
 	}
 
-	if err := handler.usecase.DeletePost(uint(id)); err != nil {
+	post, err := handler.usecase.DeletePost(uint(id))
+
+	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to delete specfied post")
 	}
 
-	return c.Status(fiber.StatusOK).SendString("Deleted successfully")
+	return c.Status(fiber.StatusOK).JSON(post.ToDetailResponse())
 }

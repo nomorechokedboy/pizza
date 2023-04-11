@@ -48,30 +48,36 @@ func (r *PostGormRepo) GetAllPosts(query *entities.PostQuery) (common.BasePagina
 
 	res.Items = posts
 
+	for i, post := range res.Items {
+		res.Items[i].CommentCount = len(post.Comments)
+	}
+
 	return res, nil
 }
 
 func (r *PostGormRepo) GetPostBySlug(slug string) (*entities.Post, error) {
 	var post entities.Post
 
-	if err := r.db.
+	tx := r.db.
 		Preload(clause.Associations).
 		Joins("JOIN slugs ON slugs.post_id = posts.id AND slugs.slug = ?", slug).
-		First(&post).Error; err != nil {
-		return nil, err
-	}
+		First(&post)
 
-	return &post, nil
+	post.CommentCount = len(post.Comments)
+
+	return &post, tx.Error
 }
 
 func (r *PostGormRepo) CreatePost(post *entities.Post) (*entities.Post, error) {
-	createdPost := r.db.Joins(clause.Associations).Create(&post)
+	tx := r.db.Create(&post)
 
-	return post, createdPost.Error
+	r.db.Preload(clause.Associations).First(&post)
+
+	return post, tx.Error
 }
 
-func (r *PostGormRepo) UpdatePost(post *entities.Post) error {
-	return r.db.Model(&post).Updates(
+func (r *PostGormRepo) UpdatePost(post *entities.Post) (*entities.Post, error) {
+	tx := r.db.Model(&post).Clauses(clause.Returning{}).Updates(
 		map[string]interface{}{
 			"title":        post.Title,
 			"parent_id":    post.ParentID,
@@ -80,12 +86,22 @@ func (r *PostGormRepo) UpdatePost(post *entities.Post) error {
 			"content":      post.Content,
 			"published":    post.Published,
 			"published_at": post.PublishedAt,
-		}).Error
+		})
+
+	r.db.Preload(clause.Associations).First(&post)
+
+	return post, tx.Error
 }
 
-func (r *PostGormRepo) DeletePost(id uint) error {
-	return r.db.
-		Delete(entities.Post{ID: id}).
+func (r *PostGormRepo) DeletePost(id uint) (*entities.Post, error) {
+	post := entities.Post{ID: id}
+
+	r.db.Preload(clause.Associations).First(&post)
+
+	tx := r.db.
+		Delete(&post).
 		Model(entities.Post{ParentID: &id}).
-		Update("parent_id", nil).Error
+		Update("parent_id", nil)
+
+	return &post, tx.Error
 }

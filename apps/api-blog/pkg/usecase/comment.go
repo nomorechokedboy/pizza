@@ -8,9 +8,9 @@ import (
 
 type CommentUsecase interface {
 	GetAllComments(query *entities.CommentQuery) (common.BasePaginationResponse[entities.Comment], error)
-	CreateComment(userID uint, body *entities.CommentReq) error
-	UpdateComment(id uint, content string) error
-	DeleteComment(id uint) error
+	CreateComment(userID uint, body *entities.CommentRequest) (*entities.Comment, error)
+	UpdateComment(id uint, content string) (*entities.Comment, error)
+	DeleteComment(id uint) (*entities.Comment, error)
 }
 
 type commentUsecase struct {
@@ -25,7 +25,7 @@ func (usecase *commentUsecase) GetAllComments(query *entities.CommentQuery) (com
 	return usecase.repo.GetAllComments(query)
 }
 
-func (usecase *commentUsecase) CreateComment(userID uint, body *entities.CommentReq) error {
+func (usecase *commentUsecase) CreateComment(userID uint, body *entities.CommentRequest) (*entities.Comment, error) {
 	comment := &entities.Comment{
 		UserID:   userID,
 		PostID:   body.PostID,
@@ -37,7 +37,7 @@ func (usecase *commentUsecase) CreateComment(userID uint, body *entities.Comment
 
 }
 
-func (usecase *commentUsecase) UpdateComment(id uint, content string) error {
+func (usecase *commentUsecase) UpdateComment(id uint, content string) (*entities.Comment, error) {
 	comment := &entities.Comment{
 		ID:      id,
 		Content: content,
@@ -46,6 +46,6 @@ func (usecase *commentUsecase) UpdateComment(id uint, content string) error {
 	return usecase.repo.UpdateComment(comment)
 }
 
-func (usecase *commentUsecase) DeleteComment(id uint) error {
+func (usecase *commentUsecase) DeleteComment(id uint) (*entities.Comment, error) {
 	return usecase.repo.DeleteComment(id)
 }
