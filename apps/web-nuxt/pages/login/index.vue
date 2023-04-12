@@ -3,7 +3,7 @@ import { SignInForm } from './components'
 
 definePageMeta({
 	layout: 'enter',
-	middleware: ['authn']
+	middleware: ['redirect']
 })
 </script>
 
