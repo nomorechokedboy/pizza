@@ -59,7 +59,7 @@ watchEffect(() => {
 					/>
 				</NuxtLink>
 				<div
-					class="bg-sky-500 h-10 lg:w-full lg:max-w-md"
+					class="bg-transparent h-10 lg:w-full lg:max-w-md"
 				></div>
 			</div>
 			<div class="flex flex-row gap-2 md:gap-5">
