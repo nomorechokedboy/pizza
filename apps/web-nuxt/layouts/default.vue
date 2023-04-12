@@ -34,3 +34,9 @@ useHead({
 		</footer>
 	</div>
 </template>
+
+<style lang="postcss">
+.skeleton {
+	@apply pointer-events-none relative z-10 inline-block w-full animate-pulse select-none overflow-hidden rounded bg-slate-200 text-transparent;
+}
+</style>

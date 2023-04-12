@@ -8,6 +8,7 @@ export interface ArticleFooterProps {
 	comment: string
 	user: string
 	slug: string
+	loading?: boolean
 }
 
 const { comment, like, slug, user } = defineProps<ArticleFooterProps>()
@@ -16,7 +17,7 @@ const articleCommentsSection = `/${user}/${slug}#comments`
 
 <template>
 	<div class="flex items-center justify-between">
-		<div class="flex items-center gap-7 py-2">
+		<div class="flex-1 flex items-center gap-7 py-2">
 			<Button v-if="like !== 0" color="gray" variant="subtle">
 				<template #leftIcon>
 					<HeartIcon />
@@ -31,18 +32,26 @@ const articleCommentsSection = `/${user}/${slug}#comments`
 					</span>
 				</template>
 			</Button>
-			<NuxtLink :to="articleCommentsSection">
+			<NuxtLink
+				:class="{ skeleton: loading }"
+				:to="articleCommentsSection"
+			>
 				<Button
 					class="!text-neutral-800"
 					color="gray"
 					variant="subtle"
 				>
-					<ChatIcon />
-					<span
-						class="hidden text-sm font-normal text-neutral-700 sm:inline"
-					>
-						{{ comment }}
-					</span>
+					<p v-if="loading">
+						<br />
+					</p>
+					<template v-else>
+						<ChatIcon />
+						<span
+							class="hidden text-sm font-normal text-neutral-700 sm:inline"
+						>
+							{{ comment }}
+						</span>
+					</template>
 				</Button>
 			</NuxtLink>
 		</div>

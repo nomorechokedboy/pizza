@@ -8,11 +8,12 @@ export interface ArticleProps {
 	}
 	publishedAt: string
 	title: string
-	tags: string[]
+	tags?: string[]
 	like: number
 	comments: number
 	slug: string
 	showImage?: boolean
+	loading?: boolean
 }
 
 const {
@@ -24,7 +25,8 @@ const {
 	owner,
 	src,
 	showImage,
-	slug
+	slug,
+	loading
 } = defineProps<ArticleProps>()
 function haveComments() {
 	return comments === 0 ? 'Add Comment' : `${comments} comments`
@@ -38,31 +40,46 @@ const to = computed(calculateTo)
 </script>
 
 <template>
-	<div class="bg-white shadow rounded overflow-hidden">
-		<nuxt-img v-if="showImage && src" :src="src" />
-		<div class="flex flex-col gap-3 p-4">
-			<NoClue
-				:alt="`${owner.name} avatar`"
-				:description="publishedAt"
-				:src="owner.src"
-				:title="owner.name"
+	<NuxtLink :to="to">
+		<div class="bg-white shadow rounded overflow-hidden">
+			<div
+				v-if="loading"
+				:class="{ skeleton: loading }"
+				class="max-w-3xl w-full h-72"
 			/>
-			<div class="flex flex-col pl-8">
-				<h2
-					class="mb-1 text-xl font-bold text-neutral-900"
-				>
-					<NuxtLink :to="to">
-						{{ title }}</NuxtLink
-					>
-				</h2>
-				<!-- <Tags :tags="tags" /> -->
-				<ArticleFooter
-					:user="owner.name"
-					:slug="slug"
-					:comment="comment"
-					:like="like"
+			<nuxt-img
+				v-if="showImage && src && !loading"
+				:src="src"
+				width="684"
+				height="275"
+			/>
+			<div class="flex flex-col gap-3 p-4">
+				<NoClue
+					:alt="`${owner.name} avatar`"
+					:description="publishedAt"
+					:src="owner.src"
+					:title="owner.name"
+					:loading="loading"
 				/>
+				<div class="flex flex-col pl-8">
+					<h2
+						class="mb-1 text-xl font-bold text-neutral-900"
+						:class="{ skeleton: loading }"
+					>
+						<NuxtLink :to="to">
+							{{ title }}</NuxtLink
+						>
+					</h2>
+					<!-- <Tags :tags="tags" /> -->
+					<ArticleFooter
+						:user="owner.name"
+						:slug="slug"
+						:comment="comment"
+						:like="like"
+						:loading="loading"
+					/>
+				</div>
 			</div>
 		</div>
-	</div>
+	</NuxtLink>
 </template>
