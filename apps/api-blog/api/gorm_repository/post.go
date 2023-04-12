@@ -31,11 +31,12 @@ func (r *PostGormRepo) GetAllPosts(query *entities.PostQuery) (common.BasePagina
 			parentIDaddr = nil
 		}
 
-		cond := entities.Post{UserID: query.UserID, ParentID: parentIDaddr}
+		cond := entities.Post{UserID: query.UserID, ParentID: parentIDaddr, Published: true}
 
 		if err := r.db.Scopes(scopes.Pagination(r.db, entities.Post{}, query.BaseQuery, &res)).
 			Preload(clause.Associations).
-			Find(&posts, cond).Error; err != nil {
+			Find(&posts, cond).
+			Error; err != nil {
 			return res, err
 		}
 	} else {
