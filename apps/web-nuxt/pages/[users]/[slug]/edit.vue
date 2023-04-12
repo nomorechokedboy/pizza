@@ -28,13 +28,20 @@ async function handleSubmit(published: boolean) {
 		return
 	}
 
+	if (!postDetails.value?.id) {
+		return
+	}
+
 	handleLoading(published)
 	try {
-		const { data } = await $blogApi.post.postsPost({
-			content: formData.content,
-			title: formData.title,
-			published
-		})
+		const { data } = await $blogApi.post.postsIdPut(
+			postDetails.value?.id,
+			{
+				content: formData.content,
+				title: formData.title,
+				published
+			}
+		)
 
 		await navigateTo(`/${data.user?.id}/${data.slug}`)
 	} catch (e) {
@@ -45,13 +52,22 @@ async function handleSubmit(published: boolean) {
 	}
 }
 
+const route = useRoute()
+let slug: string = ''
+if (typeof route.params.slug === 'object') {
+	slug = route.params.slug.pop() || ''
+} else {
+	slug = route.params.slug
+}
+
+const { data: postDetails } = usePostDetails(slug)
 const { $blogApi } = useNuxtApp()
 const loading = ref(false)
 const draftLoading = ref(false)
 const rules = computed(getFormRules)
 const formData = reactive({
-	title: '',
-	content: ''
+	title: postDetails.value?.title || '',
+	content: postDetails.value?.content || ''
 })
 const v$ = useVuelidate(rules, formData)
 definePageMeta({ layout: 'new', middleware: ['authn'] })
