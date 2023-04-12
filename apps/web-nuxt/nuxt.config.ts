@@ -37,7 +37,8 @@ export default defineNuxtConfig(async () => {
 			...defaultNuxtConfig.modules,
 			['unplugin-icons/nuxt', { scale: 1.5 }],
 			'v-satori/nuxt',
-			'unplugin-font-to-buffer/nuxt'
+			'unplugin-font-to-buffer/nuxt',
+			'@vueuse/nuxt'
 		],
 		css: ['ui-vue/dist/style.css'],
 		vite: {
