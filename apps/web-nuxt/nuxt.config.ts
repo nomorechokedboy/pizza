@@ -6,9 +6,40 @@ import defaultNuxtConfig from '../../nuxt.config'
 export default defineNuxtConfig(async () => {
 	const host = await internalIpV4()
 	const config: NuxtConfig = {
+		app: {
+			head: {
+				link: [
+					{
+						rel: 'icon',
+						type: 'image/png',
+						sizes: '32x32',
+						href: '/favicon-32x32.png'
+					},
+					{
+						rel: 'icon',
+						type: 'image/png',
+						sizes: '16x16',
+						href: '/favicon-16x16.png'
+					},
+					{
+						rel: 'apple-touch-icon',
+						sizes: '180x180',
+						href: '/apple-touch-icon.png'
+					}
+				],
+				noscript: [
+					{ children: 'JavaScript is required' }
+				],
+				htmlAttrs: { lang: 'en' }
+			}
+		},
 		modules: [
 			...defaultNuxtConfig.modules,
-			['unplugin-icons/nuxt', { scale: 1.5 }]
+			['unplugin-icons/nuxt', { scale: 1.5 }],
+			'v-satori/nuxt',
+			'unplugin-font-to-buffer/nuxt',
+			'@vueuse/nuxt',
+			'nuxt-simple-sitemap'
 		],
 		css: ['ui-vue/dist/style.css'],
 		vite: {
@@ -32,7 +63,17 @@ export default defineNuxtConfig(async () => {
 				}
 			}
 		},
-		image: {}
+		image: {
+			dir: 'assets/'
+		},
+		ssr: process.env.TAURI_ENV === undefined,
+		plugins: [{ src: '~/plugins/vercel.ts', mode: 'client' }],
+		webVitals: {
+			debug: false
+		},
+		sitemap: {
+			siteUrl: 'https://pizza-web-nuxt.vercel.app'
+		}
 	}
 
 	return config

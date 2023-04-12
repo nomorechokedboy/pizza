@@ -7,5 +7,8 @@ export default defineNuxtConfig({
 		cloudinary: {
 			baseURL: 'https://res.cloudinary.com/nuxt/image/upload/'
 		}
+	},
+	webVitals: {
+		debug: true
 	}
 })

@@ -6,6 +6,12 @@ export interface DropdownProps {
 	}
 	open: boolean
 }
+
+async function logout() {
+	removeToken()
+	navigateTo('/login')
+}
+
 const { open } = defineProps<DropdownProps>()
 </script>
 
@@ -32,41 +38,35 @@ const { open } = defineProps<DropdownProps>()
 			class="py-2 text-gray-700 dark:text-gray-200"
 			aria-labelledby="dropdownDefaultButton"
 		>
+			<!-- <li>
+                <a href="#"
+                    class="block px-4 py-2 hover:underline hover:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
+            </li> -->
 			<li>
-				<a
-					href="#"
+				<NuxtLink
+					to="/new"
 					class="block px-4 py-2 hover:underline hover:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-					>Dashboard</a
+				>
+					Create Post</NuxtLink
 				>
 			</li>
-			<li>
-				<a
-					href="#"
-					class="block px-4 py-2 hover:underline hover:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-					>Create Post</a
-				>
-			</li>
-			<li>
-				<a
-					href="#"
-					class="block px-4 py-2 hover:underline hover:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-					>Reading list</a
-				>
-			</li>
-			<li>
-				<a
-					href="#"
-					class="block px-4 py-2 hover:underline hover:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-					>Settings</a
-				>
-			</li>
+			<!-- <li>
+                <a href="#"
+                    class="block px-4 py-2 hover:underline hover:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Reading
+                    list</a>
+            </li>
+            <li>
+                <a href="#"
+                    class="block px-4 py-2 hover:underline hover:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</a>
+            </li> -->
 		</ul>
 		<div class="pt-2 dark:text-gray-200">
-			<a
-				href="#"
-				class="block px-4 py-2 hover:underline hover:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-				>Sign out</a
+			<div
+				class="cursor-pointer px-4 py-2 hover:underline hover:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+				@click="logout"
 			>
+				Sign out
+			</div>
 		</div>
 	</div>
 </template>
@@ -75,6 +75,7 @@ const { open } = defineProps<DropdownProps>()
 .dropdown {
 	@apply -right-2;
 }
+
 .dropdown[data-biding='true'] {
 	@apply block overflow-visible;
 }

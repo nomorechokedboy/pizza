@@ -1,4 +1,5 @@
 import { AxiosError } from 'axios'
+import dayjs from 'dayjs'
 import { AlertProps } from '~~/components/Alert.vue'
 import { notify } from '~~/composables/useNotification'
 export * from './astToVue'
@@ -33,4 +34,13 @@ function checkErrorType(e: unknown): string {
 	}
 
 	return JSON.stringify(e)
+}
+
+export function convertDate(d?: string): string {
+	let date = d
+	if (!date) {
+		date = dayjs().toISOString()
+	}
+
+	return dayjs(date).format('MMM D')
 }

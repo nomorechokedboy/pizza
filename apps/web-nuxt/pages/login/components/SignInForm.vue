@@ -8,6 +8,7 @@ const formData = reactive({
 	identifier: '',
 	password: ''
 })
+const loading = ref(false)
 const { $blogApi } = useNuxtApp()
 const token = useAuthToken()
 function formDataRules() {
@@ -38,6 +39,7 @@ async function handleLogin() {
 		return
 	}
 
+	loading.value = true
 	try {
 		const { data: tokenData } = await $blogApi.auth.authLoginPost({
 			password: formData.password,
@@ -54,6 +56,8 @@ async function handleLogin() {
 		await navigateTo('/')
 	} catch (e) {
 		notifyError(e)
+	} finally {
+		loading.value = false
 	}
 }
 </script>
@@ -92,6 +96,7 @@ async function handleLogin() {
 			class="!py-3"
 			@click.prevent="handleLogin"
 			block
+			:loading="loading"
 			>Continue</Button
 		>
 	</form>
