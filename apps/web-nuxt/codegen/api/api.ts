@@ -21,76 +21,76 @@ import { Configuration } from './configuration'
 // Some imports not used depending on template conditions
 // @ts-ignore
 import {
+	DUMMY_BASE_URL,
 	assertParamExists,
 	createRequestFunction,
-	DUMMY_BASE_URL,
 	serializeDataIfNeeded,
 	setApiKeyToObject,
 	setSearchParams,
 	toPathString
 } from './common'
 // @ts-ignore
-import { BaseAPI, BASE_PATH, RequestArgs } from './base'
+import { BASE_PATH, BaseAPI, RequestArgs, RequiredError } from './base'
 
 /**
  *
  * @export
- * @interface CommonBasePaginationResponseEntitiesCommentRes
+ * @interface CommonBasePaginationResponseEntitiesCommentResponse
  */
-export interface CommonBasePaginationResponseEntitiesCommentRes {
+export interface CommonBasePaginationResponseEntitiesCommentResponse {
 	/**
 	 *
-	 * @type {Array<EntitiesCommentRes>}
-	 * @memberof CommonBasePaginationResponseEntitiesCommentRes
+	 * @type {Array<EntitiesCommentResponse>}
+	 * @memberof CommonBasePaginationResponseEntitiesCommentResponse
 	 */
-	items?: Array<EntitiesCommentRes>
+	items?: Array<EntitiesCommentResponse>
 	/**
 	 *
 	 * @type {number}
-	 * @memberof CommonBasePaginationResponseEntitiesCommentRes
+	 * @memberof CommonBasePaginationResponseEntitiesCommentResponse
 	 */
 	page?: number
 	/**
 	 *
 	 * @type {number}
-	 * @memberof CommonBasePaginationResponseEntitiesCommentRes
+	 * @memberof CommonBasePaginationResponseEntitiesCommentResponse
 	 */
 	page_size?: number
 	/**
 	 *
 	 * @type {number}
-	 * @memberof CommonBasePaginationResponseEntitiesCommentRes
+	 * @memberof CommonBasePaginationResponseEntitiesCommentResponse
 	 */
 	total?: number
 }
 /**
  *
  * @export
- * @interface CommonBasePaginationResponseEntitiesPostRes
+ * @interface CommonBasePaginationResponseEntitiesPostResponse
  */
-export interface CommonBasePaginationResponseEntitiesPostRes {
+export interface CommonBasePaginationResponseEntitiesPostResponse {
 	/**
 	 *
-	 * @type {Array<EntitiesPostRes>}
-	 * @memberof CommonBasePaginationResponseEntitiesPostRes
+	 * @type {Array<EntitiesPostResponse>}
+	 * @memberof CommonBasePaginationResponseEntitiesPostResponse
 	 */
-	items?: Array<EntitiesPostRes>
+	items?: Array<EntitiesPostResponse>
 	/**
 	 *
 	 * @type {number}
-	 * @memberof CommonBasePaginationResponseEntitiesPostRes
+	 * @memberof CommonBasePaginationResponseEntitiesPostResponse
 	 */
 	page?: number
 	/**
 	 *
 	 * @type {number}
-	 * @memberof CommonBasePaginationResponseEntitiesPostRes
+	 * @memberof CommonBasePaginationResponseEntitiesPostResponse
 	 */
 	page_size?: number
 	/**
 	 *
 	 * @type {number}
-	 * @memberof CommonBasePaginationResponseEntitiesPostRes
+	 * @memberof CommonBasePaginationResponseEntitiesPostResponse
 	 */
 	total?: number
 }
@@ -165,74 +165,74 @@ export interface EntitiesComment {
 /**
  *
  * @export
- * @interface EntitiesCommentReq
+ * @interface EntitiesCommentRequest
  */
-export interface EntitiesCommentReq {
+export interface EntitiesCommentRequest {
 	/**
 	 *
 	 * @type {string}
-	 * @memberof EntitiesCommentReq
+	 * @memberof EntitiesCommentRequest
 	 */
 	content?: string
 	/**
 	 *
 	 * @type {number}
-	 * @memberof EntitiesCommentReq
+	 * @memberof EntitiesCommentRequest
 	 */
 	parentId?: number
 	/**
 	 *
 	 * @type {number}
-	 * @memberof EntitiesCommentReq
+	 * @memberof EntitiesCommentRequest
 	 */
 	postId?: number
 }
 /**
  *
  * @export
- * @interface EntitiesCommentRes
+ * @interface EntitiesCommentResponse
  */
-export interface EntitiesCommentRes {
+export interface EntitiesCommentResponse {
 	/**
 	 *
 	 * @type {string}
-	 * @memberof EntitiesCommentRes
+	 * @memberof EntitiesCommentResponse
 	 */
 	content?: string
 	/**
 	 *
 	 * @type {string}
-	 * @memberof EntitiesCommentRes
+	 * @memberof EntitiesCommentResponse
 	 */
 	createdAt?: string
 	/**
 	 *
 	 * @type {number}
-	 * @memberof EntitiesCommentRes
+	 * @memberof EntitiesCommentResponse
 	 */
 	id?: number
 	/**
 	 *
 	 * @type {EntitiesComment}
-	 * @memberof EntitiesCommentRes
+	 * @memberof EntitiesCommentResponse
 	 */
 	parent?: EntitiesComment
 	/**
 	 *
 	 * @type {number}
-	 * @memberof EntitiesCommentRes
+	 * @memberof EntitiesCommentResponse
 	 */
 	postId?: number
 	/**
 	 *
 	 * @type {string}
-	 * @memberof EntitiesCommentRes
+	 * @memberof EntitiesCommentResponse
 	 */
 	updatedAt?: string
 	/**
 	 *
 	 * @type {EntitiesUser}
-	 * @memberof EntitiesCommentRes
+	 * @memberof EntitiesCommentResponse
 	 */
 	user?: EntitiesUser
 }
@@ -242,12 +242,6 @@ export interface EntitiesCommentRes {
  * @interface EntitiesPost
  */
 export interface EntitiesPost {
-	/**
-	 *
-	 * @type {Array<EntitiesComment>}
-	 * @memberof EntitiesPost
-	 */
-	comments?: Array<EntitiesComment>
 	/**
 	 *
 	 * @type {string}
@@ -318,116 +312,201 @@ export interface EntitiesPost {
 /**
  *
  * @export
- * @interface EntitiesPostReq
+ * @interface EntitiesPostDetailResponse
  */
-export interface EntitiesPostReq {
+export interface EntitiesPostDetailResponse {
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EntitiesPostDetailResponse
+	 */
+	commentCount?: number
+	/**
+	 *
+	 * @type {Array<EntitiesComment>}
+	 * @memberof EntitiesPostDetailResponse
+	 */
+	comments?: Array<EntitiesComment>
 	/**
 	 *
 	 * @type {string}
-	 * @memberof EntitiesPostReq
+	 * @memberof EntitiesPostDetailResponse
 	 */
 	content?: string
 	/**
 	 *
 	 * @type {string}
-	 * @memberof EntitiesPostReq
+	 * @memberof EntitiesPostDetailResponse
+	 */
+	createdAt?: string
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EntitiesPostDetailResponse
+	 */
+	id?: number
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPostDetailResponse
 	 */
 	image?: string
 	/**
 	 *
-	 * @type {number}
-	 * @memberof EntitiesPostReq
+	 * @type {EntitiesPost}
+	 * @memberof EntitiesPostDetailResponse
 	 */
-	parentId?: number
+	parent?: EntitiesPost
 	/**
 	 *
 	 * @type {boolean}
-	 * @memberof EntitiesPostReq
+	 * @memberof EntitiesPostDetailResponse
 	 */
 	published?: boolean
 	/**
 	 *
 	 * @type {string}
-	 * @memberof EntitiesPostReq
+	 * @memberof EntitiesPostDetailResponse
+	 */
+	publishedAt?: string
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPostDetailResponse
+	 */
+	slug?: string
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPostDetailResponse
+	 */
+	title?: string
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPostDetailResponse
+	 */
+	updatedAt?: string
+	/**
+	 *
+	 * @type {EntitiesUser}
+	 * @memberof EntitiesPostDetailResponse
+	 */
+	user?: EntitiesUser
+}
+/**
+ *
+ * @export
+ * @interface EntitiesPostRequest
+ */
+export interface EntitiesPostRequest {
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPostRequest
+	 */
+	content?: string
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPostRequest
+	 */
+	image?: string
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EntitiesPostRequest
+	 */
+	parentId?: number
+	/**
+	 *
+	 * @type {boolean}
+	 * @memberof EntitiesPostRequest
+	 */
+	published?: boolean
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesPostRequest
 	 */
 	title?: string
 }
 /**
  *
  * @export
- * @interface EntitiesPostRes
+ * @interface EntitiesPostResponse
  */
-export interface EntitiesPostRes {
+export interface EntitiesPostResponse {
 	/**
 	 *
-	 * @type {Array<EntitiesComment>}
-	 * @memberof EntitiesPostRes
+	 * @type {number}
+	 * @memberof EntitiesPostResponse
 	 */
-	comments?: Array<EntitiesComment>
+	commentCount?: number
 	/**
 	 *
 	 * @type {string}
-	 * @memberof EntitiesPostRes
+	 * @memberof EntitiesPostResponse
 	 */
 	content?: string
 	/**
 	 *
 	 * @type {string}
-	 * @memberof EntitiesPostRes
+	 * @memberof EntitiesPostResponse
 	 */
 	createdAt?: string
 	/**
 	 *
 	 * @type {number}
-	 * @memberof EntitiesPostRes
+	 * @memberof EntitiesPostResponse
 	 */
 	id?: number
 	/**
 	 *
 	 * @type {string}
-	 * @memberof EntitiesPostRes
+	 * @memberof EntitiesPostResponse
 	 */
 	image?: string
 	/**
 	 *
 	 * @type {EntitiesPost}
-	 * @memberof EntitiesPostRes
+	 * @memberof EntitiesPostResponse
 	 */
 	parent?: EntitiesPost
 	/**
 	 *
 	 * @type {boolean}
-	 * @memberof EntitiesPostRes
+	 * @memberof EntitiesPostResponse
 	 */
 	published?: boolean
 	/**
 	 *
 	 * @type {string}
-	 * @memberof EntitiesPostRes
+	 * @memberof EntitiesPostResponse
 	 */
 	publishedAt?: string
 	/**
 	 *
 	 * @type {string}
-	 * @memberof EntitiesPostRes
+	 * @memberof EntitiesPostResponse
 	 */
 	slug?: string
 	/**
 	 *
 	 * @type {string}
-	 * @memberof EntitiesPostRes
+	 * @memberof EntitiesPostResponse
 	 */
 	title?: string
 	/**
 	 *
 	 * @type {string}
-	 * @memberof EntitiesPostRes
+	 * @memberof EntitiesPostResponse
 	 */
 	updatedAt?: string
 	/**
 	 *
 	 * @type {EntitiesUser}
-	 * @memberof EntitiesPostRes
+	 * @memberof EntitiesPostResponse
 	 */
 	user?: EntitiesUser
 }
@@ -689,13 +768,13 @@ export interface HandlerResetPasswordResetPasswordReq {
 /**
  *
  * @export
- * @interface HandlerUpdateCommentCommentReq
+ * @interface HandlerUpdateCommentCommentRequest
  */
-export interface HandlerUpdateCommentCommentReq {
+export interface HandlerUpdateCommentCommentRequest {
 	/**
 	 *
 	 * @type {string}
-	 * @memberof HandlerUpdateCommentCommentReq
+	 * @memberof HandlerUpdateCommentCommentRequest
 	 */
 	content?: string
 }
@@ -1707,13 +1786,13 @@ export const CommentsApiAxiosParamCreator = function (
 		 * Update comment
 		 * @summary Update comment with new message
 		 * @param {number} id Comment ID
-		 * @param {HandlerUpdateCommentCommentReq} comment Comment
+		 * @param {HandlerUpdateCommentCommentRequest} comment Comment
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
 		commentsIdPut: async (
 			id: number,
-			comment: HandlerUpdateCommentCommentReq,
+			comment: HandlerUpdateCommentCommentRequest,
 			options: AxiosRequestConfig = {}
 		): Promise<RequestArgs> => {
 			// verify required parameter 'id' is not null or undefined
@@ -1776,12 +1855,12 @@ export const CommentsApiAxiosParamCreator = function (
 		/**
 		 * Create comment
 		 * @summary Create comment
-		 * @param {EntitiesCommentReq} comment Comment
+		 * @param {EntitiesCommentRequest} comment Comment
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
 		commentsPost: async (
-			comment: EntitiesCommentReq,
+			comment: EntitiesCommentRequest,
 			options: AxiosRequestConfig = {}
 		): Promise<RequestArgs> => {
 			// verify required parameter 'comment' is not null or undefined
@@ -1873,7 +1952,7 @@ export const CommentsApiFp = function (configuration?: Configuration) {
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<CommonBasePaginationResponseEntitiesCommentRes>
+			) => AxiosPromise<CommonBasePaginationResponseEntitiesCommentResponse>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.commentsGet(
@@ -1907,7 +1986,7 @@ export const CommentsApiFp = function (configuration?: Configuration) {
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<void>
+			) => AxiosPromise<EntitiesCommentResponse>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.commentsIdDelete(
@@ -1925,19 +2004,19 @@ export const CommentsApiFp = function (configuration?: Configuration) {
 		 * Update comment
 		 * @summary Update comment with new message
 		 * @param {number} id Comment ID
-		 * @param {HandlerUpdateCommentCommentReq} comment Comment
+		 * @param {HandlerUpdateCommentCommentRequest} comment Comment
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
 		async commentsIdPut(
 			id: number,
-			comment: HandlerUpdateCommentCommentReq,
+			comment: HandlerUpdateCommentCommentRequest,
 			options?: AxiosRequestConfig
 		): Promise<
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<void>
+			) => AxiosPromise<EntitiesCommentResponse>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.commentsIdPut(
@@ -1955,18 +2034,18 @@ export const CommentsApiFp = function (configuration?: Configuration) {
 		/**
 		 * Create comment
 		 * @summary Create comment
-		 * @param {EntitiesCommentReq} comment Comment
+		 * @param {EntitiesCommentRequest} comment Comment
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
 		async commentsPost(
-			comment: EntitiesCommentReq,
+			comment: EntitiesCommentRequest,
 			options?: AxiosRequestConfig
 		): Promise<
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<void>
+			) => AxiosPromise<EntitiesCommentResponse>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.commentsPost(
@@ -2016,7 +2095,7 @@ export const CommentsApiFactory = function (
 			sort?: 'asc' | 'desc',
 			sortBy?: 'id' | 'user_id' | 'parent_id',
 			options?: any
-		): AxiosPromise<CommonBasePaginationResponseEntitiesCommentRes> {
+		): AxiosPromise<CommonBasePaginationResponseEntitiesCommentResponse> {
 			return localVarFp
 				.commentsGet(
 					userID,
@@ -2040,7 +2119,7 @@ export const CommentsApiFactory = function (
 		commentsIdDelete(
 			id: number,
 			options?: any
-		): AxiosPromise<void> {
+		): AxiosPromise<EntitiesCommentResponse> {
 			return localVarFp
 				.commentsIdDelete(id, options)
 				.then((request) => request(axios, basePath))
@@ -2049,15 +2128,15 @@ export const CommentsApiFactory = function (
 		 * Update comment
 		 * @summary Update comment with new message
 		 * @param {number} id Comment ID
-		 * @param {HandlerUpdateCommentCommentReq} comment Comment
+		 * @param {HandlerUpdateCommentCommentRequest} comment Comment
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
 		commentsIdPut(
 			id: number,
-			comment: HandlerUpdateCommentCommentReq,
+			comment: HandlerUpdateCommentCommentRequest,
 			options?: any
-		): AxiosPromise<void> {
+		): AxiosPromise<EntitiesCommentResponse> {
 			return localVarFp
 				.commentsIdPut(id, comment, options)
 				.then((request) => request(axios, basePath))
@@ -2065,14 +2144,14 @@ export const CommentsApiFactory = function (
 		/**
 		 * Create comment
 		 * @summary Create comment
-		 * @param {EntitiesCommentReq} comment Comment
+		 * @param {EntitiesCommentRequest} comment Comment
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
 		commentsPost(
-			comment: EntitiesCommentReq,
+			comment: EntitiesCommentRequest,
 			options?: any
-		): AxiosPromise<void> {
+		): AxiosPromise<EntitiesCommentResponse> {
 			return localVarFp
 				.commentsPost(comment, options)
 				.then((request) => request(axios, basePath))
@@ -2143,14 +2222,14 @@ export class CommentsApi extends BaseAPI {
 	 * Update comment
 	 * @summary Update comment with new message
 	 * @param {number} id Comment ID
-	 * @param {HandlerUpdateCommentCommentReq} comment Comment
+	 * @param {HandlerUpdateCommentCommentRequest} comment Comment
 	 * @param {*} [options] Override http request option.
 	 * @throws {RequiredError}
 	 * @memberof CommentsApi
 	 */
 	public commentsIdPut(
 		id: number,
-		comment: HandlerUpdateCommentCommentReq,
+		comment: HandlerUpdateCommentCommentRequest,
 		options?: AxiosRequestConfig
 	) {
 		return CommentsApiFp(this.configuration)
@@ -2161,13 +2240,13 @@ export class CommentsApi extends BaseAPI {
 	/**
 	 * Create comment
 	 * @summary Create comment
-	 * @param {EntitiesCommentReq} comment Comment
+	 * @param {EntitiesCommentRequest} comment Comment
 	 * @param {*} [options] Override http request option.
 	 * @throws {RequiredError}
 	 * @memberof CommentsApi
 	 */
 	public commentsPost(
-		comment: EntitiesCommentReq,
+		comment: EntitiesCommentRequest,
 		options?: AxiosRequestConfig
 	) {
 		return CommentsApiFp(this.configuration)
@@ -2634,13 +2713,13 @@ export const PostsApiAxiosParamCreator = function (
 		 * Update post
 		 * @summary Update post with new info
 		 * @param {number} id Post ID
-		 * @param {EntitiesPostReq} post Post
+		 * @param {EntitiesPostRequest} post Post
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
 		postsIdPut: async (
 			id: number,
-			post: EntitiesPostReq,
+			post: EntitiesPostRequest,
 			options: AxiosRequestConfig = {}
 		): Promise<RequestArgs> => {
 			// verify required parameter 'id' is not null or undefined
@@ -2703,12 +2782,12 @@ export const PostsApiAxiosParamCreator = function (
 		/**
 		 * Create post
 		 * @summary Create post
-		 * @param {EntitiesPostReq} post Post
+		 * @param {EntitiesPostRequest} post Post
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
 		postsPost: async (
-			post: EntitiesPostReq,
+			post: EntitiesPostRequest,
 			options: AxiosRequestConfig = {}
 		): Promise<RequestArgs> => {
 			// verify required parameter 'post' is not null or undefined
@@ -2854,7 +2933,7 @@ export const PostsApiFp = function (configuration?: Configuration) {
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<CommonBasePaginationResponseEntitiesPostRes>
+			) => AxiosPromise<CommonBasePaginationResponseEntitiesPostResponse>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.postsGet(
@@ -2887,7 +2966,7 @@ export const PostsApiFp = function (configuration?: Configuration) {
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<void>
+			) => AxiosPromise<EntitiesPostDetailResponse>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.postsIdDelete(
@@ -2905,19 +2984,19 @@ export const PostsApiFp = function (configuration?: Configuration) {
 		 * Update post
 		 * @summary Update post with new info
 		 * @param {number} id Post ID
-		 * @param {EntitiesPostReq} post Post
+		 * @param {EntitiesPostRequest} post Post
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
 		async postsIdPut(
 			id: number,
-			post: EntitiesPostReq,
+			post: EntitiesPostRequest,
 			options?: AxiosRequestConfig
 		): Promise<
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<void>
+			) => AxiosPromise<EntitiesPostDetailResponse>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.postsIdPut(
@@ -2935,18 +3014,18 @@ export const PostsApiFp = function (configuration?: Configuration) {
 		/**
 		 * Create post
 		 * @summary Create post
-		 * @param {EntitiesPostReq} post Post
+		 * @param {EntitiesPostRequest} post Post
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
 		async postsPost(
-			post: EntitiesPostReq,
+			post: EntitiesPostRequest,
 			options?: AxiosRequestConfig
 		): Promise<
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<EntitiesPostRes>
+			) => AxiosPromise<EntitiesPostDetailResponse>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.postsPost(
@@ -2974,7 +3053,7 @@ export const PostsApiFp = function (configuration?: Configuration) {
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<EntitiesPostRes>
+			) => AxiosPromise<EntitiesPostDetailResponse>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.postsSlugGet(
@@ -3027,7 +3106,7 @@ export const PostsApiFactory = function (
 				| 'user_id'
 				| 'parent_id',
 			options?: any
-		): AxiosPromise<CommonBasePaginationResponseEntitiesPostRes> {
+		): AxiosPromise<CommonBasePaginationResponseEntitiesPostResponse> {
 			return localVarFp
 				.postsGet(
 					userID,
@@ -3047,7 +3126,10 @@ export const PostsApiFactory = function (
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
-		postsIdDelete(id: number, options?: any): AxiosPromise<void> {
+		postsIdDelete(
+			id: number,
+			options?: any
+		): AxiosPromise<EntitiesPostDetailResponse> {
 			return localVarFp
 				.postsIdDelete(id, options)
 				.then((request) => request(axios, basePath))
@@ -3056,15 +3138,15 @@ export const PostsApiFactory = function (
 		 * Update post
 		 * @summary Update post with new info
 		 * @param {number} id Post ID
-		 * @param {EntitiesPostReq} post Post
+		 * @param {EntitiesPostRequest} post Post
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
 		postsIdPut(
 			id: number,
-			post: EntitiesPostReq,
+			post: EntitiesPostRequest,
 			options?: any
-		): AxiosPromise<void> {
+		): AxiosPromise<EntitiesPostDetailResponse> {
 			return localVarFp
 				.postsIdPut(id, post, options)
 				.then((request) => request(axios, basePath))
@@ -3072,14 +3154,14 @@ export const PostsApiFactory = function (
 		/**
 		 * Create post
 		 * @summary Create post
-		 * @param {EntitiesPostReq} post Post
+		 * @param {EntitiesPostRequest} post Post
 		 * @param {*} [options] Override http request option.
 		 * @throws {RequiredError}
 		 */
 		postsPost(
-			post: EntitiesPostReq,
+			post: EntitiesPostRequest,
 			options?: any
-		): AxiosPromise<EntitiesPostRes> {
+		): AxiosPromise<EntitiesPostDetailResponse> {
 			return localVarFp
 				.postsPost(post, options)
 				.then((request) => request(axios, basePath))
@@ -3094,7 +3176,7 @@ export const PostsApiFactory = function (
 		postsSlugGet(
 			slug: string,
 			options?: any
-		): AxiosPromise<EntitiesPostRes> {
+		): AxiosPromise<EntitiesPostDetailResponse> {
 			return localVarFp
 				.postsSlugGet(slug, options)
 				.then((request) => request(axios, basePath))
@@ -3162,14 +3244,14 @@ export class PostsApi extends BaseAPI {
 	 * Update post
 	 * @summary Update post with new info
 	 * @param {number} id Post ID
-	 * @param {EntitiesPostReq} post Post
+	 * @param {EntitiesPostRequest} post Post
 	 * @param {*} [options] Override http request option.
 	 * @throws {RequiredError}
 	 * @memberof PostsApi
 	 */
 	public postsIdPut(
 		id: number,
-		post: EntitiesPostReq,
+		post: EntitiesPostRequest,
 		options?: AxiosRequestConfig
 	) {
 		return PostsApiFp(this.configuration)
@@ -3180,12 +3262,15 @@ export class PostsApi extends BaseAPI {
 	/**
 	 * Create post
 	 * @summary Create post
-	 * @param {EntitiesPostReq} post Post
+	 * @param {EntitiesPostRequest} post Post
 	 * @param {*} [options] Override http request option.
 	 * @throws {RequiredError}
 	 * @memberof PostsApi
 	 */
-	public postsPost(post: EntitiesPostReq, options?: AxiosRequestConfig) {
+	public postsPost(
+		post: EntitiesPostRequest,
+		options?: AxiosRequestConfig
+	) {
 		return PostsApiFp(this.configuration)
 			.postsPost(post, options)
 			.then((request) => request(this.axios, this.basePath))
