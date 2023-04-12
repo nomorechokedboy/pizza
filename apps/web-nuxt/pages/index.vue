@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { useInfiniteQuery } from '@tanstack/vue-query'
+import { useElementVisibility } from '@vueuse/core'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { CommonBasePaginationResponseEntitiesPostRes } from '~~/codegen/api'
-import { baseURL, dicebearMedia } from '~~/constants'
+import { dicebearMedia } from '~~/constants'
 
 dayjs.extend(relativeTime)
 
@@ -11,45 +12,43 @@ type HeaderNav = {
 	match: string
 }
 
-type BaseQuery = {
-	page?: number
-	pageSize?: number
-	q?: string
-	sort?: 'asc' | 'desc'
-	sortBy?: string
+async function fetchPosts({ pageParam = 1 }) {
+	return $blogApi.post
+		.postsGet(undefined, undefined, pageParam, undefined, 'desc')
+		.then((resp) => resp.data)
 }
 
-async function getPosts() {
-	let queryParams = ''
-	for (const [key, val] of Object.entries(baseQuery)) {
-		if (val !== undefined) {
-			queryParams += `${key}=${val}&`
-		}
-	}
-
-	return $fetch<CommonBasePaginationResponseEntitiesPostRes>(
-		`${baseURL}/api/v1/posts?${queryParams}`
-	)
-}
-
-const baseQuery = reactive<BaseQuery>({
-	sort: 'desc',
-	sortBy: 'id',
-	q: undefined,
-	pageSize: 20,
-	page: 0
-})
+const { $blogApi } = useNuxtApp()
 const headerNav: HeaderNav[] = [
 	{ content: 'Relevant', match: '/' }
 	/* { content: 'Latest', match: '/latest' },
     { content: 'Top', match: '/top' } */
 ]
 const route = useRoute()
-const { data: posts, pending: isPostsPending } =
-	await useAsyncData<CommonBasePaginationResponseEntitiesPostRes>(
-		`posts-${baseQuery.page}-${baseQuery.pageSize}`,
-		getPosts
-	)
+const {
+	data: testPosts,
+	isFetching,
+	isFetchingNextPage,
+	isLoading,
+	fetchNextPage,
+	hasNextPage
+} = useInfiniteQuery({
+	queryKey: ['posts'],
+	queryFn: fetchPosts,
+	getNextPageParam: (lastPage) =>
+		lastPage.page && lastPage.items?.length === 10
+			? lastPage.page + 1
+			: undefined
+})
+const target = ref(null)
+const targetIsVisible = useElementVisibility(target)
+watchEffect(() => {
+	const loading =
+		isFetching.value || isLoading.value || isFetchingNextPage.value
+	if (targetIsVisible.value && hasNextPage?.value && !loading) {
+		fetchNextPage()
+	}
+})
 useSeoMeta({
 	title: 'Accessiblog',
 	description:
@@ -105,45 +104,71 @@ useSeoMeta({
 					</nav>
 				</header>
 				<div class="flex flex-col gap-2">
-					<div v-if="isPostsPending">
-						Loading...
-					</div>
-					<Article
-						v-for="(
-							{
+					<template
+						v-for="page in testPosts?.pages"
+					>
+						<Article
+							v-for="{
 								user,
 								id,
 								publishedAt,
 								title,
 								slug,
-								comments
-							},
-							i
-						) in posts?.items || []"
-						:owner="{
-							src:
-								user?.avatar ||
-								`${dicebearMedia}${user?.fullName}`,
-							name:
-								user?.fullName ||
-								'User name',
-							id: id ?? 0
-						}"
-						:slug="slug || ''"
-						:tags="['tags']"
-						:publishedAt="`${convertDate(
-							publishedAt
-						)} (${dayjs(publishedAt).toNow(
-							true
-						)} ago)`"
-						:title="title || ''"
-						:showImage="i === 0"
-						:comments="
-							comments?.length || 0
+								commentCount,
+								image
+							} in page.items"
+							:owner="{
+								src:
+									user?.avatar ||
+									`${dicebearMedia}${user?.fullName}`,
+								name:
+									user?.fullName ||
+									'User name',
+								id: id ?? 0
+							}"
+							:slug="slug || ''"
+							:tags="['tags']"
+							:publishedAt="`${convertDate(
+								publishedAt
+							)} (${dayjs(
+								publishedAt
+							).toNow(true)} ago)`"
+							:title="title || ''"
+							:src="image"
+							:comments="
+								commentCount ||
+								0
+							"
+							:like="0"
+							:key="id"
+						/>
+					</template>
+					<template
+						v-if="
+							isFetching ||
+							isFetchingNextPage ||
+							isLoading
 						"
-						:like="0"
-						:key="id"
-					/>
+					>
+						<Article
+							v-for="n in 3"
+							:owner="{
+								id: n,
+								name: 'lmao',
+								src: 'https://res.cloudinary.com/practicaldev/image/fetch/s--5VEqFAA8--/c_fill,f_auto,fl_progressive,h_90,q_66,w_90/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/909049/9a19683f-1e9f-4933-bdba-e7ea2fe5e71c.gif'
+							}"
+							slug="test"
+							publishedAt="Lmao"
+							title="test"
+							:comments="0"
+							:like="0"
+							src="https://res.cloudinary.com/practicaldev/image/fetch/s--xow1lZzw--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/ndp8r87ccsoa5yzw6zqh.png"
+							:key="n"
+							showImage
+							loading
+						/>
+					</template>
+					<div ref="target" />
 				</div>
 			</div>
 		</SidebarLayout>
