@@ -36,6 +36,7 @@
 		"eslint-config-custom": "workspace:*",
 		"internal-ip": "^7.0.0",
 		"nuxt": "^3.1.0",
+		"nuxt-simple-sitemap": "^2.4.11",
 		"nuxt-svgo": "^1.1.0",
 		"nuxt-vitest": "^0.6.4",
 		"postcss": "^8.4.21",

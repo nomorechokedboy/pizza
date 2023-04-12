@@ -38,7 +38,8 @@ export default defineNuxtConfig(async () => {
 			['unplugin-icons/nuxt', { scale: 1.5 }],
 			'v-satori/nuxt',
 			'unplugin-font-to-buffer/nuxt',
-			'@vueuse/nuxt'
+			'@vueuse/nuxt',
+			'nuxt-simple-sitemap'
 		],
 		css: ['ui-vue/dist/style.css'],
 		vite: {
@@ -69,6 +70,9 @@ export default defineNuxtConfig(async () => {
 		plugins: [{ src: '~/plugins/vercel.ts', mode: 'client' }],
 		webVitals: {
 			debug: false
+		},
+		sitemap: {
+			siteUrl: 'https://pizza-web-nuxt.vercel.app'
 		}
 	}
 

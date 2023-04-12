@@ -35,11 +35,14 @@ const articleCommentsSection = `/${user}/${slug}#comments`
 			<NuxtLink
 				:class="{ skeleton: loading }"
 				:to="articleCommentsSection"
+				:title="`This link will navigate to ${slug} comment section`"
+				:aria-label="`Link to ${slug} comment section`"
 			>
 				<Button
 					class="!text-neutral-800"
 					color="gray"
 					variant="subtle"
+					:aria-label="`To ${slug} comment section`"
 				>
 					<p v-if="loading">
 						<br />
