@@ -1,24 +1,45 @@
 <script setup lang="ts">
 import { ActionIcon, Button } from 'ui-vue'
-import { reactive } from 'vue'
-import IconBell from '~icons/ph/bell-simple'
+import { dicebearMedia } from '~/constants'
 import Avatar from './Avatar.vue'
 import Dropdown from './Dropdown.vue'
+
+function handleToggle() {
+	toggle.value = !toggle.value
+}
 
 const token = useAuthToken()
 const isLoggedIn = computed(
 	() => token.value.accessToken && token.value.refreshToken
 )
 const { $blogApi } = useNuxtApp()
-const toggle = reactive({
-	open: false,
-	onChange() {
-		this.open = !this.open
-	}
-})
+const toggle = ref(false)
+const userProfile = useUserProfile()
+const userAvatar = computed(
+	() =>
+		userProfile.value?.avatar ||
+		`${dicebearMedia}${userProfile.value.name}`
+)
 watchEffect(() => {
 	if (isLoggedIn.value) {
-		$blogApi.auth.authMeGet()
+		$blogApi.auth.authMeGet().then(({ data }) => {
+			if (data) {
+				const {
+					avatar,
+					username,
+					id,
+					email,
+					fullname
+				} = data
+				setUserProfile({
+					name: fullname,
+					email,
+					id,
+					username,
+					avatar
+				})
+			}
+		})
 	}
 })
 </script>
@@ -29,18 +50,25 @@ watchEffect(() => {
 			class="max-w-7xl w-full flex flex-row items-center justify-between px-2"
 		>
 			<div class="flex items-center gap-4 w-1/2">
-				<div class="w-[50px] h-10 bg-black"></div>
+				<NuxtLink to="/">
+					<nuxt-img
+						alt="Accessiblog logo"
+						src="/logo.png"
+						width="50"
+						height="40"
+					/>
+				</NuxtLink>
 				<div
-					class="bg-sky-500 h-10 lg:w-full lg:max-w-md"
+					class="bg-transparent h-10 lg:w-full lg:max-w-md"
 				></div>
 			</div>
-			<div class="flex flex-row gap-2">
+			<div class="flex flex-row gap-2 md:gap-5">
 				<NuxtLink v-if="isLoggedIn" to="/new">
 					<Button color="indigo"
 						>Create Post</Button
 					>
 				</NuxtLink>
-				<ActionIcon
+				<!-- <ActionIcon
 					color="indigo"
 					class="group"
 					size="lg"
@@ -52,7 +80,7 @@ watchEffect(() => {
 					>
 						<IconBell />
 					</span>
-				</ActionIcon>
+				</ActionIcon> -->
 				<div
 					class="relative inline-block"
 					v-if="isLoggedIn"
@@ -61,26 +89,26 @@ watchEffect(() => {
 						radius="xl"
 						size="lg"
 						variant="subtle"
+						@click="handleToggle"
 						class="focus:ring-4 focus:outline-none focus:ring-gray-300"
 					>
 						<Avatar
-							class="md:w-8"
-							width="24"
-							:src="'https://avatars.githubusercontent.com/u/42694704?v=4'"
-							@click="
-								toggle.onChange()
-							"
+							width="32"
+							:src="userAvatar"
 						/>
 					</ActionIcon>
 					<Dropdown
-						:open="toggle.open"
+						:open="toggle"
 						:user="{
-							name: 'Đỗ Viên',
-							username: 'Cpea2506'
+							name:
+								userProfile?.name ||
+								'No username',
+							username:
+								userProfile?.username ||
+								'No username'
 						}"
 					/>
 				</div>
-
 				<NuxtLink
 					v-if="!isLoggedIn"
 					class="hidden md:inline"

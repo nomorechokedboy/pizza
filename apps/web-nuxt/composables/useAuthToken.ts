@@ -13,3 +13,9 @@ export function useAuthToken() {
 		maxAge: 60 * 60
 	})
 }
+
+export function removeToken() {
+	const token = useAuthToken()
+	token.value.refreshToken = undefined
+	token.value.accessToken = undefined
+}

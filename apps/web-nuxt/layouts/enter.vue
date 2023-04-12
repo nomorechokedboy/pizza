@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Button } from 'ui-vue'
+import IconFacebook from '~icons/fa6-brands/facebook'
 import IconGoogle from '~icons/gg/google'
 import IconGithub from '~icons/mdi/github'
 import IconGitlab from '~icons/ri/gitlab-fill'
-import IconFacebook from '~icons/fa6-brands/facebook'
 
 const route = useRoute()
 const isLoginPage = computed(() => route.name === 'login')

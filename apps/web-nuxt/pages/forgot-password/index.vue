@@ -6,7 +6,7 @@ import { Button } from 'ui-vue'
 import { notify } from '~~/composables/useNotification'
 
 definePageMeta({
-	middleware: ['authn']
+	middleware: ['redirect']
 })
 
 const { $blogApi } = useNuxtApp()

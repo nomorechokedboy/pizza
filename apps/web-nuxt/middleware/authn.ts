@@ -1,14 +1,9 @@
-export default defineNuxtRouteMiddleware((to, _from) => {
+export default defineNuxtRouteMiddleware(() => {
 	const token = useAuthToken()
+	const isAuthenticated =
+		token.value.accessToken && token.value.refreshToken
 
-	// if((!token.value.accessToken  || !token.value.refreshToken ) && to.path === '')
-	if (
-		token.value.accessToken &&
-		token.value.refreshToken &&
-		(to.path === '/login' ||
-			to.path === '/signup' ||
-			to.path === '/forgot-password')
-	) {
-		return navigateTo('/')
+	if (!isAuthenticated) {
+		return navigateTo('/login')
 	}
 })

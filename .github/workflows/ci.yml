@@ -36,5 +36,6 @@ jobs:
                           run: |
                                   yarn global add pnpm
                                   pnpm i --frozen-lockfile
+                                  npx playwright install --with-deps
                                   pnpm lint
                                   pnpm t
