@@ -6,6 +6,12 @@ export interface DropdownProps {
 	}
 	open: boolean
 }
+
+async function logout() {
+	removeToken()
+	navigateTo('/login')
+}
+
 const { open } = defineProps<DropdownProps>()
 </script>
 
@@ -62,11 +68,12 @@ const { open } = defineProps<DropdownProps>()
 			</li>
 		</ul>
 		<div class="pt-2 dark:text-gray-200">
-			<a
-				href="#"
-				class="block px-4 py-2 hover:underline hover:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-				>Sign out</a
+			<div
+				class="cursor-pointer px-4 py-2 hover:underline hover:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+				@click="logout"
 			>
+				Sign out
+			</div>
 		</div>
 	</div>
 </template>
@@ -75,6 +82,7 @@ const { open } = defineProps<DropdownProps>()
 .dropdown {
 	@apply -right-2;
 }
+
 .dropdown[data-biding='true'] {
 	@apply block overflow-visible;
 }
