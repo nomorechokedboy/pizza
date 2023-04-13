@@ -37,10 +37,11 @@ function calculateTo() {
 
 const comment = computed(haveComments)
 const to = computed(calculateTo)
+const linkLoadingClass = { 'pointer-events-none': loading }
 </script>
 
 <template>
-	<NuxtLink :to="to">
+	<NuxtLink :to="to" :class="linkLoadingClass">
 		<div class="bg-white shadow rounded overflow-hidden">
 			<div
 				v-if="loading"
@@ -66,7 +67,12 @@ const to = computed(calculateTo)
 						class="mb-1 text-xl font-bold text-neutral-900"
 						:class="{ skeleton: loading }"
 					>
-						<NuxtLink :to="to">
+						<NuxtLink
+							:class="
+								linkLoadingClass
+							"
+							:to="to"
+						>
 							{{ title }}</NuxtLink
 						>
 					</h2>
