@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios'
 import dayjs from 'dayjs'
+import calendar from 'dayjs/plugin/calendar'
 import { AlertProps } from '~~/components/Alert.vue'
 import { notify } from '~~/composables/useNotification'
 export * from './astToVue'
@@ -7,6 +8,8 @@ export * from './rehypeFilter'
 export * from './storyFixture'
 export * from './types'
 export * from './uriTransformer'
+
+dayjs.extend(calendar)
 
 export function notifyError(e: unknown) {
 	if (e instanceof AxiosError) {
@@ -43,4 +46,12 @@ export function convertDate(d?: string): string {
 	}
 
 	return dayjs(date).format('MMM D')
+}
+
+export function getCalendarTime(d?: string) {
+	let date = d
+	if (!date) {
+		date = dayjs().toISOString()
+	}
+	return dayjs(date).calendar()
 }
