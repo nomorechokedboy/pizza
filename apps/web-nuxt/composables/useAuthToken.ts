@@ -19,3 +19,12 @@ export function removeToken() {
 	token.value.refreshToken = undefined
 	token.value.accessToken = undefined
 }
+
+export function useIsAuthenticated() {
+	const token = useAuthToken()
+	function computeIsAuthenticated() {
+		return token.value.accessToken && token.value.refreshToken
+	}
+
+	return computed(computeIsAuthenticated)
+}
