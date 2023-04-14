@@ -8,17 +8,17 @@ function handleToggle() {
 	toggle.value = !toggle.value
 }
 
-const token = useAuthToken()
-const isLoggedIn = computed(
-	() => token.value.accessToken && token.value.refreshToken
-)
+const isLoggedIn = useIsAuthenticated()
 const { $blogApi } = useNuxtApp()
 const toggle = ref(false)
 const userProfile = useUserProfile()
 const userAvatar = computed(
 	() =>
 		userProfile.value?.avatar ||
-		`${dicebearMedia}${userProfile.value.name}`
+		`${dicebearMedia}${
+			userProfile.value.name ||
+			'A6Blog&backgroundColor=000000'
+		}`
 )
 watchEffect(() => {
 	if (isLoggedIn.value) {
