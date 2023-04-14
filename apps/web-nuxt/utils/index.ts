@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios'
 import dayjs from 'dayjs'
+import calendar from 'dayjs/plugin/calendar'
 import jwtDecode, { JwtPayload } from 'jwt-decode'
 import { AlertProps } from '~~/components/Alert.vue'
 import { notify } from '~~/composables/useNotification'
@@ -9,6 +10,8 @@ export * from './rehypeFilter'
 export * from './storyFixture'
 export * from './types'
 export * from './uriTransformer'
+
+dayjs.extend(calendar)
 
 export function notifyError(e: unknown) {
 	if (e instanceof AxiosError) {
@@ -52,4 +55,12 @@ export function isTokenExpired(token: string): boolean {
 	if (!exp) return false
 
 	return !(Date.now() >= exp * 1000)
+}
+
+export function getCalendarTime(d?: string) {
+	let date = d
+	if (!date) {
+		date = dayjs().toISOString()
+	}
+	return dayjs(date).calendar()
 }
