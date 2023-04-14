@@ -1,100 +1,141 @@
 <script lang="ts" setup>
-import { ActionIcon } from 'ui-vue'
+import { useInfiniteQuery } from '@tanstack/vue-query'
+import { useElementVisibility } from '@vueuse/core'
+import { ActionIcon, Button } from 'ui-vue'
+import { dicebearMedia } from '~/constants'
 import ChevronIcon from '~icons/mdi/chevron-up-down'
 import { CommentProps } from './Comment.vue'
 
-const source = `
-## Getting Started
+export interface CommentSectionProps {
+	slug: string
+}
 
-First, run the development server:
+const { $blogApi } = useNuxtApp()
+const { slug } = defineProps<CommentSectionProps>()
+const userProfile = useUserProfile()
+const isAuth = useIsAuthenticated()
+const userAvatar = computed(computeUserAvatar)
+const { data: postDetails } = usePostDetails(slug)
+const content = ref('')
+const isFormValid = computed(computeFormValidity)
+const postId = computed(() => postDetails.value?.id)
+const enabled = computed(() => !!postDetails.value?.id)
+const {
+	data: commentData,
+	isFetching,
+	isFetchingNextPage,
+	isLoading,
+	fetchNextPage,
+	hasNextPage,
+	refetch: refetchComments
+} = useInfiniteQuery({
+	queryKey: ['comments', postId],
+	queryFn: getPostComments,
+	enabled,
+	getNextPageParam: (lastPage) =>
+		lastPage.page && lastPage.items?.length === pageSize
+			? lastPage.page + 1
+			: undefined
+})
+const comments = computed(computeComments)
+const loading = ref(false)
+const blankCommentProps: CommentProps = {
+	like: 0,
+	loading: true,
+	createdAt: '',
+	updated: false,
+	replies: [],
+	user: { avatarUrl: '', name: '' },
+	content: ''
+}
+const pageSize = 30
+const target = ref(null)
+const targetIsVisible = useElementVisibility(target)
 
-\`\`\`bash
-yarn dev
-\`\`\`
+function computeUserAvatar() {
+	return (
+		userProfile.value?.avatar ||
+		`${dicebearMedia}${
+			userProfile.value.name ||
+			'A6Blog&backgroundColor=000000'
+		}`
+	)
+}
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+function computeFormValidity() {
+	return content.value.length !== 0 && postDetails.value?.id !== undefined
+}
 
-You can start editing the page by modifying \`pages/index.js\`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in \`pages/api/hello.js\`.
-
-The \`pages/api\` directory is mapped to \`/api/*\`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_source=github.com&utm_medium=referral&utm_campaign=turborepo-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-`
-
-const comments: CommentProps[] = [
-	{
-		content: source,
-		createdAt: 'Mar 28',
-		updated: true,
-		like: 5,
-		user: {
-			name: 'Duong Le',
-			avatarUrl: 'https://res.cloudinary.com/practicaldev/image/fetch/s--5VEqFAA8--/c_fill,f_auto,fl_progressive,h_90,q_66,w_90/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/909049/9a19683f-1e9f-4933-bdba-e7ea2fe5e71c.gif'
-		},
-		replies: []
-	},
-	{
-		content: source,
-		createdAt: 'Mar 28',
-		updated: false,
-		like: 15,
-		user: {
-			name: 'Duong Le',
-			avatarUrl: 'https://res.cloudinary.com/practicaldev/image/fetch/s--5VEqFAA8--/c_fill,f_auto,fl_progressive,h_90,q_66,w_90/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/909049/9a19683f-1e9f-4933-bdba-e7ea2fe5e71c.gif'
-		},
-		replies: [
-			{
-				content: source,
-				createdAt: 'Mar 28',
-				updated: false,
-				like: 15,
-				user: {
-					name: 'Duong Le',
-					avatarUrl: 'https://res.cloudinary.com/practicaldev/image/fetch/s--5VEqFAA8--/c_fill,f_auto,fl_progressive,h_90,q_66,w_90/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/909049/9a19683f-1e9f-4933-bdba-e7ea2fe5e71c.gif'
-				},
-				replies: []
-			},
-			{
-				content: source,
-				createdAt: 'Mar 28',
-				updated: false,
-				like: 15,
-				user: {
-					name: 'Duong Le',
-					avatarUrl: 'https://res.cloudinary.com/practicaldev/image/fetch/s--5VEqFAA8--/c_fill,f_auto,fl_progressive,h_90,q_66,w_90/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/909049/9a19683f-1e9f-4933-bdba-e7ea2fe5e71c.gif'
-				},
-				replies: [
-					{
-						content: source,
-						createdAt: 'Mar 28',
-						updated: false,
-						like: 15,
-						user: {
-							name: 'Duong Le',
-							avatarUrl: 'https://res.cloudinary.com/practicaldev/image/fetch/s--5VEqFAA8--/c_fill,f_auto,fl_progressive,h_90,q_66,w_90/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/909049/9a19683f-1e9f-4933-bdba-e7ea2fe5e71c.gif'
-						},
-						replies: []
-					}
-				]
+function computeComments() {
+	const comments: (CommentProps & { id: number })[] = []
+	commentData.value?.pages.forEach((page) =>
+		page?.items?.forEach(
+			({ content, id, user, createdAt, updatedAt }) => {
+				comments.push({
+					id,
+					content,
+					user: {
+						name: user?.fullName,
+						avatarUrl:
+							user?.avatar === ''
+								? `${dicebearMedia}${
+										user?.fullName ||
+										'A6Blog'
+								  }`
+								: user?.avatar
+					},
+					like: 0,
+					replies: [],
+					updated: createdAt !== updatedAt,
+					createdAt: getCalendarTime(createdAt)
+				} as CommentProps & { id: number })
 			}
-		]
+		)
+	)
+
+	return comments
+}
+
+async function getPostComments({ pageParam: page = 1 }) {
+	return $blogApi.comment
+		.commentsGet(
+			undefined,
+			postId.value,
+			undefined,
+			page,
+			pageSize,
+			'desc',
+			'id'
+		)
+		.then((resp) => resp.data)
+}
+
+async function handleSubmit() {
+	if (!isFormValid) {
+		return
 	}
-]
+
+	loading.value = true
+	try {
+		await $blogApi.comment.commentsPost({
+			content: content.value,
+			postId: postDetails.value!.id
+		})
+		refetchComments()
+		content.value = ''
+	} catch (e) {
+		notifyError(e)
+	} finally {
+		loading.value = false
+	}
+}
+watchEffect(() => {
+	const loading =
+		isFetching.value || isLoading.value || isFetchingNextPage.value
+	if (targetIsVisible.value && hasNextPage?.value && !loading) {
+		fetchNextPage()
+	}
+})
 </script>
 
 <template>
@@ -120,11 +161,67 @@ const comments: CommentProps[] = [
 			</div>
 			<!-- <Button>Subscribe</Button> -->
 		</header>
+		<div class="flex flex-col gap-4">
+			<div class="flex gap-2">
+				<div class="w-full max-w-[32px]">
+					<Avatar
+						class="md:w-8"
+						width="24"
+						:src="userAvatar"
+					/>
+				</div>
+				<form class="flex flex-col gap-4 flex-1">
+					<div
+						class="text-neutral-900 text-base shadow rounded-md flex-1 flex flex-col gap-4 px-3 pt-2 pb-4"
+					>
+						<main>
+							<RichTextEditor
+								v-model="
+									content
+								"
+								reversed
+							/>
+						</main>
+					</div>
+					<div
+						class="flex items-center gap-3 justify-end"
+						v-if="isAuth"
+					>
+						<Button
+							type="submit"
+							@click.prevent="
+								handleSubmit
+							"
+							:disabled="!isFormValid"
+							:loading="loading"
+							>Comment</Button
+						>
+						<Button
+							color="indigo"
+							variant="subtle"
+							:disabled="
+								!isFormValid ||
+								loading
+							"
+							>Preview</Button
+						>
+					</div>
+				</form>
+			</div>
+		</div>
 		<Comment
-			v-for="(comment, i) in comments"
+			v-for="{ id, ...comment } in comments"
 			v-bind="comment"
-			:key="i"
+			:key="id"
 		/>
+		<template v-if="isFetching || isFetchingNextPage || isLoading">
+			<Comment
+				v-for="n in 5"
+				v-bind="blankCommentProps"
+				:key="n"
+			/>
+		</template>
+		<div ref="target" />
 		<!-- <nav class="flex items-center justify-center text-neutral-500 text-sm">
             <p>Code of conduct</p>
             <div class="py-2 px-3">

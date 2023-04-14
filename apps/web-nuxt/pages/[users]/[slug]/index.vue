@@ -61,6 +61,7 @@ const userProfile = useUserProfile()
 const editUrl = computed(
 	() => `/${postDetails.value?.user?.id}/${postDetails.value?.slug}/edit`
 )
+const isAuthenticated = useIsAuthenticated()
 useSeoMeta({
 	title: postDetails.value?.title,
 	description: postDetails.value?.content,
@@ -206,10 +207,11 @@ useSeoMeta({
 							<div
 								class="flex items-center gap-3"
 								v-if="
+									isAuthenticated &&
 									postDetails
 										?.user
 										?.id ===
-									userProfile?.id
+										userProfile?.id
 								"
 							>
 								<Button
@@ -249,7 +251,7 @@ useSeoMeta({
 							/>
 						</main>
 					</section>
-					<CommentSection />
+					<CommentSection :slug="slug" />
 				</article>
 			</div>
 		</SidebarLayout>
