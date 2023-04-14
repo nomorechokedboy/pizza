@@ -1,0 +1,67 @@
+base: 'https://noisy-boi-dev-nomorechokedboy.cloud.okteto.net/api/v1'
+concurrency: 100
+iterations: 100
+rampup: 5
+plan:
+  - name: Fetch notifications
+    request:
+      url: /notifications?page={{ item.page }}&pageSize={{ item.pageSize }}
+      headers:
+        Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODMwODgzMjgsInN1YiI6MX0.GV_NzjLBAlxZ3sAiIKN_ok6CR4PZKtIxS5_FWpjOjhY
+    with_items:
+      - {page: 1, pageSize: 10}
+      - {page: 1, pageSize: 20}
+      - {page: 1, pageSize: 30}
+      - {page: 1, pageSize: 40}
+      - {page: 1, pageSize: 50}
+      - {page: 1, pageSize: 60}
+      - {page: 1, pageSize: 70}
+      - {page: 1, pageSize: 80}
+      - {page: 1, pageSize: 90}
+      - {page: 1, pageSize: 100}
+      - {page: 2, pageSize: 10}
+      - {page: 2, pageSize: 20}
+      - {page: 2, pageSize: 30}
+      - {page: 2, pageSize: 40}
+      - {page: 2, pageSize: 50}
+      - {page: 2, pageSize: 60}
+      - {page: 2, pageSize: 70}
+      - {page: 2, pageSize: 80}
+      - {page: 2, pageSize: 90}
+      - {page: 3, pageSize: 10}
+      - {page: 3, pageSize: 20}
+      - {page: 3, pageSize: 30}
+      - {page: 3, pageSize: 40}
+      - {page: 3, pageSize: 50}
+      - {page: 3, pageSize: 60}
+      - {page: 3, pageSize: 70}
+      - {page: 3, pageSize: 80}
+      - {page: 3, pageSize: 90}
+      - {page: 4, pageSize: 10}
+      - {page: 4, pageSize: 20}
+      - {page: 4, pageSize: 30}
+      - {page: 4, pageSize: 40}
+      - {page: 4, pageSize: 50}
+      - {page: 4, pageSize: 60}
+      - {page: 4, pageSize: 70}
+      - {page: 4, pageSize: 80}
+      - {page: 4, pageSize: 90}
+      - {page: 5, pageSize: 10}
+      - {page: 5, pageSize: 20}
+      - {page: 5, pageSize: 30}
+      - {page: 5, pageSize: 40}
+      - {page: 5, pageSize: 50}
+      - {page: 5, pageSize: 60}
+      - {page: 5, pageSize: 70}
+      - {page: 5, pageSize: 80}
+      - {page: 5, pageSize: 90}
+      - {page: 1, pageSize: 1}
+      - {page: 1, pageSize: 2}
+      - {page: 1, pageSize: 3}
+      - {page: 1, pageSize: 4}
+      - {page: 1, pageSize: 5}
+      - {page: 1, pageSize: 6}
+      - {page: 1, pageSize: 7}
+      - {page: 1, pageSize: 8}
+      - {page: 1, pageSize: 9}
+    shuffle: true

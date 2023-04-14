@@ -43,3 +43,12 @@ export function onRefreshTokenError() {
 		type: 'error'
 	})
 }
+
+export function useIsAuthenticated() {
+	const token = useAuthToken()
+	function computeIsAuthenticated() {
+		return token.value.accessToken && token.value.refreshToken
+	}
+
+	return computed(computeIsAuthenticated)
+}
