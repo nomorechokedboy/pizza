@@ -16,7 +16,7 @@ const userProfile = useUserProfile()
 const isAuth = useIsAuthenticated()
 const userAvatar = computed(computeUserAvatar)
 const { data: postDetails } = usePostDetails(slug)
-const content = ref('')
+const formData = reactive({ content: '' })
 const isFormValid = computed(computeFormValidity)
 const postId = computed(() => postDetails.value?.id)
 const enabled = computed(() => !!postDetails.value?.id)
@@ -63,7 +63,10 @@ function computeUserAvatar() {
 }
 
 function computeFormValidity() {
-	return content.value.length !== 0 && postDetails.value?.id !== undefined
+	return (
+		formData.content.length !== 0 &&
+		postDetails.value?.id !== undefined
+	)
 }
 
 function computeComments() {
@@ -118,11 +121,11 @@ async function handleSubmit() {
 	loading.value = true
 	try {
 		await $blogApi.comment.commentsPost({
-			content: content.value,
+			content: formData.content,
 			postId: postDetails.value!.id
 		})
 		refetchComments()
-		content.value = ''
+		formData.content = ''
 	} catch (e) {
 		notifyError(e)
 	} finally {
@@ -177,7 +180,7 @@ watchEffect(() => {
 						<main>
 							<RichTextEditor
 								v-model="
-									content
+									formData.content
 								"
 								reversed
 							/>
