@@ -57,7 +57,7 @@ const postedOn = computed(computePostedOn)
 const { $blogApi } = useNuxtApp()
 const openedModal = ref(false)
 const loading = ref(false)
-const userProfile = useUserProfile()
+const { data: userProfile } = useUserProfile()
 const editUrl = computed(
 	() => `/${postDetails.value?.user?.id}/${postDetails.value?.slug}/edit`
 )

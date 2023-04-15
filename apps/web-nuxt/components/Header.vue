@@ -1,47 +1,28 @@
 <script setup lang="ts">
 import { ActionIcon, Button } from 'ui-vue'
 import { dicebearMedia } from '~/constants'
-import Avatar from './Avatar.vue'
-import Dropdown from './Dropdown.vue'
+import IconBell from '~icons/ph/bell-simple'
+
+const isLoggedIn = useIsAuthenticated()
+const toggle = ref(false)
+const { data: userProfile } = useUserProfile()
+const userAvatar = computed(
+	() =>
+		userProfile.value?.avatar ||
+		`${dicebearMedia}${
+			userProfile.value?.name ||
+			'A6Blog&backgroundColor=000000'
+		}`
+)
 
 function handleToggle() {
 	toggle.value = !toggle.value
 }
 
-const isLoggedIn = useIsAuthenticated()
-const { $blogApi } = useNuxtApp()
-const toggle = ref(false)
-const userProfile = useUserProfile()
-const userAvatar = computed(
-	() =>
-		userProfile.value?.avatar ||
-		`${dicebearMedia}${
-			userProfile.value.name ||
-			'A6Blog&backgroundColor=000000'
-		}`
-)
-watchEffect(() => {
-	if (isLoggedIn.value) {
-		$blogApi.auth.authMeGet().then(({ data }) => {
-			if (data) {
-				const {
-					avatar,
-					username,
-					id,
-					email,
-					fullname
-				} = data
-				setUserProfile({
-					name: fullname,
-					email,
-					id,
-					username,
-					avatar
-				})
-			}
-		})
-	}
-})
+async function logout() {
+	removeToken()
+	navigateTo('/login')
+}
 </script>
 
 <template>
@@ -68,7 +49,7 @@ watchEffect(() => {
 						>Create Post</Button
 					>
 				</NuxtLink>
-				<!-- <ActionIcon
+				<ActionIcon
 					color="indigo"
 					class="group"
 					size="lg"
@@ -80,7 +61,7 @@ watchEffect(() => {
 					>
 						<IconBell />
 					</span>
-				</ActionIcon> -->
+				</ActionIcon>
 				<div
 					class="relative inline-block"
 					v-if="isLoggedIn"
@@ -97,17 +78,68 @@ watchEffect(() => {
 							:src="userAvatar"
 						/>
 					</ActionIcon>
-					<Dropdown
-						:open="toggle"
-						:user="{
-							name:
-								userProfile?.name ||
-								'No username',
-							username:
-								userProfile?.username ||
-								'No username'
-						}"
-					/>
+					<Dropdown :open="toggle">
+						<div
+							class="pb-2 mb-2 hover:underline hover:rounded-lg px-4 py-3 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+						>
+							<a href="#">
+								<div>
+									<span
+										class="fw-medium block"
+									>
+										{{
+											userProfile?.name ||
+											'No username'
+										}}
+									</span>
+									<small
+										class="text-gray-400"
+										>@{{
+											userProfile?.username ||
+											'No username'
+										}}
+									</small>
+								</div>
+							</a>
+						</div>
+						<ul
+							class="py-2 text-gray-700 dark:text-gray-200"
+							aria-labelledby="dropdownDefaultButton"
+						>
+							<!-- <li>
+                <a href="#"
+                    class="block px-4 py-2 hover:underline hover:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
+            </li> -->
+							<li>
+								<NuxtLink
+									to="/new"
+									class="block px-4 py-2 hover:underline hover:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+								>
+									Create
+									Post</NuxtLink
+								>
+							</li>
+							<!-- <li>
+                <a href="#"
+                    class="block px-4 py-2 hover:underline hover:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Reading
+                    list</a>
+            </li>
+            <li>
+                <a href="#"
+                    class="block px-4 py-2 hover:underline hover:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</a>
+            </li> -->
+						</ul>
+						<div
+							class="pt-2 dark:text-gray-200"
+						>
+							<div
+								class="cursor-pointer px-4 py-2 hover:underline hover:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+								@click="logout"
+							>
+								Sign out
+							</div>
+						</div>
+					</Dropdown>
 				</div>
 				<NuxtLink
 					v-if="!isLoggedIn"
