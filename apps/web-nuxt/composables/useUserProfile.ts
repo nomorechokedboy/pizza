@@ -1,3 +1,6 @@
+import { useQuery } from '@tanstack/vue-query'
+import { EntitiesUserResponse } from '~/codegen/api'
+
 type UserProfile = {
 	id?: number
 	name?: string
@@ -6,17 +9,30 @@ type UserProfile = {
 	username?: string
 }
 
-export function useUserProfile() {
-	return useState<UserProfile>('userProfile', () => ({
-		email: undefined,
-		avatar: undefined,
-		name: undefined,
-		id: undefined,
-		username: undefined
-	}))
+function selectUserProfile({
+	fullname,
+	phone: _phone,
+	...profile
+}: EntitiesUserResponse) {
+	const userProfile: UserProfile = {
+		name: fullname,
+		...profile
+	}
+	return userProfile
 }
 
-export function setUserProfile(profile: UserProfile) {
-	const userProfile = useUserProfile()
-	userProfile.value = profile
+export function useUserProfile() {
+	const { $blogApi } = useNuxtApp()
+	const isLoggedIn = useIsAuthenticated()
+	const enabled = computed(() => !!isLoggedIn.value)
+	async function getUserProfile() {
+		return $blogApi.auth.authMeGet().then((res) => res.data)
+	}
+
+	return useQuery({
+		queryFn: getUserProfile,
+		queryKey: ['UserProfile'],
+		select: selectUserProfile,
+		enabled
+	})
 }

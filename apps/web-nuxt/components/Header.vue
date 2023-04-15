@@ -8,33 +8,16 @@ const isLoggedIn = computed(() => !!token.value)
 const { $blogApi } = useNuxtApp()
 const notificationEventSource = useNotificationEventSource()
 const toggle = ref(false)
-const userProfile = useUserProfile()
+const { data: userProfile } = useUserProfile()
 const userAvatar = computed(
 	() =>
 		userProfile.value?.avatar ||
 		`${config.public.dicebearMedia}${
-			userProfile.value.name ||
+			userProfile.value?.name ||
 			'A6Blog&backgroundColor=000000'
 		}`
 )
-watchEffect(() => {
-	if (!isLoggedIn.value) {
-		return
-	}
 
-	$blogApi.auth.authMeGet().then(({ data }) => {
-		if (data) {
-			const { avatar, username, id, email, fullname } = data
-			setUserProfile({
-				name: fullname,
-				email,
-				id,
-				username,
-				avatar
-			})
-		}
-	})
-})
 watchEffect((onStop) => {
 	if (
 		!isLoggedIn.value ||

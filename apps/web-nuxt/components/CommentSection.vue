@@ -12,7 +12,7 @@ export interface CommentSectionProps {
 
 const { $blogApi } = useNuxtApp()
 const { slug } = defineProps<CommentSectionProps>()
-const userProfile = useUserProfile()
+const { data: userProfile } = useUserProfile()
 const isAuth = useIsAuthenticated()
 const userAvatar = computed(computeUserAvatar)
 const { data: postDetails } = usePostDetails(slug)
@@ -56,7 +56,7 @@ function computeUserAvatar() {
 	return (
 		userProfile.value?.avatar ||
 		`${dicebearMedia}${
-			userProfile.value.name ||
+			userProfile.value?.name ||
 			'A6Blog&backgroundColor=000000'
 		}`
 	)
