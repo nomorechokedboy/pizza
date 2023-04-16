@@ -1,25 +1,18 @@
 <script lang="ts" setup>
-import { useInfiniteQuery } from '@tanstack/vue-query'
 import { useElementVisibility } from '@vueuse/core'
 import { ActionIcon, Button } from 'ui-vue'
 import { dicebearMedia } from '~/constants'
 import ChevronIcon from '~icons/mdi/chevron-up-down'
 import { CommentProps } from './Comment.vue'
 
-export interface CommentSectionProps {
-	slug: string
-}
-
 const { $blogApi } = useNuxtApp()
-const { slug } = defineProps<CommentSectionProps>()
 const { data: userProfile } = useUserProfile()
 const isAuth = useIsAuthenticated()
 const userAvatar = computed(computeUserAvatar)
-const { data: postDetails } = usePostDetails(slug)
 const formData = reactive({ content: '' })
 const isFormValid = computed(computeFormValidity)
-const postId = computed(() => postDetails.value?.id)
-const enabled = computed(() => !!postDetails.value?.id)
+const slug = inject<string>('slug', 'no slug')
+const { data: postDetails } = usePostDetails(slug)
 const {
 	data: commentData,
 	isFetching,
@@ -28,27 +21,18 @@ const {
 	fetchNextPage,
 	hasNextPage,
 	refetch: refetchComments
-} = useInfiniteQuery({
-	queryKey: ['comments', postId],
-	queryFn: getPostComments,
-	enabled,
-	getNextPageParam: (lastPage) =>
-		lastPage.page && lastPage.items?.length === pageSize
-			? lastPage.page + 1
-			: undefined
-})
+} = usePostComments()
 const comments = computed(computeComments)
 const loading = ref(false)
-const blankCommentProps: CommentProps = {
+const blankCommentProps: Omit<CommentProps, 'id'> = {
 	like: 0,
 	loading: true,
 	createdAt: '',
 	updated: false,
 	replies: [],
-	user: { avatarUrl: '', name: '' },
+	user: { avatarUrl: 'dudimemaythangnunglon', name: '' },
 	content: ''
 }
-const pageSize = 30
 const target = ref(null)
 const targetIsVisible = useElementVisibility(target)
 
@@ -97,20 +81,6 @@ function computeComments() {
 	)
 
 	return comments
-}
-
-async function getPostComments({ pageParam: page = 1 }) {
-	return $blogApi.comment
-		.commentsGet(
-			undefined,
-			postId.value,
-			undefined,
-			page,
-			pageSize,
-			'desc',
-			'id'
-		)
-		.then((resp) => resp.data)
 }
 
 async function handleSubmit() {
@@ -213,14 +183,15 @@ watchEffect(() => {
 			</div>
 		</div>
 		<Comment
-			v-for="{ id, ...comment } in comments"
+			v-for="comment in comments"
 			v-bind="comment"
-			:key="id"
+			:key="`${comment.id}${comment.content}`"
 		/>
 		<template v-if="isFetching || isFetchingNextPage || isLoading">
 			<Comment
 				v-for="n in 5"
 				v-bind="blankCommentProps"
+				:id="n"
 				:key="n"
 			/>
 		</template>

@@ -71,6 +71,7 @@ useSeoMeta({
 	ogImageHeight: 600,
 	twitterImage: url
 })
+provide('slug', slug)
 </script>
 
 <template>
@@ -251,7 +252,7 @@ useSeoMeta({
 							/>
 						</main>
 					</section>
-					<CommentSection :slug="slug" />
+					<CommentSection />
 				</article>
 			</div>
 		</SidebarLayout>
