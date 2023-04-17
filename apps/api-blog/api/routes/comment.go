@@ -19,7 +19,7 @@ func publicCommentRouter(app fiber.Router, handler handler.CommentHandler) {
 }
 
 func privateCommentRouter(app fiber.Router, handler handler.CommentHandler, middle middleware.JWTMiddleware) {
-	app.Use(middle.Protected())
+	app.Use(middle.IsAuth)
 	app.Post("/", handler.CreateComment)
 	app.Put("/:id", handler.UpdateComment)
 	app.Delete("/:id", handler.DeleteComment)
