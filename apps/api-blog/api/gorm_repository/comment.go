@@ -33,11 +33,22 @@ func (r *CommentGormRepo) GetAllComments(query *entities.CommentQuery) (common.B
 	cond := &entities.Comment{UserID: query.UserID, PostID: query.PostID, ParentID: parentIDaddr}
 
 	if err := r.db.Scopes(scopes.Pagination(r.db, entities.Comment{}, query.BaseQuery, &res)).
+		Preload("Replies.User").
+		Preload("Replies.Replies").
 		Preload(clause.Associations).
 		Find(&comments, cond).Error; err != nil {
 		return res, err
 	}
-	res.Items = comments
+
+	commentFilter := []entities.Comment{}
+
+	for _, item := range comments {
+		if len(item.Replies) > 0 {
+			commentFilter = append(commentFilter, item)
+		}
+	}
+
+	res.Items = commentFilter
 
 	return res, nil
 }

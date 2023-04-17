@@ -79,7 +79,7 @@ func (handler *PostHandler) GetAllPosts(c *fiber.Ctx) error {
 // @Description Get post by slug
 // @Tags Posts
 // @Param slug path string true "Post Slug"
-// @Success 200 {object} entities.PostDetailResponse
+// @Success 200 {object} entities.PostResponse
 // @Failure 400
 // @Failure 404
 // @Router /posts/{slug} [get]
@@ -91,7 +91,7 @@ func (handler *PostHandler) GetPostBySlug(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusNotFound, "failed to get post")
 	}
 
-	return c.Status(fiber.StatusOK).JSON(post.ToDetailResponse())
+	return c.Status(fiber.StatusOK).JSON(post.ToResponse())
 }
 
 // @CreatePost godoc
@@ -100,7 +100,7 @@ func (handler *PostHandler) GetPostBySlug(c *fiber.Ctx) error {
 // @Tags Posts
 // @Accept json
 // @Param post body entities.PostRequest true "Post"
-// @Success 201 {object} entities.PostDetailResponse
+// @Success 201 {object} entities.PostResponse
 // @Failure 400
 // @Failure 409
 // @Failure 500
@@ -138,7 +138,7 @@ func (handler *PostHandler) CreatePost(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to create post slug")
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(post.ToDetailResponse())
+	return c.Status(fiber.StatusCreated).JSON(post.ToResponse())
 }
 
 // @UpdatePost godoc
@@ -147,7 +147,7 @@ func (handler *PostHandler) CreatePost(c *fiber.Ctx) error {
 // @Param id path int true "Post ID"
 // @Param post body entities.PostRequest true "Post"
 // @Tags Posts
-// @Success 200 {object} entities.PostDetailResponse
+// @Success 200 {object} entities.PostResponse
 // @Failure 400
 // @Failure 500
 // @Security ApiKeyAuth
@@ -181,7 +181,7 @@ func (handler *PostHandler) UpdatePost(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to create new slug")
 	}
 
-	return c.Status(fiber.StatusOK).JSON(post.ToDetailResponse())
+	return c.Status(fiber.StatusOK).JSON(post.ToResponse())
 }
 
 // @DeletePost godoc
@@ -190,7 +190,7 @@ func (handler *PostHandler) UpdatePost(c *fiber.Ctx) error {
 // @Param id path int true "Post ID"
 // @Tags Posts
 // @Produce json
-// @Success 200 {object} entities.PostDetailResponse
+// @Success 200 {object} entities.PostResponse
 // @Failure 400
 // @Failure 500
 // @security ApiKeyAuth
@@ -208,5 +208,5 @@ func (handler *PostHandler) DeletePost(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to delete specfied post")
 	}
 
-	return c.Status(fiber.StatusOK).JSON(post.ToDetailResponse())
+	return c.Status(fiber.StatusOK).JSON(post.ToResponse())
 }

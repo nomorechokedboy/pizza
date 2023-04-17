@@ -41,11 +41,6 @@ type PostResponse struct {
 	UpdatedAt    time.Time  `json:"updatedAt"`
 }
 
-type PostDetailResponse struct {
-	PostResponse
-	Comments []Comment `json:"comments"`
-}
-
 func (post *Post) ToResponse() PostResponse {
 	return PostResponse{
 		ID:           post.ID,
@@ -60,26 +55,6 @@ func (post *Post) ToResponse() PostResponse {
 		PublishedAt:  post.PublishedAt,
 		CreatedAt:    post.CreatedAt,
 		UpdatedAt:    post.UpdatedAt,
-	}
-}
-
-func (post *Post) ToDetailResponse() PostDetailResponse {
-	return PostDetailResponse{
-		PostResponse: PostResponse{
-			ID:           post.ID,
-			User:         post.User,
-			Parent:       post.Parent,
-			Title:        post.Title,
-			Slug:         post.Slug,
-			Image:        post.Image,
-			CommentCount: post.CommentCount,
-			Content:      post.Content,
-			Published:    post.Published,
-			PublishedAt:  post.PublishedAt,
-			CreatedAt:    post.CreatedAt,
-			UpdatedAt:    post.UpdatedAt,
-		},
-		Comments: post.Comments,
 	}
 }
 

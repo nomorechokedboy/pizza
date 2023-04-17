@@ -27,7 +27,7 @@ func NewCommentHandler(usecase usecase.CommentUsecase) *CommentHandler {
 // @Param  pageSize query int false "Page Size"
 // @Param sort query string false "Sort direction" Enums(asc, desc) default(desc)
 // @Param sortBy query string false "Sort by" Enums(id, user_id, parent_id) default(id)
-// @Success 200 {object} common.BasePaginationResponse[entities.CommentResponse]
+// @Success 200 {object} common.BasePaginationResponse[entities.Comment]
 // @Failure 404
 // @Failure 500
 // @Router /comments/ [get]
@@ -54,18 +54,7 @@ func (handler *CommentHandler) GetAllComments(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusNotFound, "failed to get all comments")
 	}
 
-	commentRes := common.BasePaginationResponse[entities.CommentResponse]{
-		Items: []entities.CommentResponse{},
-	}
-	commentRes.Page = comments.Page
-	commentRes.PageSize = comments.PageSize
-	commentRes.Total = comments.Total
-
-	for _, comment := range comments.Items {
-		commentRes.Items = append(commentRes.Items, comment.ToResponse())
-	}
-
-	return c.Status(fiber.StatusOK).JSON(commentRes)
+	return c.Status(fiber.StatusOK).JSON(comments)
 }
 
 // @CreateComment godoc
@@ -74,7 +63,7 @@ func (handler *CommentHandler) GetAllComments(c *fiber.Ctx) error {
 // @Tags Comments
 // @Accept json
 // @Param comment body entities.CommentRequest true "Comment"
-// @Success 201 {object} entities.CommentResponse
+// @Success 201 {object} entities.Comment
 // @Failure 400
 // @Failure 500
 // @Security ApiKeyAuth
@@ -93,7 +82,7 @@ func (handler *CommentHandler) CreateComment(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to create new comment")
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(comment.ToResponse())
+	return c.Status(fiber.StatusCreated).JSON(comment)
 }
 
 // @UpdateComment godoc
@@ -102,7 +91,7 @@ func (handler *CommentHandler) CreateComment(c *fiber.Ctx) error {
 // @Param id path int true "Comment ID"
 // @Param comment body handler.UpdateComment.commentRequest true "Comment"
 // @Tags Comments
-// @Success 200 {object} entities.CommentResponse
+// @Success 200 {object} entities.Comment
 // @Failure 400
 // @Failure 500
 // @Security ApiKeyAuth
@@ -130,7 +119,7 @@ func (handler *CommentHandler) UpdateComment(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to update specfied comment")
 	}
 
-	return c.Status(fiber.StatusOK).JSON(comment.ToResponse())
+	return c.Status(fiber.StatusOK).JSON(comment)
 }
 
 // @DeleteComment godoc
@@ -139,7 +128,7 @@ func (handler *CommentHandler) UpdateComment(c *fiber.Ctx) error {
 // @Param id path int true "Comment ID"
 // @Tags Comments
 // @Produce json
-// @Success 200 {object} entities.CommentResponse
+// @Success 200 {object} entities.Comment
 // @Failure 400
 // @Failure 500
 // @security ApiKeyAuth
@@ -157,5 +146,5 @@ func (handler *CommentHandler) DeleteComment(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to delete specfied comment")
 	}
 
-	return c.Status(fiber.StatusOK).JSON(comment.ToResponse())
+	return c.Status(fiber.StatusOK).JSON(comment)
 }
