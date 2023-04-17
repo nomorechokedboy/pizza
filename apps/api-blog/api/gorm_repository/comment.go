@@ -40,7 +40,15 @@ func (r *CommentGormRepo) GetAllComments(query *entities.CommentQuery) (common.B
 		return res, err
 	}
 
-	res.Items = comments
+	commentFilter := []entities.Comment{}
+
+	for _, item := range comments {
+		if len(item.Replies) > 0 {
+			commentFilter = append(commentFilter, item)
+		}
+	}
+
+	res.Items = commentFilter
 
 	return res, nil
 }
