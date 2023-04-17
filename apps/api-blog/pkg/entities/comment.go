@@ -9,37 +9,31 @@ import (
 
 type Comment struct {
 	ID        uint           `json:"id"`
-	UserID    uint           `json:"userId"`
-	User      User           `json:"-"`
+	UserID    uint           `json:"-"`
+	User      User           `json:"user"`
 	PostID    uint           `json:"postId"`
 	Post      Post           `json:"-"`
-	ParentID  *uint          `json:"parentId"`
-	Parent    *Comment       `json:"-"`
+	ParentID  *uint          `json:"-"`
+	Replies   []Comment      `json:"replies" gorm:"foreignkey:ParentID"`
 	Content   string         `gorm:"size:1000" json:"content"`
 	CreatedAt time.Time      `json:"createdAt"`
 	UpdatedAt time.Time      `json:"updatedAt"`
 	DeletedAt gorm.DeletedAt `json:"-"`
 }
 
-type CommentResponse struct {
-	ID        uint      `json:"id"`
-	User      User      `json:"user"`
-	Parent    *Comment  `json:"parent"`
-	PostID    uint      `json:"postId"`
-	Content   string    `gorm:"size:1000" json:"content"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
-}
-
-func (comment *Comment) ToResponse() CommentResponse {
-	return CommentResponse{
+func (comment *Comment) New() Comment {
+	return Comment{
 		ID:        comment.ID,
-		PostID:    comment.PostID,
+		UserID:    comment.UserID,
 		User:      comment.User,
-		Parent:    comment.Parent,
+		PostID:    comment.PostID,
+		Post:      comment.Post,
+		ParentID:  comment.ParentID,
+		Replies:   comment.Replies,
 		Content:   comment.Content,
 		CreatedAt: comment.CreatedAt,
 		UpdatedAt: comment.UpdatedAt,
+		DeletedAt: comment.DeletedAt,
 	}
 }
 
