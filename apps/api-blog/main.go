@@ -10,6 +10,7 @@ import (
 	_ "api-blog/docs"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
+	"api-blog/reaction"
 	"fmt"
 	"log"
 
@@ -40,10 +41,17 @@ func main() {
 	if err != nil {
 		panic("Cannot connect Database: %v")
 	}
-	db.AutoMigrate(&entities.User{})
-	db.AutoMigrate(&entities.Post{})
-	db.AutoMigrate(&entities.Slug{})
-	db.AutoMigrate(&entities.Comment{})
+
+	if err = db.
+		AutoMigrate(
+			&entities.User{},
+			&entities.Post{},
+			&entities.Slug{},
+			&entities.Comment{},
+			&entities.Reaction{},
+		); err != nil {
+		log.Panic("failed to migrate database: ", err)
+	}
 
 	//Minio
 	minioClient, err := util.ConnectMinio(cfg)
@@ -52,7 +60,6 @@ func main() {
 	}
 
 	//middlerware
-
 	middle := middleware.NewJWTMiddleware(cfg.AuthConfig.JWTSecret)
 
 	//register usecase
@@ -86,6 +93,11 @@ func main() {
 	}))
 	app.Use(logger.New())
 	app.Use(recover.New())
+	app.Use(func(c *fiber.Ctx) error {
+		c.Locals("db", db)
+		c.Locals("userService", userUC)
+		return c.Next()
+	})
 	app.Get("/metrics", monitor.New(monitor.Config{Title: "Api Blog Metrics Page"}))
 	app.Get("/healthCheck", func(c *fiber.Ctx) error {
 		return c.SendString("Hello world")
@@ -102,6 +114,7 @@ func main() {
 	routes.MediaRouter(v1, *mediaHandler, *middle)
 	routes.PostRouter(v1, *postHandler, *middle)
 	routes.CommentRouter(v1, *commentHandler, *middle)
+	reaction.RegisterReactionApi(v1, *middle)
 
 	port := fmt.Sprintf(":%v", cfg.Server.Port)
 	log.Printf("Server started on port %v", cfg.Server.Port)

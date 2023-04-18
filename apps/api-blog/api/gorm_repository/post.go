@@ -5,6 +5,7 @@ import (
 	"api-blog/pkg/common"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/repository"
+	"errors"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -51,6 +52,7 @@ func (r *PostGormRepo) GetAllPosts(query *entities.PostQuery) (common.BasePagina
 
 	for i, post := range res.Items {
 		res.Items[i].CommentCount = len(post.Comments)
+		res.Items[i].ReactionCount = uint(len(post.Reactions))
 	}
 
 	return res, nil
@@ -63,8 +65,14 @@ func (r *PostGormRepo) GetPostBySlug(slug string) (*entities.Post, error) {
 		Preload(clause.Associations).
 		Joins("JOIN slugs ON slugs.post_id = posts.id AND slugs.slug = ?", slug).
 		First(&post)
+	if res := r.db.
+		Preload(clause.Associations).
+		Find(&post.Reactions); res.Error != nil {
+		return nil, res.Error
+	}
 
 	post.CommentCount = len(post.Comments)
+	post.ReactionCount = uint(len(post.Reactions))
 
 	return &post, tx.Error
 }
@@ -105,4 +113,18 @@ func (r *PostGormRepo) DeletePost(id uint) (*entities.Post, error) {
 		Update("parent_id", nil)
 
 	return &post, tx.Error
+}
+
+func (r *PostGormRepo) GetPostById(id uint) (*entities.Post, error) {
+	post := entities.Post{ID: id}
+
+	if result := r.db.Preload(clause.Associations).First(&post); result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+
+		return nil, errors.New("unknown error")
+	}
+
+	return &post, nil
 }

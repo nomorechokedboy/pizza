@@ -39,10 +39,10 @@ func (r *CommentGormRepo) GetAllComments(query *entities.CommentQuery) (common.B
 		Find(&comments, cond).Error; err != nil {
 		return res, err
 	}
-
 	commentFilter := []entities.Comment{}
 
 	for _, item := range comments {
+		item.ReactionCount = uint(len(item.Reactions))
 		if item.ParentID == nil {
 			commentFilter = append(commentFilter, item)
 		}
