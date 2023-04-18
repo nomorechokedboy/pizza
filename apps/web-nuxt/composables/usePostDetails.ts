@@ -1,9 +1,8 @@
 import { QueryFunctionContext, useQuery } from '@tanstack/vue-query'
-import { EntitiesPostDetailResponse } from '~/codegen/api'
 
 export async function getPostDetails({
 	queryKey
-}: QueryFunctionContext<string[], any>): Promise<EntitiesPostDetailResponse> {
+}: QueryFunctionContext<string[], any>) {
 	const { $blogApi } = useNuxtApp()
 	return $blogApi.post.postsSlugGet(queryKey[1]).then((resp) => resp.data)
 }
