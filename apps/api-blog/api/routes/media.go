@@ -10,6 +10,6 @@ import (
 func MediaRouter(app fiber.Router, handler handler.MediaHandler, middleware middleware.JWTMiddleware) {
 	media := app.Group("/media")
 	media.Get("/:uuId/:objectName", handler.GetMedia)
-	media.Use(middleware.Protected())
+	media.Use(middleware.IsAuth)
 	media.Post("/upload", handler.PostImage)
 }

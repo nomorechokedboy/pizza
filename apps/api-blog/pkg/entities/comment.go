@@ -8,17 +8,19 @@ import (
 )
 
 type Comment struct {
-	ID        uint           `json:"id"`
-	UserID    uint           `json:"-"`
-	User      User           `json:"user"`
-	PostID    uint           `json:"postId"`
-	Post      Post           `json:"-"`
-	ParentID  *uint          `json:"-"`
-	Replies   []Comment      `json:"replies" gorm:"foreignkey:ParentID"`
-	Content   string         `gorm:"size:1000" json:"content"`
-	CreatedAt time.Time      `json:"createdAt"`
-	UpdatedAt time.Time      `json:"updatedAt"`
-	DeletedAt gorm.DeletedAt `json:"-"`
+	ID            uint           `json:"id"`
+	UserID        uint           `json:"-"`
+	User          User           `json:"user"`
+	PostID        uint           `json:"postId"`
+	Post          Post           `json:"-"`
+	ParentID      *uint          `json:"-"`
+	Replies       []Comment      `json:"replies" gorm:"foreignkey:ParentID"`
+	Content       string         `gorm:"size:1000" json:"content"`
+	CreatedAt     time.Time      `json:"createdAt"`
+	UpdatedAt     time.Time      `json:"updatedAt"`
+	DeletedAt     gorm.DeletedAt `json:"-"`
+	Reactions     []Reaction     `json:"-" gorm:"polymorphic:Reactable;"`
+	ReactionCount uint           `json:"reactionCount"`
 }
 
 func (comment *Comment) New() Comment {

@@ -51,6 +51,7 @@ func (r *PostGormRepo) GetAllPosts(query *entities.PostQuery) (common.BasePagina
 
 	for i, post := range res.Items {
 		res.Items[i].CommentCount = len(post.Comments)
+		res.Items[i].ReactionCount = uint(len(post.Reactions))
 	}
 
 	return res, nil
@@ -63,8 +64,14 @@ func (r *PostGormRepo) GetPostBySlug(slug string) (*entities.Post, error) {
 		Preload(clause.Associations).
 		Joins("JOIN slugs ON slugs.post_id = posts.id AND slugs.slug = ?", slug).
 		First(&post)
+	if res := r.db.
+		Preload(clause.Associations).
+		Find(&post.Reactions); res.Error != nil {
+		return nil, res.Error
+	}
 
 	post.CommentCount = len(post.Comments)
+	post.ReactionCount = uint(len(post.Reactions))
 
 	return &post, tx.Error
 }

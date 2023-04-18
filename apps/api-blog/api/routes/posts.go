@@ -20,7 +20,7 @@ func publicPostRouter(app fiber.Router, handler handler.PostHandler) {
 }
 
 func privatePostRouter(app fiber.Router, handler handler.PostHandler, middle middleware.JWTMiddleware) {
-	app.Use(middle.Protected())
+	app.Use(middle.IsAuth)
 	app.Post("/", handler.CreatePost)
 	app.Put("/:id", handler.UpdatePost)
 	app.Delete("/:id", handler.DeletePost)
