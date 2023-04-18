@@ -35,31 +35,31 @@ import { BASE_PATH, BaseAPI, RequestArgs, RequiredError } from './base'
 /**
  *
  * @export
- * @interface CommonBasePaginationResponseEntitiesCommentResponse
+ * @interface CommonBasePaginationResponseEntitiesComment
  */
-export interface CommonBasePaginationResponseEntitiesCommentResponse {
+export interface CommonBasePaginationResponseEntitiesComment {
 	/**
 	 *
-	 * @type {Array<EntitiesCommentResponse>}
-	 * @memberof CommonBasePaginationResponseEntitiesCommentResponse
+	 * @type {Array<EntitiesComment>}
+	 * @memberof CommonBasePaginationResponseEntitiesComment
 	 */
-	items?: Array<EntitiesCommentResponse>
+	items?: Array<EntitiesComment>
 	/**
 	 *
 	 * @type {number}
-	 * @memberof CommonBasePaginationResponseEntitiesCommentResponse
+	 * @memberof CommonBasePaginationResponseEntitiesComment
 	 */
 	page?: number
 	/**
 	 *
 	 * @type {number}
-	 * @memberof CommonBasePaginationResponseEntitiesCommentResponse
+	 * @memberof CommonBasePaginationResponseEntitiesComment
 	 */
 	page_size?: number
 	/**
 	 *
 	 * @type {number}
-	 * @memberof CommonBasePaginationResponseEntitiesCommentResponse
+	 * @memberof CommonBasePaginationResponseEntitiesComment
 	 */
 	total?: number
 }
@@ -142,13 +142,19 @@ export interface EntitiesComment {
 	 * @type {number}
 	 * @memberof EntitiesComment
 	 */
-	parentId?: number
+	postId?: number
 	/**
 	 *
 	 * @type {number}
 	 * @memberof EntitiesComment
 	 */
-	postId?: number
+	reactionCount?: number
+	/**
+	 *
+	 * @type {Array<EntitiesComment>}
+	 * @memberof EntitiesComment
+	 */
+	replies?: Array<EntitiesComment>
 	/**
 	 *
 	 * @type {string}
@@ -157,10 +163,10 @@ export interface EntitiesComment {
 	updatedAt?: string
 	/**
 	 *
-	 * @type {number}
+	 * @type {EntitiesUser}
 	 * @memberof EntitiesComment
 	 */
-	userId?: number
+	user?: EntitiesUser
 }
 /**
  *
@@ -186,55 +192,6 @@ export interface EntitiesCommentRequest {
 	 * @memberof EntitiesCommentRequest
 	 */
 	postId?: number
-}
-/**
- *
- * @export
- * @interface EntitiesCommentResponse
- */
-export interface EntitiesCommentResponse {
-	/**
-	 *
-	 * @type {string}
-	 * @memberof EntitiesCommentResponse
-	 */
-	content?: string
-	/**
-	 *
-	 * @type {string}
-	 * @memberof EntitiesCommentResponse
-	 */
-	createdAt?: string
-	/**
-	 *
-	 * @type {number}
-	 * @memberof EntitiesCommentResponse
-	 */
-	id?: number
-	/**
-	 *
-	 * @type {EntitiesComment}
-	 * @memberof EntitiesCommentResponse
-	 */
-	parent?: EntitiesComment
-	/**
-	 *
-	 * @type {number}
-	 * @memberof EntitiesCommentResponse
-	 */
-	postId?: number
-	/**
-	 *
-	 * @type {string}
-	 * @memberof EntitiesCommentResponse
-	 */
-	updatedAt?: string
-	/**
-	 *
-	 * @type {EntitiesUser}
-	 * @memberof EntitiesCommentResponse
-	 */
-	user?: EntitiesUser
 }
 /**
  *
@@ -286,6 +243,12 @@ export interface EntitiesPost {
 	publishedAt?: string
 	/**
 	 *
+	 * @type {number}
+	 * @memberof EntitiesPost
+	 */
+	reactionCount?: number
+	/**
+	 *
 	 * @type {string}
 	 * @memberof EntitiesPost
 	 */
@@ -308,91 +271,6 @@ export interface EntitiesPost {
 	 * @memberof EntitiesPost
 	 */
 	userId?: number
-}
-/**
- *
- * @export
- * @interface EntitiesPostDetailResponse
- */
-export interface EntitiesPostDetailResponse {
-	/**
-	 *
-	 * @type {number}
-	 * @memberof EntitiesPostDetailResponse
-	 */
-	commentCount?: number
-	/**
-	 *
-	 * @type {Array<EntitiesComment>}
-	 * @memberof EntitiesPostDetailResponse
-	 */
-	comments?: Array<EntitiesComment>
-	/**
-	 *
-	 * @type {string}
-	 * @memberof EntitiesPostDetailResponse
-	 */
-	content?: string
-	/**
-	 *
-	 * @type {string}
-	 * @memberof EntitiesPostDetailResponse
-	 */
-	createdAt?: string
-	/**
-	 *
-	 * @type {number}
-	 * @memberof EntitiesPostDetailResponse
-	 */
-	id?: number
-	/**
-	 *
-	 * @type {string}
-	 * @memberof EntitiesPostDetailResponse
-	 */
-	image?: string
-	/**
-	 *
-	 * @type {EntitiesPost}
-	 * @memberof EntitiesPostDetailResponse
-	 */
-	parent?: EntitiesPost
-	/**
-	 *
-	 * @type {boolean}
-	 * @memberof EntitiesPostDetailResponse
-	 */
-	published?: boolean
-	/**
-	 *
-	 * @type {string}
-	 * @memberof EntitiesPostDetailResponse
-	 */
-	publishedAt?: string
-	/**
-	 *
-	 * @type {string}
-	 * @memberof EntitiesPostDetailResponse
-	 */
-	slug?: string
-	/**
-	 *
-	 * @type {string}
-	 * @memberof EntitiesPostDetailResponse
-	 */
-	title?: string
-	/**
-	 *
-	 * @type {string}
-	 * @memberof EntitiesPostDetailResponse
-	 */
-	updatedAt?: string
-	/**
-	 *
-	 * @type {EntitiesUser}
-	 * @memberof EntitiesPostDetailResponse
-	 */
-	user?: EntitiesUser
 }
 /**
  *
@@ -487,6 +365,18 @@ export interface EntitiesPostResponse {
 	publishedAt?: string
 	/**
 	 *
+	 * @type {number}
+	 * @memberof EntitiesPostResponse
+	 */
+	reactionCount?: number
+	/**
+	 *
+	 * @type {Array<EntitiesReaction>}
+	 * @memberof EntitiesPostResponse
+	 */
+	reactions?: Array<EntitiesReaction>
+	/**
+	 *
 	 * @type {string}
 	 * @memberof EntitiesPostResponse
 	 */
@@ -507,6 +397,31 @@ export interface EntitiesPostResponse {
 	 *
 	 * @type {EntitiesUser}
 	 * @memberof EntitiesPostResponse
+	 */
+	user?: EntitiesUser
+}
+/**
+ *
+ * @export
+ * @interface EntitiesReaction
+ */
+export interface EntitiesReaction {
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesReaction
+	 */
+	createdAt?: string
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesReaction
+	 */
+	updatedAt?: string
+	/**
+	 *
+	 * @type {EntitiesUser}
+	 * @memberof EntitiesReaction
 	 */
 	user?: EntitiesUser
 }
@@ -720,6 +635,34 @@ export interface EntitiesUserResponse {
 	 */
 	username?: string
 }
+/**
+ *
+ * @export
+ * @interface EntitiesWriteReactionBody
+ */
+export interface EntitiesWriteReactionBody {
+	/**
+	 *
+	 * @type {number}
+	 * @memberof EntitiesWriteReactionBody
+	 */
+	reactableId: number
+	/**
+	 *
+	 * @type {string}
+	 * @memberof EntitiesWriteReactionBody
+	 */
+	reactableType: EntitiesWriteReactionBodyReactableTypeEnum
+}
+
+export const EntitiesWriteReactionBodyReactableTypeEnum = {
+	Posts: 'posts',
+	Comments: 'comments'
+} as const
+
+export type EntitiesWriteReactionBodyReactableTypeEnum =
+	(typeof EntitiesWriteReactionBodyReactableTypeEnum)[keyof typeof EntitiesWriteReactionBodyReactableTypeEnum]
+
 /**
  *
  * @export
@@ -1952,7 +1895,7 @@ export const CommentsApiFp = function (configuration?: Configuration) {
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<CommonBasePaginationResponseEntitiesCommentResponse>
+			) => AxiosPromise<CommonBasePaginationResponseEntitiesComment>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.commentsGet(
@@ -1986,7 +1929,7 @@ export const CommentsApiFp = function (configuration?: Configuration) {
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<EntitiesCommentResponse>
+			) => AxiosPromise<EntitiesComment>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.commentsIdDelete(
@@ -2016,7 +1959,7 @@ export const CommentsApiFp = function (configuration?: Configuration) {
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<EntitiesCommentResponse>
+			) => AxiosPromise<EntitiesComment>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.commentsIdPut(
@@ -2045,7 +1988,7 @@ export const CommentsApiFp = function (configuration?: Configuration) {
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<EntitiesCommentResponse>
+			) => AxiosPromise<EntitiesComment>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.commentsPost(
@@ -2095,7 +2038,7 @@ export const CommentsApiFactory = function (
 			sort?: 'asc' | 'desc',
 			sortBy?: 'id' | 'user_id' | 'parent_id',
 			options?: any
-		): AxiosPromise<CommonBasePaginationResponseEntitiesCommentResponse> {
+		): AxiosPromise<CommonBasePaginationResponseEntitiesComment> {
 			return localVarFp
 				.commentsGet(
 					userID,
@@ -2119,7 +2062,7 @@ export const CommentsApiFactory = function (
 		commentsIdDelete(
 			id: number,
 			options?: any
-		): AxiosPromise<EntitiesCommentResponse> {
+		): AxiosPromise<EntitiesComment> {
 			return localVarFp
 				.commentsIdDelete(id, options)
 				.then((request) => request(axios, basePath))
@@ -2136,7 +2079,7 @@ export const CommentsApiFactory = function (
 			id: number,
 			comment: HandlerUpdateCommentCommentRequest,
 			options?: any
-		): AxiosPromise<EntitiesCommentResponse> {
+		): AxiosPromise<EntitiesComment> {
 			return localVarFp
 				.commentsIdPut(id, comment, options)
 				.then((request) => request(axios, basePath))
@@ -2151,7 +2094,7 @@ export const CommentsApiFactory = function (
 		commentsPost(
 			comment: EntitiesCommentRequest,
 			options?: any
-		): AxiosPromise<EntitiesCommentResponse> {
+		): AxiosPromise<EntitiesComment> {
 			return localVarFp
 				.commentsPost(comment, options)
 				.then((request) => request(axios, basePath))
@@ -2966,7 +2909,7 @@ export const PostsApiFp = function (configuration?: Configuration) {
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<EntitiesPostDetailResponse>
+			) => AxiosPromise<EntitiesPostResponse>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.postsIdDelete(
@@ -2996,7 +2939,7 @@ export const PostsApiFp = function (configuration?: Configuration) {
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<EntitiesPostDetailResponse>
+			) => AxiosPromise<EntitiesPostResponse>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.postsIdPut(
@@ -3025,7 +2968,7 @@ export const PostsApiFp = function (configuration?: Configuration) {
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<EntitiesPostDetailResponse>
+			) => AxiosPromise<EntitiesPostResponse>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.postsPost(
@@ -3053,7 +2996,7 @@ export const PostsApiFp = function (configuration?: Configuration) {
 			(
 				axios?: AxiosInstance,
 				basePath?: string
-			) => AxiosPromise<EntitiesPostDetailResponse>
+			) => AxiosPromise<EntitiesPostResponse>
 		> {
 			const localVarAxiosArgs =
 				await localVarAxiosParamCreator.postsSlugGet(
@@ -3129,7 +3072,7 @@ export const PostsApiFactory = function (
 		postsIdDelete(
 			id: number,
 			options?: any
-		): AxiosPromise<EntitiesPostDetailResponse> {
+		): AxiosPromise<EntitiesPostResponse> {
 			return localVarFp
 				.postsIdDelete(id, options)
 				.then((request) => request(axios, basePath))
@@ -3146,7 +3089,7 @@ export const PostsApiFactory = function (
 			id: number,
 			post: EntitiesPostRequest,
 			options?: any
-		): AxiosPromise<EntitiesPostDetailResponse> {
+		): AxiosPromise<EntitiesPostResponse> {
 			return localVarFp
 				.postsIdPut(id, post, options)
 				.then((request) => request(axios, basePath))
@@ -3161,7 +3104,7 @@ export const PostsApiFactory = function (
 		postsPost(
 			post: EntitiesPostRequest,
 			options?: any
-		): AxiosPromise<EntitiesPostDetailResponse> {
+		): AxiosPromise<EntitiesPostResponse> {
 			return localVarFp
 				.postsPost(post, options)
 				.then((request) => request(axios, basePath))
@@ -3176,7 +3119,7 @@ export const PostsApiFactory = function (
 		postsSlugGet(
 			slug: string,
 			options?: any
-		): AxiosPromise<EntitiesPostDetailResponse> {
+		): AxiosPromise<EntitiesPostResponse> {
 			return localVarFp
 				.postsSlugGet(slug, options)
 				.then((request) => request(axios, basePath))
@@ -3287,6 +3230,296 @@ export class PostsApi extends BaseAPI {
 	public postsSlugGet(slug: string, options?: AxiosRequestConfig) {
 		return PostsApiFp(this.configuration)
 			.postsSlugGet(slug, options)
+			.then((request) => request(this.axios, this.basePath))
+	}
+}
+
+/**
+ * ReactionApi - axios parameter creator
+ * @export
+ */
+export const ReactionApiAxiosParamCreator = function (
+	configuration?: Configuration
+) {
+	return {
+		/**
+		 * Delete a reaction
+		 * @summary Delete user reaction to a post
+		 * @param {EntitiesWriteReactionBody} post Delete reaction body
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		reactionDropDelete: async (
+			post: EntitiesWriteReactionBody,
+			options: AxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'post' is not null or undefined
+			assertParamExists('reactionDropDelete', 'post', post)
+			const localVarPath = `/reaction/drop`
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(
+				localVarPath,
+				DUMMY_BASE_URL
+			)
+			let baseOptions
+			if (configuration) {
+				baseOptions = configuration.baseOptions
+			}
+
+			const localVarRequestOptions = {
+				method: 'DELETE',
+				...baseOptions,
+				...options
+			}
+			const localVarHeaderParameter = {} as any
+			const localVarQueryParameter = {} as any
+
+			// authentication ApiKeyAuth required
+			await setApiKeyToObject(
+				localVarHeaderParameter,
+				'Authorization',
+				configuration
+			)
+
+			localVarHeaderParameter['Content-Type'] =
+				'application/json'
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter)
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers
+					? baseOptions.headers
+					: {}
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers
+			}
+			localVarRequestOptions.data = serializeDataIfNeeded(
+				post,
+				localVarRequestOptions,
+				configuration
+			)
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions
+			}
+		},
+		/**
+		 * Create a reaction to an article
+		 * @summary React to a blog post
+		 * @param {EntitiesWriteReactionBody} post Create reaction body
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		reactionReactPost: async (
+			post: EntitiesWriteReactionBody,
+			options: AxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'post' is not null or undefined
+			assertParamExists('reactionReactPost', 'post', post)
+			const localVarPath = `/reaction/react`
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(
+				localVarPath,
+				DUMMY_BASE_URL
+			)
+			let baseOptions
+			if (configuration) {
+				baseOptions = configuration.baseOptions
+			}
+
+			const localVarRequestOptions = {
+				method: 'POST',
+				...baseOptions,
+				...options
+			}
+			const localVarHeaderParameter = {} as any
+			const localVarQueryParameter = {} as any
+
+			// authentication ApiKeyAuth required
+			await setApiKeyToObject(
+				localVarHeaderParameter,
+				'Authorization',
+				configuration
+			)
+
+			localVarHeaderParameter['Content-Type'] =
+				'application/json'
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter)
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers
+					? baseOptions.headers
+					: {}
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers
+			}
+			localVarRequestOptions.data = serializeDataIfNeeded(
+				post,
+				localVarRequestOptions,
+				configuration
+			)
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions
+			}
+		}
+	}
+}
+
+/**
+ * ReactionApi - functional programming interface
+ * @export
+ */
+export const ReactionApiFp = function (configuration?: Configuration) {
+	const localVarAxiosParamCreator =
+		ReactionApiAxiosParamCreator(configuration)
+	return {
+		/**
+		 * Delete a reaction
+		 * @summary Delete user reaction to a post
+		 * @param {EntitiesWriteReactionBody} post Delete reaction body
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async reactionDropDelete(
+			post: EntitiesWriteReactionBody,
+			options?: AxiosRequestConfig
+		): Promise<
+			(
+				axios?: AxiosInstance,
+				basePath?: string
+			) => AxiosPromise<EntitiesReaction>
+		> {
+			const localVarAxiosArgs =
+				await localVarAxiosParamCreator.reactionDropDelete(
+					post,
+					options
+				)
+			return createRequestFunction(
+				localVarAxiosArgs,
+				globalAxios,
+				BASE_PATH,
+				configuration
+			)
+		},
+		/**
+		 * Create a reaction to an article
+		 * @summary React to a blog post
+		 * @param {EntitiesWriteReactionBody} post Create reaction body
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async reactionReactPost(
+			post: EntitiesWriteReactionBody,
+			options?: AxiosRequestConfig
+		): Promise<
+			(
+				axios?: AxiosInstance,
+				basePath?: string
+			) => AxiosPromise<EntitiesReaction>
+		> {
+			const localVarAxiosArgs =
+				await localVarAxiosParamCreator.reactionReactPost(
+					post,
+					options
+				)
+			return createRequestFunction(
+				localVarAxiosArgs,
+				globalAxios,
+				BASE_PATH,
+				configuration
+			)
+		}
+	}
+}
+
+/**
+ * ReactionApi - factory interface
+ * @export
+ */
+export const ReactionApiFactory = function (
+	configuration?: Configuration,
+	basePath?: string,
+	axios?: AxiosInstance
+) {
+	const localVarFp = ReactionApiFp(configuration)
+	return {
+		/**
+		 * Delete a reaction
+		 * @summary Delete user reaction to a post
+		 * @param {EntitiesWriteReactionBody} post Delete reaction body
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		reactionDropDelete(
+			post: EntitiesWriteReactionBody,
+			options?: any
+		): AxiosPromise<EntitiesReaction> {
+			return localVarFp
+				.reactionDropDelete(post, options)
+				.then((request) => request(axios, basePath))
+		},
+		/**
+		 * Create a reaction to an article
+		 * @summary React to a blog post
+		 * @param {EntitiesWriteReactionBody} post Create reaction body
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		reactionReactPost(
+			post: EntitiesWriteReactionBody,
+			options?: any
+		): AxiosPromise<EntitiesReaction> {
+			return localVarFp
+				.reactionReactPost(post, options)
+				.then((request) => request(axios, basePath))
+		}
+	}
+}
+
+/**
+ * ReactionApi - object-oriented interface
+ * @export
+ * @class ReactionApi
+ * @extends {BaseAPI}
+ */
+export class ReactionApi extends BaseAPI {
+	/**
+	 * Delete a reaction
+	 * @summary Delete user reaction to a post
+	 * @param {EntitiesWriteReactionBody} post Delete reaction body
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof ReactionApi
+	 */
+	public reactionDropDelete(
+		post: EntitiesWriteReactionBody,
+		options?: AxiosRequestConfig
+	) {
+		return ReactionApiFp(this.configuration)
+			.reactionDropDelete(post, options)
+			.then((request) => request(this.axios, this.basePath))
+	}
+
+	/**
+	 * Create a reaction to an article
+	 * @summary React to a blog post
+	 * @param {EntitiesWriteReactionBody} post Create reaction body
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof ReactionApi
+	 */
+	public reactionReactPost(
+		post: EntitiesWriteReactionBody,
+		options?: AxiosRequestConfig
+	) {
+		return ReactionApiFp(this.configuration)
+			.reactionReactPost(post, options)
 			.then((request) => request(this.axios, this.basePath))
 	}
 }
