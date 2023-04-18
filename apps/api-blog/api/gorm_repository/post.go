@@ -5,7 +5,6 @@ import (
 	"api-blog/pkg/common"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/repository"
-	"errors"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -113,18 +112,4 @@ func (r *PostGormRepo) DeletePost(id uint) (*entities.Post, error) {
 		Update("parent_id", nil)
 
 	return &post, tx.Error
-}
-
-func (r *PostGormRepo) GetPostById(id uint) (*entities.Post, error) {
-	post := entities.Post{ID: id}
-
-	if result := r.db.Preload(clause.Associations).First(&post); result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-
-		return nil, errors.New("unknown error")
-	}
-
-	return &post, nil
 }
