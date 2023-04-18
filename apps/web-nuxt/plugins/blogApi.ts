@@ -1,5 +1,11 @@
 import axiosGlobal, { AxiosError, CreateAxiosDefaults } from 'axios'
-import { AuthApi, CommentsApi, PostsApi, UserApi } from '~~/codegen/api'
+import {
+	AuthApi,
+	CommentsApi,
+	PostsApi,
+	ReactionApi,
+	UserApi
+} from '~~/codegen/api'
 import { baseURL } from '~~/constants'
 
 const configs: CreateAxiosDefaults = {
@@ -16,6 +22,7 @@ type BlogApi = {
 	comment: CommentsApi
 	post: PostsApi
 	user: UserApi
+	reaction: ReactionApi
 }
 
 export default defineNuxtPlugin(() => {
@@ -44,7 +51,8 @@ export default defineNuxtPlugin(() => {
 	const comment = new CommentsApi(undefined, undefined, axios)
 	const post = new PostsApi(undefined, undefined, axios)
 	const user = new UserApi(undefined, undefined, axios)
-	const blogApi: BlogApi = { auth, comment, post, user }
+	const reaction = new ReactionApi(undefined, undefined, axios)
+	const blogApi: BlogApi = { auth, comment, post, user, reaction }
 
 	const createAxiosResponseInterceptor = () => {
 		const interceptor = axios.interceptors.response.use(
