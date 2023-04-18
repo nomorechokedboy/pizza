@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useElementVisibility } from '@vueuse/core'
 import { ActionIcon, Button } from 'ui-vue'
+import { EntitiesComment } from '~/codegen/api'
 import { dicebearMedia } from '~/constants'
 import ChevronIcon from '~icons/mdi/chevron-up-down'
 import { CommentProps } from './Comment.vue'
@@ -30,7 +31,7 @@ const blankCommentProps: Omit<CommentProps, 'id'> = {
 	createdAt: '',
 	updated: false,
 	replies: [],
-	user: { avatarUrl: 'dudimemaythangnunglon', name: '' },
+	user: { avatarUrl: '', name: '' },
 	content: ''
 }
 const target = ref(null)
@@ -53,31 +54,41 @@ function computeFormValidity() {
 	)
 }
 
+function commentToProps({
+	id,
+	content,
+	user,
+	createdAt,
+	updatedAt,
+	replies
+}: EntitiesComment): CommentProps {
+	const cProps: CommentProps = {
+		id: id || 0,
+		content: content || 'Error: No content',
+		user: {
+			name: user?.fullName || 'Error no fullName',
+			avatarUrl:
+				!user?.avatar || user.avatar === ''
+					? `${dicebearMedia}${
+							user?.fullName ||
+							'A6Blog'
+					  }`
+					: user?.avatar
+		},
+		like: 0,
+		replies: replies?.map(commentToProps) || [],
+		updated: createdAt !== updatedAt,
+		createdAt: getCalendarTime(createdAt)
+	}
+	return cProps
+}
+
 function computeComments() {
-	const comments: (CommentProps & { id: number })[] = []
+	const comments: CommentProps[] = []
 	commentData.value?.pages.forEach((page) =>
-		page?.items?.forEach(
-			({ content, id, user, createdAt, updatedAt }) => {
-				comments.push({
-					id,
-					content,
-					user: {
-						name: user?.fullName,
-						avatarUrl:
-							user?.avatar === ''
-								? `${dicebearMedia}${
-										user?.fullName ||
-										'A6Blog'
-								  }`
-								: user?.avatar
-					},
-					like: 0,
-					replies: [],
-					updated: createdAt !== updatedAt,
-					createdAt: getCalendarTime(createdAt)
-				} as CommentProps & { id: number })
-			}
-		)
+		page?.items?.forEach((c) => {
+			comments.push(commentToProps(c))
+		})
 	)
 
 	return comments
@@ -119,7 +130,9 @@ watchEffect(() => {
 		<header class="flex items-center justify-between">
 			<div class="flex items-center">
 				<h2 class="text-xl text-neutral-800 font-bold">
-					Top comments (0)
+					Top comments ({{
+						postDetails?.commentCount || 0
+					}})
 				</h2>
 				<ActionIcon
 					color="indigo"
