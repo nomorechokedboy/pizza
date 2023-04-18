@@ -13,7 +13,6 @@ type PostUsecase interface {
 	CreatePost(userID uint, postSlug string, body *entities.PostRequest) (*entities.Post, error)
 	UpdatePost(id uint, postSlug string, body *entities.PostRequest) (*entities.Post, error)
 	DeletePost(id uint) (*entities.Post, error)
-	GetPostById(id uint) (*entities.Post, error)
 }
 
 type postUsecase struct {
@@ -79,8 +78,4 @@ func (usecase *postUsecase) UpdatePost(id uint, postSlug string, body *entities.
 
 func (usecase *postUsecase) DeletePost(id uint) (*entities.Post, error) {
 	return usecase.repo.DeletePost(id)
-}
-
-func (u *postUsecase) GetPostById(id uint) (*entities.Post, error) {
-	return u.repo.GetPostById(id)
 }
