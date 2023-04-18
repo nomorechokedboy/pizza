@@ -10,7 +10,7 @@ export function useAuthToken() {
 	})
 }
 
-export function removeToken() {
+export function onRefreshToken(resp: AxiosResponse<EntitiesAuth, any>) {
 	const token = useAuthToken()
 	const refreshToken = useRefreshToken()
 	token.value = undefined
