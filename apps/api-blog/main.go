@@ -10,7 +10,7 @@ import (
 	_ "api-blog/docs"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
-	"api-blog/reaction"
+	"api-blog/src/reaction"
 	"fmt"
 	"log"
 
