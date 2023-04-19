@@ -46,3 +46,5 @@ build
 # auto gen
 docs
 
+# rust
+target
