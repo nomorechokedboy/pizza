@@ -13,8 +13,8 @@ COPY apps/api/main.go apps/api/.air.toml ./
 RUN $GOPATH/bin/swag init && \
     go build -ldflags="-s -w" -o api .
 
-FROM scratch
+FROM gcr.io/distroless/static-debian11:nonroot AS runtime
 
 COPY --from=builder ["/build/api", "/"]
-
 ENTRYPOINT ["/api"]
+
