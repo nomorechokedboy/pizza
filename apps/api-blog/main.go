@@ -14,6 +14,8 @@ import (
 	"fmt"
 	"log"
 
+	"time"
+
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -21,6 +23,14 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
+
+var startTime = time.Now()
+
+type HealthCheckResponse struct {
+	Message   string  `json:"message"`
+	Uptime    float64 `json:"uptime"`
+	Timestamp int64   `json:"timestamp"`
+}
 
 // @title web Blog
 // @version 1.0
@@ -100,7 +110,10 @@ func main() {
 	})
 	app.Get("/metrics", monitor.New(monitor.Config{Title: "Api Blog Metrics Page"}))
 	app.Get("/healthCheck", func(c *fiber.Ctx) error {
-		return c.SendString("Hello world")
+		elapsed_time := time.Since(startTime)
+		uptime := elapsed_time.Seconds()
+		res := HealthCheckResponse{Message: "Still alive lmao", Uptime: uptime, Timestamp: time.Now().UnixNano()}
+		return c.JSON(res)
 	})
 	app.Get("/docs/*", swagger.HandlerDefault)
 	app.Get("/", func(c *fiber.Ctx) error {
@@ -117,6 +130,5 @@ func main() {
 	reaction.RegisterReactionApi(v1, *middle)
 
 	port := fmt.Sprintf(":%v", cfg.Server.Port)
-	log.Printf("Server started on port %v", cfg.Server.Port)
 	app.Listen(port)
 }
