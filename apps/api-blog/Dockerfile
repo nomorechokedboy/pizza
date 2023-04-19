@@ -15,10 +15,9 @@ COPY apps/api-blog/main.go apps/api-blog/.air.toml ./
 
 RUN $GOPATH/bin/swag init && \
     go build -ldflags="-s -w" -o api-blog .
-FROM scratch
+FROM gcr.io/distroless/static-debian11:nonroot AS runtime
 
 COPY --from=builder ["build/api-blog", "/"]
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 ENTRYPOINT ["/api-blog"]
 
