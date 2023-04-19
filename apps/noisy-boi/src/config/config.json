@@ -1,0 +1,16 @@
+{
+	"database": {
+		"host": "localhost",
+		"name": "pizza",
+		"user": "postgres",
+		"password": "postgres",
+		"port": 5432
+	},
+	"log": {
+		"level": "debug"
+	},
+	"server": {
+		"port": 5000,
+		"host": false
+	}
+}

@@ -1,0 +1,18 @@
+[package]
+name = "noisy-boi"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = "4.3.1"
+chrono = { version = "0.4.24", features = ["serde"] }
+config = "0.13.3"
+sea-query = { version = "0.28.4", features = ["attr", "backend-postgres", "thread-safe", "with-chrono"] }
+serde = { version = "1.0.160", features = ["derive"] }
+sqlx = { version = "0.6.3", features = ["runtime-actix-native-tls", "chrono", "postgres"] }
+tracing = "0.1.37"
+tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
+utoipa = { version = "3.3.0", features = ["actix_extras"] }
+utoipa-swagger-ui = { version = "3.1.3", features = ["actix-web"] }
