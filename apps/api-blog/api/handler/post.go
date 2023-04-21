@@ -243,6 +243,8 @@ func (handler *PostHandler) GetPostAudio(c *fiber.Ctx) error {
 	hash.Write([]byte(content))
 	objectName := fmt.Sprintf("%x", hash.Sum(nil))
 
+	c.Set("Content-Type", "audio/mpeg")
+
 	if _, err := handler.minioClient.StatObject(ctx, "audio", objectName, minio.StatObjectOptions{}); err != nil {
 		url := fmt.Sprintf("%s?key=%s&hl=en-us&c=MP3&src=%s", handler.config.AudioAPI.Link, handler.config.AudioAPI.Key, content)
 		res, _ := http.Get(url)
@@ -251,13 +253,13 @@ func (handler *PostHandler) GetPostAudio(c *fiber.Ctx) error {
 			handler.minioClient.MakeBucket(ctx, "audio", minio.MakeBucketOptions{})
 		}
 
-		defer res.Body.Close()
-
 		if _, err := handler.minioClient.PutObject(
 			ctx, "audio", objectName, res.Body, res.ContentLength,
 			minio.PutObjectOptions{ContentType: "audio/mpeg"}); err != nil {
 			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 		}
+
+		return c.SendStream(res.Body)
 	}
 
 	audioObject, err := handler.minioClient.GetObject(ctx, "audio", objectName, minio.GetObjectOptions{})
@@ -265,8 +267,6 @@ func (handler *PostHandler) GetPostAudio(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
-
-	c.Set("Content-Type", "audio/mpeg")
 
 	return c.SendStream(audioObject)
 }
