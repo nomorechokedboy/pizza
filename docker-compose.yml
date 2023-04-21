@@ -34,6 +34,8 @@ services:
                         - DB_NAME=pizza
                         - DB_USER=postgres
                         - DB_PASSWORD=postgres
+                        - AUDIO_KEY=${AUDIO_KEY}
+                        - AUDIO_LINK=${AUDIO_LINK}
                 ports:
                         - '8080:8080'
                 networks:
