@@ -4,23 +4,31 @@ import (
 	"api-blog/pkg/common"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
+
 	"fmt"
+
+	"context"
+	"crypto/sha256"
+	"net/http"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gosimple/slug"
+	"github.com/minio/minio-go/v7"
 )
 
 type PostHandler struct {
 	usecase     usecase.PostUsecase
 	slugUsecase usecase.SlugUsecase
 	userUsecase usecase.UserUsecase
+	minioClient minio.Client
 }
 
-func NewPostHandler(usecase usecase.PostUsecase, slugUsecase usecase.SlugUsecase, userUsecase usecase.UserUsecase) *PostHandler {
+func NewPostHandler(usecase usecase.PostUsecase, slugUsecase usecase.SlugUsecase, userUsecase usecase.UserUsecase, mionioClient *minio.Client) *PostHandler {
 	return &PostHandler{
 		usecase:     usecase,
 		slugUsecase: slugUsecase,
 		userUsecase: userUsecase,
+		minioClient: *mionioClient,
 	}
 }
 
@@ -211,18 +219,51 @@ func (handler *PostHandler) DeletePost(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(post.ToResponse())
 }
 
-// @PostToSpeech godoc
+// @GetPostAudio godoc
 // @Description Convert post to speech
 // @Summary Convert post to speech
-// @Param content path string true "Content"
 // @Tags Posts
+// @Param content path string true "Content"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /posts/text-to-speech/{content} [get]
-func (handler *PostHandler) ConvertToSpeech(c *fiber.Ctx) error {
+// @Router /posts/t2s/{content} [get]
+func (handler *PostHandler) GetPostAudio(c *fiber.Ctx) error {
+	ctx := context.Background()
 	content := c.Params("content")
-	url := "https://api.voicerss.org/?key=817e51130c864a4ab0d6558d46cbee24&hl=en-us&c=MP3&src=" + content
 
-	return c.Redirect(url)
+	if content == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "empty or invalid post content")
+	}
+
+	hash := sha256.New()
+	hash.Write([]byte(content))
+	objectName := fmt.Sprintf("%x", hash.Sum(nil))
+
+	if _, err := handler.minioClient.StatObject(ctx, "audio", objectName, minio.StatObjectOptions{}); err != nil {
+		url := "https://api.voicerss.org/?key=817e51130c864a4ab0d6558d46cbee24&hl=en-us&c=MP3&src=" + content
+		res, _ := http.Get(url)
+
+		if exists, _ := handler.minioClient.BucketExists(ctx, "audio"); !exists {
+			handler.minioClient.MakeBucket(ctx, "audio", minio.MakeBucketOptions{})
+		}
+
+		defer res.Body.Close()
+
+		if _, err := handler.minioClient.PutObject(
+			ctx, "audio", objectName, res.Body, res.ContentLength,
+			minio.PutObjectOptions{ContentType: "audio/mpeg"}); err != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+		}
+	}
+
+	audioObject, err := handler.minioClient.GetObject(ctx, "audio", objectName, minio.GetObjectOptions{})
+
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+
+	c.Set("Content-Type", "audio/mpeg")
+
+	return c.SendStream(audioObject)
 }
