@@ -1,6 +1,9 @@
 package config
 
 import (
+	"os"
+
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/kelseyhightower/envconfig"
 )
 
@@ -27,6 +30,10 @@ type Config struct {
 	AppAPI struct {
 		Link string `envconfig:"API_LINK" default:"Hello"`
 	}
+	AudioAPI struct {
+		Link string
+		Key  string
+	}
 	Minio struct {
 		EndPoint        string `envconfig:"END_POINT" default:"localhost:9000"`
 		AccessKeyID     string `envconfig:"ACCESSKEYID" default:"admin"`
@@ -38,8 +45,14 @@ type Config struct {
 
 func LoadConfig() (*Config, error) {
 	cfg := new(Config)
+
 	if err := envconfig.Process("", cfg); err != nil {
 		return nil, err
 	}
+
+	// .env
+	cfg.AudioAPI.Link = os.Getenv("AUDIO_LINK")
+	cfg.AudioAPI.Key = os.Getenv("AUDIO_KEY")
+
 	return cfg, nil
 }

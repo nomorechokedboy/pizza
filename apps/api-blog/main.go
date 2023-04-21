@@ -79,7 +79,7 @@ func main() {
 	//post
 	postRepo := gorm_repository.NewPostGormRepository(db)
 	postUC := usecase.NewPostUseCase(postRepo)
-	postHandler := handler.NewPostHandler(postUC, slugUC, userUC, minioClient)
+	postHandler := handler.NewPostHandler(postUC, slugUC, userUC, cfg, minioClient)
 
 	// comment
 	commentRepo := gorm_repository.NewCommentGormRepository(db)

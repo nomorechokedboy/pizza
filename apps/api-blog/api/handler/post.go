@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"api-blog/api/config"
 	"api-blog/pkg/common"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
@@ -21,14 +22,16 @@ type PostHandler struct {
 	slugUsecase usecase.SlugUsecase
 	userUsecase usecase.UserUsecase
 	minioClient minio.Client
+	config      *config.Config
 }
 
-func NewPostHandler(usecase usecase.PostUsecase, slugUsecase usecase.SlugUsecase, userUsecase usecase.UserUsecase, mionioClient *minio.Client) *PostHandler {
+func NewPostHandler(usecase usecase.PostUsecase, slugUsecase usecase.SlugUsecase, userUsecase usecase.UserUsecase, config *config.Config, mionioClient *minio.Client) *PostHandler {
 	return &PostHandler{
 		usecase:     usecase,
 		slugUsecase: slugUsecase,
 		userUsecase: userUsecase,
 		minioClient: *mionioClient,
+		config:      config,
 	}
 }
 
@@ -241,7 +244,7 @@ func (handler *PostHandler) GetPostAudio(c *fiber.Ctx) error {
 	objectName := fmt.Sprintf("%x", hash.Sum(nil))
 
 	if _, err := handler.minioClient.StatObject(ctx, "audio", objectName, minio.StatObjectOptions{}); err != nil {
-		url := "https://api.voicerss.org/?key=817e51130c864a4ab0d6558d46cbee24&hl=en-us&c=MP3&src=" + content
+		url := fmt.Sprintf("%s?key=%s&hl=en-us&c=MP3&src=%s", handler.config.AudioAPI.Link, handler.config.AudioAPI.Key, content)
 		res, _ := http.Get(url)
 
 		if exists, _ := handler.minioClient.BucketExists(ctx, "audio"); !exists {
