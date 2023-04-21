@@ -1,4 +1,5 @@
 mod config;
+mod notification;
 use crate::config::AppSettings;
 use actix_web::{
     get,
@@ -103,6 +104,10 @@ async fn main() -> std::io::Result<()> {
         .connect(&db_url)
         .await
         .map_err(|e| std::io::Error::new(std::io::ErrorKind::TimedOut, e.to_string()))?;
+    sqlx::migrate!()
+        .run(&pool)
+        .await
+        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.to_string()))?;
     let pool = Arc::new(pool);
 
     let openapi = ApiDoc::openapi();

@@ -26,8 +26,16 @@ pub struct Database {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct EntityType {
+    pub id: u16,
+    pub entity: String,
+    pub description: String,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct AppSettings {
     pub database: Database,
+    pub entity_type: Vec<EntityType>,
     pub server: Server,
     pub log: Log,
 }

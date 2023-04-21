@@ -1,7 +1,7 @@
 {
 	"database": {
 		"host": "localhost",
-		"name": "pizza",
+		"name": "crazy_noisy_bizarre_town",
 		"user": "postgres",
 		"password": "postgres",
 		"port": 5432
@@ -12,5 +12,22 @@
 	"server": {
 		"port": 5000,
 		"host": false
-	}
+	},
+	"entity_type": [
+		{
+			"id": 1,
+			"entity": "comments",
+			"description": "Commenting on a post."
+		},
+		{
+			"id": 2,
+			"entity": "comments",
+			"description": "Reply your comment."
+		},
+		{
+			"id": 3,
+			"entity": "posts",
+			"description": "React to your post."
+		}
+	]
 }
