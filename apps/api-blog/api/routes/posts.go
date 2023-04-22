@@ -17,6 +17,7 @@ func PostRouter(app fiber.Router, handler handler.PostHandler, jwtSecret middlew
 func publicPostRouter(app fiber.Router, handler handler.PostHandler) {
 	app.Get("/", handler.GetAllPosts)
 	app.Get("/:slug", handler.GetPostBySlug)
+	app.Get("/t2s/:content", handler.GetPostAudio)
 }
 
 func privatePostRouter(app fiber.Router, handler handler.PostHandler, middle middleware.JWTMiddleware) {
