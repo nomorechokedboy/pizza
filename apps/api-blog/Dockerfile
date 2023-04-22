@@ -5,7 +5,7 @@ ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
 COPY apps/api-blog/go.mod apps/api-blog/go.sum ./
 RUN go mod download && \
     go install github.com/cosmtrek/air@latest && \
-    go install github.com/swaggo/swag/cmd/swag@latest
+    go install github.com/swaggo/swag/cmd/swag
 
 COPY apps/api-blog/api ./api
 COPY apps/api-blog/pkg ./pkg
