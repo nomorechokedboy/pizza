@@ -46,10 +46,7 @@ func LoadConfig() (*Config, error) {
 
 	viper.SetConfigFile(".env")
 	viper.SetConfigType("env")
-
-	if err := viper.ReadInConfig(); err != nil {
-		return nil, err
-	}
+	viper.ReadInConfig()
 
 	env("database.db_port", "5432")
 	env("database.db_host", "localhost")
