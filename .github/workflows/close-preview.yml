@@ -5,6 +5,9 @@ on:
                         - dev
                 types:
                         - closed
+                paths:
+                        - apps/api/**
+                        - apps/api-blog/**
 jobs:
         closed:
                 runs-on: ubuntu-latest
