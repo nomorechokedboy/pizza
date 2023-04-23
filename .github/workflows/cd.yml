@@ -3,6 +3,9 @@ on:
         push:
                 branches:
                         - main
+                paths:
+                        - apps/api/**
+                        - apps/api-blog/**
 jobs:
         deploy:
                 runs-on: ubuntu-latest
