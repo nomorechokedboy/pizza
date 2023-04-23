@@ -28,6 +28,8 @@ services:
                                 condition: service_healthy
                         minio-svc:
                                 condition: service_healthy
+                deploy:
+                        replicas: 3
                 environment:
                         - DB_PORT=5432
                         - DB_HOST=postgres
