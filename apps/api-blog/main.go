@@ -13,13 +13,16 @@ import (
 	"api-blog/src/reaction"
 	"fmt"
 	"log"
+	"time"
 
-	swagger "github.com/arsmn/fiber-swagger/v2"
+	"github.com/ansrivas/fiberprometheus/v2"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/swagger"
 )
 
 // @title web Blog
@@ -41,6 +44,14 @@ func main() {
 	if err != nil {
 		panic("Cannot connect Database: %v")
 	}
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Panic("Can't get db", err)
+	}
+
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	if err = db.
 		AutoMigrate(
@@ -93,12 +104,16 @@ func main() {
 	}))
 	app.Use(logger.New())
 	app.Use(recover.New())
+	app.Use(compress.New())
+	app.Use(etag.New())
 	app.Use(func(c *fiber.Ctx) error {
 		c.Locals("db", db)
 		c.Locals("userService", userUC)
 		return c.Next()
 	})
-	app.Get("/metrics", monitor.New(monitor.Config{Title: "Api Blog Metrics Page"}))
+	prometheus := fiberprometheus.New("my-service-name")
+	prometheus.RegisterAt(app, "/metrics")
+	app.Use(prometheus.Middleware)
 	app.Get("/healthCheck", func(c *fiber.Ctx) error {
 		return c.SendString("Hello world")
 	})
@@ -117,6 +132,5 @@ func main() {
 	reaction.RegisterReactionApi(v1, *middle)
 
 	port := fmt.Sprintf(":%v", cfg.Server.Port)
-	log.Printf("Server started on port %v", cfg.Server.Port)
 	app.Listen(port)
 }

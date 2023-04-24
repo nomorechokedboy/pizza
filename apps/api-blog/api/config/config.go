@@ -1,10 +1,11 @@
 package config
 
 import (
-	"github.com/spf13/viper"
+	"github.com/ilyakaznacheev/cleanenv"
 )
 
-type Config struct {
+/* type Config struct {
+	Env      string `mapstructure:"ENV"`
 	Database struct {
 		Port     string `mapstructure:"DB_PORT"`
 		Host     string `mapstructure:"DB_HOST"`
@@ -38,42 +39,56 @@ type Config struct {
 		UseSSL          bool   `mapstructure:"USESSL"`
 		BucketName      string `mapstructure:"BUCKET_NAME"`
 	}
+} */
+
+type Config struct {
+	Env      string `env:"ENV" env-default:"dev"`
+	Database struct {
+		Port     string `env:"DB_PORT" env-default:"5432"`
+		Host     string `env:"DB_HOST" env-default:"localhost"`
+		Name     string `env:"DB_NAME" env-default:"pizza"`
+		User     string `env:"DB_USER" env-default:"postgres"`
+		Password string `env:"DB_PASSWORD" env-default:"postgres"`
+	}
+	Server struct {
+		Host string `env:"HOST" env-default:""`
+		Port string `env:"PORT" env-default:"8080"`
+	}
+	AuthConfig struct {
+		JWTRefreshToken string `env:"JWT_REFRESH_SECRET" env-default:"refresh-secret"`
+		JWTSecret       string `env:"JWT_SECRET" env-default:"token-secret"`
+	}
+	AuthEmail struct {
+		Email    string `env:"EMAIL"`
+		Password string `env:"EMAIL_PASSWORD"`
+	}
+	AppAPI struct {
+		Link string `env:"FE_URL" env-default:"pizza-web-nuxt.vercel.app"`
+	}
+	AudioAPI struct {
+		Link string `env:"LINK"`
+		Key  string `env:"KEY"`
+	}
+	Minio struct {
+		EndPoint        string `env:"END_POINT" env-default:"localhost:9000"`
+		AccessKeyID     string `env:"ACCESSKEYID" env-default:"admin"`
+		SecretAccessKey string `env:"SECRET_ACCESS_KEY" env-default:"admin123"`
+		UseSSL          bool   `env:"USESSL" env-default:"false"`
+		BucketName      string `env:"BUCKET_NAME" env-default:"general"`
+	}
 }
 
 func LoadConfig() (*Config, error) {
-	config := new(Config)
-	env := viper.SetDefault
-
-	viper.SetConfigFile(".env")
-	viper.SetConfigType("env")
-
-	if err := viper.ReadInConfig(); err != nil {
+	config := Config{}
+	if err := cleanenv.ReadEnv(&config); err != nil {
 		return nil, err
 	}
 
-	env("database.db_port", "5432")
-	env("database.db_host", "localhost")
-	env("database.db_name", "pizza")
-	env("database.db_user", "postgres")
-	env("database.db_password", "postgres")
-	env("server.host", "")
-	env("server.port", "8080")
-	env("authconfig.jwt_refresh_secret", "refresh-secret")
-	env("authconfig.jwt_secret", "my-secret")
-	env("authemail.email", "kristiannguyen276@gmail.com")
-	env("authemail.email_password", "figjbdfsggwhcvbr")
-	env("appapi.api_link", "Hello")
-	env("minio.end_point", "localhost:9000")
-	env("minio.accesskeyid", "admin")
-	env("minio.secret_access_key", "admin123")
-	env("minio.usessl", "false")
-	env("minio.bucket_name", "general")
-	env("audioapi.link", viper.Get("audio_link"))
-	env("audioapi.key", viper.Get("audio_key"))
-
-	if err := viper.Unmarshal(&config); err != nil {
-		return nil, err
+	if config.Env == "dev" {
+		if err := cleanenv.ReadConfig(".env", &config); err != nil {
+			return nil, err
+		}
 	}
 
-	return config, nil
+	return &config, nil
 }
