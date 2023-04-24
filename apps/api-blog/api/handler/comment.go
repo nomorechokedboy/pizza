@@ -51,7 +51,7 @@ func (handler *CommentHandler) GetAllComments(c *fiber.Ctx) error {
 	})
 
 	if err != nil {
-		return fiber.NewError(fiber.StatusNotFound, "failed to get all comments")
+		return fiber.NewError(fiber.StatusInternalServerError, "failed to get all comments")
 	}
 
 	return c.Status(fiber.StatusOK).JSON(comments)
