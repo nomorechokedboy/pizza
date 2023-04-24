@@ -15,10 +15,26 @@ services:
                         - DB_PASSWORD=postgres
                 ports:
                         - '3001:3001'
+                healthcheck:
+                        test:
+                                [
+                                        'CMD',
+                                        '/usr/bin/wget',
+                                        '--no-verbose',
+                                        '--tries=1',
+                                        '--spider',
+                                        'http://localhost:3001/healthz'
+                                ]
+                        interval: 1m30s
+                        timeout: 30s
+                        retries: 5
+                        start_period: 30s
+                restart: always
                 networks:
                         - cache-network
                         - db-network
                         - storage-network
+                        - monitor-network
         api-blog:
                 build:
                         context: .
@@ -28,8 +44,10 @@ services:
                                 condition: service_healthy
                         minio-svc:
                                 condition: service_healthy
-                deploy:
-                        replicas: 3
+                # deploy:
+                #   replicas: 3
+                env_file:
+                        - apps/api-blog/.env
                 environment:
                         - DB_PORT=5432
                         - DB_HOST=postgres
@@ -38,9 +56,26 @@ services:
                         - DB_PASSWORD=postgres
                         - AUDIO_KEY=${AUDIO_KEY}
                         - AUDIO_LINK=${AUDIO_LINK}
+                        - ENV=prod
                 ports:
                         - '8080:8080'
+                healthcheck:
+                        test:
+                                [
+                                        'CMD',
+                                        '/usr/bin/wget',
+                                        '--no-verbose',
+                                        '--tries=1',
+                                        '--spider',
+                                        'http://localhost:8080/healthCheck'
+                                ]
+                        interval: 1m30s
+                        timeout: 30s
+                        retries: 5
+                        start_period: 30s
+                restart: always
                 networks:
+                        - monitor-network
                         - cache-network
                         - db-network
                         - storage-network
@@ -63,6 +98,16 @@ services:
                         timeout: 60s
                         retries: 5
                         start_period: 30s
+        postgres-exporter:
+                image: prometheuscommunity/postgres-exporter
+                ports:
+                        - 9187:9187
+                environment:
+                        DATA_SOURCE_NAME: 'postgresql://postgres:postgres@postgres:5432/pizza?sslmode=disable'
+                networks:
+                        - db-network
+                        - monitor-network
+
         minio-svc:
                 environment:
                         - MINIO_ROOT_USER=admin
@@ -80,7 +125,9 @@ services:
                         test:
                                 [
                                         'CMD',
-                                        'curl -f http://localhost:9000/minio/health/live'
+                                        'curl',
+                                        '-f',
+                                        'http://localhost:9000/minio/health/live'
                                 ]
                         interval: 30s
                         timeout: 20s
@@ -103,12 +150,34 @@ services:
                         timeout: 30s
                         retries: 5
                         start_period: 30s
+        prometheus:
+                image: prom/prometheus:v2.40.4
+                ports:
+                        - 9090:9090
+                volumes:
+                        - ./deploy/prometheus/config.yml:/etc/prometheus/prometheus.yml
+                networks:
+                        - monitor-network
+        grafana:
+                image: grafana/grafana:9.3.0
+                ports:
+                        - 3005:3000
+                environment:
+                        - GF_SECURITY_ADMIN_USER=admin
+                        - GF_SECURITY_ADMIN_PASSWORD=devops123
+                volumes:
+                        - ./deploy/grafana/dataSources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+                        - grafana:/var/lib/grafana
+                networks:
+                        - monitor-network
 networks:
         cache-network:
                 driver: bridge
         db-network:
                 driver: bridge
         storage-network:
+                driver: bridge
+        monitor-network:
                 driver: bridge
 volumes:
         minio-data:
@@ -123,3 +192,9 @@ volumes:
                         type: none
                         o: bind
                         device: ${PWD}/data/postgresql
+        grafana:
+                driver: local
+                driver_opts:
+                        type: none
+                        o: bind
+                        device: ${PWD}/data/grafana
