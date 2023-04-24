@@ -107,7 +107,6 @@ services:
                 networks:
                         - db-network
                         - monitor-network
-
         minio-svc:
                 environment:
                         - MINIO_ROOT_USER=admin
@@ -138,7 +137,7 @@ services:
                 image: redis:alpine
                 command: ['redis-server', '--appendonly', 'yes']
                 volumes:
-                        - ./data/redis:/data
+                        - redis-data:/data
                 ports:
                         - '6379:6379'
                 networks:
@@ -180,6 +179,12 @@ networks:
         monitor-network:
                 driver: bridge
 volumes:
+        redis-data:
+                driver: local
+                driver_opts:
+                        type: none
+                        o: bind
+                        device: ${PWD}/data/redis
         minio-data:
                 driver: local
                 driver_opts:
