@@ -44,8 +44,8 @@ services:
                                 condition: service_healthy
                         minio-svc:
                                 condition: service_healthy
-                # deploy:
-                #   replicas: 3
+                deploy:
+                        replicas: 3
                 env_file:
                         - apps/api-blog/.env
                 environment:
