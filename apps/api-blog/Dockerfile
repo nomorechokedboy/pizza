@@ -7,10 +7,10 @@ RUN go mod download && \
     go install github.com/cosmtrek/air@latest && \
     go install github.com/swaggo/swag/cmd/swag
 
-COPY apps/api-blog/api ./api
-COPY apps/api-blog/pkg ./pkg
 COPY apps/api-blog/src ./src
 COPY apps/api-blog/templates ./templates 
+COPY apps/api-blog/api ./api
+COPY apps/api-blog/pkg ./pkg
 COPY apps/api-blog/main.go apps/api-blog/.air.toml ./
 
 RUN $GOPATH/bin/swag init && \
