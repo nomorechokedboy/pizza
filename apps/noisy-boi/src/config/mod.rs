@@ -5,18 +5,20 @@ use serde::Deserialize;
 
 const CONFIG_PATH: &str = "./src/config/config";
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Server {
     pub port: u16,
     pub host: bool,
+    pub token_secret: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Log {
     pub level: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Database {
     pub host: String,
     pub name: String,
@@ -25,7 +27,7 @@ pub struct Database {
     pub port: u16,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct AppSettings {
     pub database: Database,
     pub server: Server,
@@ -33,7 +35,7 @@ pub struct AppSettings {
     pub redis: Redis,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Redis {
     pub host: String,
     pub port: u16,
@@ -48,7 +50,7 @@ impl AppSettings {
     }
 
     pub fn server_url(&self) -> String {
-        let Server { port, host } = self.server;
+        let Server { port, host, .. } = self.server;
         let host = match host {
             true => Ipv4Addr::UNSPECIFIED,
             false => Ipv4Addr::LOCALHOST,
