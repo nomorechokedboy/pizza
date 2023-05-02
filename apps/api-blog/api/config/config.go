@@ -4,43 +4,6 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
-/* type Config struct {
-	Env      string `mapstructure:"ENV"`
-	Database struct {
-		Port     string `mapstructure:"DB_PORT"`
-		Host     string `mapstructure:"DB_HOST"`
-		Name     string `mapstructure:"DB_NAME"`
-		User     string `mapstructure:"DB_USER"`
-		Password string `mapstructure:"DB_PASSWORD"`
-	}
-	Server struct {
-		Host string `mapstructure:"HOST"`
-		Port string `mapstructure:"PORT"`
-	}
-	AuthConfig struct {
-		JWTRefreshToken string `mapstructure:"JWT_REFRESH_SECRET"`
-		JWTSecret       string `mapstructure:"JWT_SECRET"`
-	}
-	AuthEmail struct {
-		Email    string `mapstructure:"EMAIL"`
-		Password string `mapstructure:"EMAIL_PASSWORD"`
-	}
-	AppAPI struct {
-		Link string `mapstructure:"API_LINK"`
-	}
-	AudioAPI struct {
-		Link string `mapstructure:"LINK"`
-		Key  string `mapstructure:"KEY"`
-	}
-	Minio struct {
-		EndPoint        string `mapstructure:"END_POINT"`
-		AccessKeyID     string `mapstructure:"ACCESSKEYID" `
-		SecretAccessKey string `mapstructure:"SECRET_ACCESS_KEY"`
-		UseSSL          bool   `mapstructure:"USESSL"`
-		BucketName      string `mapstructure:"BUCKET_NAME"`
-	}
-} */
-
 type Config struct {
 	Env      string `env:"ENV" env-default:"dev"`
 	Database struct {
@@ -76,6 +39,13 @@ type Config struct {
 		UseSSL          bool   `env:"USESSL" env-default:"false"`
 		BucketName      string `env:"BUCKET_NAME" env-default:"general"`
 	}
+	Redis RedisConfig
+}
+
+type RedisConfig struct {
+	URI      string `env:"REDIS_URI" env-default:"localhost:6379"`
+	Password string `env:"REDIS_PASSWORD" env-default:""`
+	DB       int    `env:"REDIS_DB" env-default:"0"`
 }
 
 func LoadConfig() (*Config, error) {
