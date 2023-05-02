@@ -11,7 +11,8 @@
 	},
 	"server": {
 		"port": 5000,
-		"host": false
+		"host": false,
+		"tokenSecret": "token-secret"
 	},
 	"redis": {
 		"host": "localhost",
