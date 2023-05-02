@@ -4,7 +4,8 @@ import (
 	"api-blog/pkg/common"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
-	"fmt"
+	"api-blog/src/notification"
+	notificationEntities "api-blog/src/notification/entities"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -19,10 +20,10 @@ import (
 // @Accept json
 // @Param post body entities.WriteReactionBody true "Create reaction body"
 // @Success 201 {object} entities.Reaction
-// @Failure 400 {string} dcmm
-// @Failure 409 {string} clmm
-// @Failure 422 {string} clmm
-// @Failure 500 {string} cdcmtm
+// @Failure 400 {string} string
+// @Failure 409 {string} string
+// @Failure 422 {string} string
+// @Failure 500 {string} string
 // @Security ApiKeyAuth
 // @Router /reaction/react [post]
 func ReactToEntity(c *fiber.Ctx) error {
@@ -32,23 +33,45 @@ func ReactToEntity(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
 	}
 	err := common.Validator.Struct(req)
-	fmt.Println("Err: ", err)
 	if err != nil {
 		return fiber.NewError(fiber.StatusUnprocessableEntity, "Invalid request body")
 	}
 
 	db := c.Locals("db").(*gorm.DB)
+	notifyRepo := c.Locals("notifyRepository").(notification.NotifyRepository)
 	userSvc := c.Locals("userService").(usecase.UserUsecase)
 	user, err := userSvc.GetUserById(UserID)
 	if err != nil {
 		return fiber.NewError(fiber.StatusConflict, "User does not exist")
 	}
 
+	var notiferID *uint
+	var entityData *string
+	if req.ReactableType == "posts" {
+		post := entities.Post{ID: req.ReactableID}
+		if err := db.First(&post).Error; err != nil {
+			return fiber.NewError(fiber.StatusUnprocessableEntity, "Reacted entity does not exist")
+		}
+		notiferID = &post.UserID
+		entityData = &post.Content
+	}
+
 	reaction := entities.Reaction{UserID: UserID, User: *user, ReactableID: req.ReactableID, ReactableType: req.ReactableType}
 	if res := db.Joins(clause.Associations).Create(&reaction); res.Error != nil {
-		if res.Error.(*pgconn.PgError).Code == "23503" {
-			return fiber.NewError(fiber.StatusConflict, "Entity does not exist")
+		if res.Error.(*pgconn.PgError).Code == "23505" {
+			return fiber.NewError(fiber.StatusConflict, "Entity already exist")
 		}
+	}
+
+	if req.ReactableType == "posts" && notiferID != nil {
+		notificationRequest := notificationEntities.NotificationRequest{ActorID: reaction.UserID,
+			ActionType: "reacted to your post",
+			EntityData: *entityData,
+			EntityID:   reaction.ReactableID,
+			EntityType: "post",
+			NotifierID: *notiferID,
+		}
+		go notifyRepo.Notify(notificationRequest)
 	}
 
 	return c.Status(201).JSON(reaction)
