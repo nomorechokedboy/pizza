@@ -16,11 +16,11 @@ futures = "0.3.28"
 jsonwebtoken = "8.3.0"
 parking_lot = "0.12.1"
 redis-async = "0.16.0"
-sea-query = { version = "0.28.4", features = ["attr", "thread-safe", "with-chrono", "backend-postgres", "derive"] }
+sea-query = { version = "0.28.4", features = ["thread-safe", "with-chrono", "backend-postgres", "derive"] }
 sea-query-binder = { version = "0.3.0", features = ["sqlx-postgres", "with-chrono", "runtime-tokio-native-tls"] }
 serde = { version = "1.0.160", features = ["derive"] }
 serde_json = "1.0.96"
-sqlx = { version = "0.6.3", features = ["migrate", "chrono", "postgres", "runtime-tokio-native-tls"] }
+sqlx = { version = "0.6.3", features = ["chrono", "postgres", "runtime-tokio-native-tls"] }
 tokio = { version = "1.27.0", features = ["full"] }
 tracing = "0.1.37"
 tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
