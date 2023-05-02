@@ -5,6 +5,9 @@ import (
 	"api-blog/pkg/common"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
+	"encoding/json"
+	"log"
+	"time"
 
 	"fmt"
 
@@ -15,6 +18,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gosimple/slug"
 	"github.com/minio/minio-go/v7"
+	"github.com/redis/go-redis/v9"
 )
 
 type PostHandler struct {
@@ -23,15 +27,17 @@ type PostHandler struct {
 	userUsecase usecase.UserUsecase
 	minioClient minio.Client
 	config      *config.Config
+	rdb         *redis.Client
 }
 
-func NewPostHandler(usecase usecase.PostUsecase, slugUsecase usecase.SlugUsecase, userUsecase usecase.UserUsecase, config *config.Config, mionioClient *minio.Client) *PostHandler {
+func NewPostHandler(usecase usecase.PostUsecase, slugUsecase usecase.SlugUsecase, userUsecase usecase.UserUsecase, config *config.Config, mionioClient *minio.Client, rdb *redis.Client) *PostHandler {
 	return &PostHandler{
 		usecase:     usecase,
 		slugUsecase: slugUsecase,
 		userUsecase: userUsecase,
 		minioClient: *mionioClient,
 		config:      config,
+		rdb:         rdb,
 	}
 }
 
@@ -51,38 +57,68 @@ func NewPostHandler(usecase usecase.PostUsecase, slugUsecase usecase.SlugUsecase
 // @Router /posts [get]
 func (handler *PostHandler) GetAllPosts(c *fiber.Ctx) error {
 	query := new(entities.PostQuery)
-
 	if err := c.QueryParser(query); err != nil {
 		return err
 	}
 
-	posts, err := handler.usecase.GetAllPosts(&entities.PostQuery{
-		UserID:   uint(query.UserID),
-		ParentID: uint(query.ParentID),
-		BaseQuery: common.BaseQuery{
-			Page:     query.Page,
-			PageSize: query.PageSize,
-			Sort:     query.Sort,
-			SortBy:   query.SortBy,
-		},
-	})
+	key := fmt.Sprintf(
+		"posts-page:%d-pageSize:%d-sort:%s-sortBy:%s-userID:%d-parentID:%d",
+		query.Page,
+		query.PageSize,
+		query.Sort,
+		query.SortBy,
+		query.UserID,
+		query.ParentID,
+	)
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
 
-	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "failed to get all posts")
+	postSerialized, err := handler.rdb.Get(ctx, key).Result()
+	if err == redis.Nil {
+		posts, err := handler.usecase.GetAllPosts(&entities.PostQuery{
+			UserID:   uint(query.UserID),
+			ParentID: uint(query.ParentID),
+			BaseQuery: common.BaseQuery{
+				Page:     query.Page,
+				PageSize: query.PageSize,
+				Sort:     query.Sort,
+				SortBy:   query.SortBy,
+			},
+		})
+
+		if err != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, "failed to get all posts")
+		}
+
+		postRes := common.BasePaginationResponse[entities.PostResponse]{
+			Items: []entities.PostResponse{},
+		}
+		postRes.Page = posts.Page
+		postRes.PageSize = posts.PageSize
+		postRes.Total = posts.Total
+
+		for _, post := range posts.Items {
+			postRes.Items = append(postRes.Items, post.ToResponse())
+		}
+
+		postsJSON, err := json.Marshal(postRes)
+		err = handler.rdb.Set(ctx, key, postsJSON, time.Minute*5).Err()
+		if err != nil {
+			log.Println("There is some problem with redis")
+		}
+
+		return c.JSON(postRes)
+	} else if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Internal error")
 	}
 
-	postRes := common.BasePaginationResponse[entities.PostResponse]{
-		Items: []entities.PostResponse{},
-	}
-	postRes.Page = posts.Page
-	postRes.PageSize = posts.PageSize
-	postRes.Total = posts.Total
-
-	for _, post := range posts.Items {
-		postRes.Items = append(postRes.Items, post.ToResponse())
+	cachePosts := new(common.BasePaginationResponse[entities.PostResponse])
+	if err := json.Unmarshal([]byte(postSerialized), cachePosts); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Internal error")
 	}
 
-	return c.Status(fiber.StatusOK).JSON(postRes)
+	return c.JSON(cachePosts)
 }
 
 // @GetPostByID godoc

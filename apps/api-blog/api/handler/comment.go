@@ -4,26 +4,28 @@ import (
 	"api-blog/pkg/common"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
+	"api-blog/src/notification"
+	notificationEntities "api-blog/src/notification/entities"
+
+	"context"
+	"encoding/json"
+	"fmt"
+	"log"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/redis/go-redis/v9"
 )
 
 type CommentHandler struct {
 	usecase usecase.CommentUsecase
+	rdb     *redis.Client
 }
 
-func NewCommentHandler(usecase usecase.CommentUsecase) *CommentHandler {
-	return &CommentHandler{usecase: usecase}
+func NewCommentHandler(usecase usecase.CommentUsecase, rdb *redis.Client) *CommentHandler {
+	return &CommentHandler{usecase: usecase, rdb: rdb}
 }
 
-// @GetAllComments godoc
-// @Summary Show all comments from comment
-// @Description get all comments from specfied comment
-// @Tags Comments
-// @Param  userID query int false "User ID"
-// @Param  postID query int false "Post ID"
-// @Param  parentID query int false "Parent ID"
-// @Param  page query int false "Page"
 // @Param  pageSize query int false "Page Size"
 // @Param sort query string false "Sort direction" Enums(asc, desc) default(desc)
 // @Param sortBy query string false "Sort by" Enums(id, user_id, parent_id) default(id)
@@ -38,23 +40,44 @@ func (handler *CommentHandler) GetAllComments(c *fiber.Ctx) error {
 		return err
 	}
 
-	comments, err := handler.usecase.GetAllComments(&entities.CommentQuery{
-		UserID:   query.UserID,
-		PostID:   query.PostID,
-		ParentID: query.ParentID,
-		BaseQuery: common.BaseQuery{
-			Page:     query.Page,
-			PageSize: query.PageSize,
-			Sort:     query.Sort,
-			SortBy:   query.SortBy,
-		},
-	})
+	key := fmt.Sprintf(
+		"comments-%d-page:%d-pageSize:%d-sort:%s-sortBy:%s-userID:%d",
+		query.PostID,
+		query.Page,
+		query.PageSize,
+		query.Sort,
+		query.SortBy,
+		query.UserID,
+	)
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
 
-	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "failed to get all comments")
+	commentsString, err := handler.rdb.Get(ctx, key).Result()
+	if err == redis.Nil {
+		comments, err := handler.usecase.GetAllComments(query)
+
+		if err != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, "failed to get all comments")
+		}
+
+		commentsJSON, err := json.Marshal(comments)
+		err = handler.rdb.Set(ctx, key, commentsJSON, time.Hour*5).Err()
+		if err != nil {
+			log.Println("There is some problem with redis")
+		}
+
+		return c.JSON(comments)
+	} else if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Internal error")
 	}
 
-	return c.Status(fiber.StatusOK).JSON(comments)
+	cacheComments := new(common.BasePaginationResponse[entities.Comment])
+	if err := json.Unmarshal([]byte(commentsString), cacheComments); err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Internal error")
+	}
+
+	return c.JSON(cacheComments)
 }
 
 // @CreateComment godoc
@@ -77,9 +100,39 @@ func (handler *CommentHandler) CreateComment(c *fiber.Ctx) error {
 	}
 
 	comment, err := handler.usecase.CreateComment(authID, req)
-
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to create new comment")
+	}
+
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+
+	pipe := handler.rdb.Pipeline()
+	match := fmt.Sprintf("comments-%d*", req.PostID)
+	iter := handler.rdb.Scan(ctx, 0, match, 0).Iterator()
+	for iter.Next(ctx) {
+		pipe.Del(ctx, iter.Val())
+	}
+	if err := iter.Err(); err != nil {
+		log.Println("REDIS ERR: ", err)
+	}
+	if _, err = pipe.Exec(ctx); err != nil {
+		log.Println("REDIS ERR: ", err)
+	}
+
+	notifyRepo := c.Locals("notifyRepository").(notification.NotifyRepository)
+	if req.ParentID == nil {
+		notificationRequest := notificationEntities.NotificationRequest{
+			ActionType: "commented on your post",
+			ActorID:    authID,
+			EntityData: comment.Content,
+			// EntityDataID: comment.ID,
+			EntityID:   comment.ID,
+			EntityType: "comment",
+			NotifierID: comment.Post.UserID,
+		}
+		go notifyRepo.Notify(notificationRequest)
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(comment)
