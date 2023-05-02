@@ -1,7 +1,7 @@
 {
 	"database": {
 		"host": "localhost",
-		"name": "crazy_noisy_bizarre_town",
+		"name": "pizza",
 		"user": "postgres",
 		"password": "postgres",
 		"port": 5432
@@ -29,5 +29,9 @@
 			"entity": "posts",
 			"description": "React to your post."
 		}
-	]
+	],
+	"redis": {
+		"host": "localhost",
+		"port": 6379
+	}
 }

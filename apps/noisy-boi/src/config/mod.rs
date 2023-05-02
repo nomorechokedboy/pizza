@@ -38,6 +38,13 @@ pub struct AppSettings {
     pub entity_type: Vec<EntityType>,
     pub server: Server,
     pub log: Log,
+    pub redis: Redis,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Redis {
+    pub host: String,
+    pub port: u16,
 }
 
 impl AppSettings {
