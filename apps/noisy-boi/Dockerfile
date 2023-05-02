@@ -1,15 +1,16 @@
 FROM rust:1.68 AS builder
 
-RUN cargo new app
+RUN mkdir repo repo/apps && cargo new app/apps/noisy-boi
 WORKDIR /app
 
-COPY Cargo.lock Cargo.toml ./
-COPY migrations ./migrations
+COPY ./Cargo.lock ./Cargo.toml ./
+# COPY ./apps/noisy-boi/migrations ./apps/noisy-boi/migrations
+COPY ./apps/noisy-boi/Cargo.toml ./apps/noisy-boi/
 
 RUN cargo b -r
 
-COPY src ./src
-RUN touch /app/src/main.rs \ 
+COPY ./apps/noisy-boi/src ./apps/noisy-boi/src
+RUN touch /app/apps/noisy-boi/src/main.rs \ 
     && cargo b -r
 
 FROM busybox:1.36 AS deps
@@ -26,6 +27,6 @@ COPY --from=builder /etc/group /etc/group
 
 WORKDIR /
 
-COPY --from=builder /app/target/release/tags-keeper .
-ENTRYPOINT ["./tags-keeper"]
+COPY --from=builder /app/target/release/noisy-boi .
+ENTRYPOINT ["./noisy-boi"]
 
