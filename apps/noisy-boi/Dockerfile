@@ -28,5 +28,6 @@ COPY --from=builder /etc/group /etc/group
 WORKDIR /
 
 COPY --from=builder /app/target/release/noisy-boi .
+COPY --from=builder /app/apps/noisy-boi/src/config/config.json ./src/config/
 ENTRYPOINT ["./noisy-boi"]
 
