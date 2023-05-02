@@ -9,7 +9,7 @@ use super::{
     },
     handlers::GetNotificationQuery,
 };
-use crate::common::FromDBFlatten;
+use crate::common::from_db_flatten::FromDBFlatten;
 use actix_web::error::ErrorInternalServerError;
 use sea_query::{Alias, Expr, JoinType, PostgresQueryBuilder, Query};
 use sea_query_binder::{SqlxBinder, SqlxValues};

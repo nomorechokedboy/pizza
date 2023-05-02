@@ -1,5 +1,5 @@
 use super::entities::notification_object::NotificationObject;
-use crate::{AppState, AuthGuard};
+use crate::common::{app_state::AppState, auth_guard::AuthGuard};
 use actix_web::{get, web, Responder, Result};
 use sea_query::Order;
 use serde::Deserialize;
