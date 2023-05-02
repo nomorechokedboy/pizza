@@ -13,23 +13,6 @@
 		"port": 5000,
 		"host": false
 	},
-	"entity_type": [
-		{
-			"id": 1,
-			"entity": "comments",
-			"description": "Commenting on a post."
-		},
-		{
-			"id": 2,
-			"entity": "comments",
-			"description": "Reply your comment."
-		},
-		{
-			"id": 3,
-			"entity": "posts",
-			"description": "React to your post."
-		}
-	],
 	"redis": {
 		"host": "localhost",
 		"port": 6379
