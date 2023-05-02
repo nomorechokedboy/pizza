@@ -1,4 +1,7 @@
-use crate::notification::{broadcaster::Broadcaster, repository::GetNotificationRepository};
+use crate::{
+    config::AppSettings,
+    notification::{broadcaster::Broadcaster, repository::GetNotificationRepository},
+};
 use redis_async::client::PubsubConnection;
 use std::{sync::Arc, time::Instant};
 
@@ -8,4 +11,5 @@ pub struct AppState {
     pub get_notification_repo: GetNotificationRepository,
     pub sse_broadcaster: Arc<Broadcaster>,
     pub pubsub_con: PubsubConnection,
+    pub settings: AppSettings,
 }
