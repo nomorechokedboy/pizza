@@ -173,7 +173,7 @@ type UserEmailReq struct {
 // @Description send email to user for reset password
 // @Tags Auth
 // @Accept json
-// @Param todo body handler.ForgotPassword.userEmailReq true "user email"
+// @Param todo body handler.UserEmailReq true "user email"
 // @Success 200
 // @Router /auth/forgot-password [post]
 func (handler *UserHandler) ForgotPassword(c *fiber.Ctx) error {
