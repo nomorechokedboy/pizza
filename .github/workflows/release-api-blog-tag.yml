@@ -23,5 +23,8 @@ jobs:
                         - name: Build Docker images
                           run: |
                                   docker pull ghcr.io/nomorechokedboy/api-blog:latest || true
-                                  docker build -t ghcr.io/nomorechokedboy/api-blog:latest -f apps/api-blog/Dockerfile .
+                                  docker build \\
+                                  --cache-from=ghcr.io/nomorechokedboy/api:latest \\
+                                  -t ghcr.io/nomorechokedboy/api:latest \\
+                                  -f apps/api/Dockerfile .
                                   docker push ghcr.io/nomorechokedboy/api-blog:latest
