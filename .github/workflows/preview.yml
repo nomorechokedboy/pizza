@@ -1,10 +1,5 @@
 name: Preview deploy
 on:
-        workflow_run:
-                workflows:
-                        ['Publish api', 'Publish api-blog', 'Publish noisy-boi']
-                types:
-                        - completed
         pull_request:
                 branches:
                         - dev
