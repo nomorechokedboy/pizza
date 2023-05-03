@@ -81,7 +81,7 @@ services:
                         - database_host=postgres
                         - redis_host=redis
                         - server_host=true
-                        - server_tokenSecret=$TOKEN_SECRET
+                        - server_token_secret=$TOKEN_SECRET
                 ports:
                         - '5000:5000'
                 healthcheck:
