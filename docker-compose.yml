@@ -86,6 +86,7 @@ services:
                 environment:
                         - database_host=postgres
                         - redis_host=redis
+                        - redis_port=6379
                         - server_host=true
                         - server_tokenSecret=$TOKEN_SECRET
                 ports:
