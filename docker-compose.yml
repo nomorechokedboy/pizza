@@ -1,9 +1,7 @@
 version: '3.8'
 services:
         api:
-                build:
-                        context: .
-                        dockerfile: ./apps/api/Dockerfile
+                image: ghcr.io/nomorechokedboy/api:latest
                 depends_on:
                         - postgres
                         - minio-svc
@@ -36,9 +34,7 @@ services:
                         - storage-network
                         - monitor-network
         api-blog:
-                build:
-                        context: .
-                        dockerfile: ./apps/api-blog/Dockerfile
+                image: ghcr.io/nomorechokedboy/api-blog:latest
                 depends_on:
                         postgres:
                                 condition: service_healthy
@@ -78,9 +74,7 @@ services:
                         - storage-network
                         # - message-broker-network
         noisy-boi:
-                build:
-                        context: .
-                        dockerfile: ./apps/noisy-boi/Dockerfile
+                image: ghcr.io/nomorechokedboy/noisy-boi:latest
                 depends_on:
                         - api-blog
                 environment:
