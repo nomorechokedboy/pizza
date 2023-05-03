@@ -52,8 +52,6 @@ services:
                         - AUDIO_LINK=${AUDIO_LINK}
                         - ENV=prod
                         - REDIS_URI=redis:6379
-                        - JWT_SECRET=$TOKEN_SECRET
-                        - JWT_REFRESH_SECRET=$REFRESH_SECRET
                 ports:
                         - '8080:8080'
                 healthcheck:
@@ -87,7 +85,6 @@ services:
                         - database_host=postgres
                         - redis_host=redis
                         - server_host=true
-                        - server_token_secret=$TOKEN_SECRET
                 ports:
                         - '5000:5000'
                 healthcheck:
