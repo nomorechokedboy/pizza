@@ -33,7 +33,8 @@ func (r *PostGormRepo) GetAllPosts(query *entities.PostQuery) (common.BasePagina
 
 		cond := entities.Post{UserID: query.UserID, ParentID: parentIDaddr, Published: true}
 
-		if err := r.db.Scopes(scopes.Pagination(r.db, entities.Post{}, query.BaseQuery, &res)).
+		if err := r.db.
+			Scopes(scopes.Pagination(r.db, entities.Post{}, query.BaseQuery, &res)).
 			Preload(clause.Associations).
 			Find(&posts, cond).
 			Error; err != nil {

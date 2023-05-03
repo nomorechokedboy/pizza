@@ -10,6 +10,8 @@ import (
 	_ "api-blog/docs"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
+	"api-blog/src/notification"
+	notificationEntities "api-blog/src/notification/entities"
 	"api-blog/src/reaction"
 	"fmt"
 	"log"
@@ -23,7 +25,14 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/swagger"
+	"github.com/redis/go-redis/v9"
 )
+
+func failOnError(err error, msg string) {
+	if err != nil {
+		log.Panicf("%s: %s", msg, err)
+	}
+}
 
 // @title web Blog
 // @version 1.0
@@ -60,15 +69,57 @@ func main() {
 			&entities.Slug{},
 			&entities.Comment{},
 			&entities.Reaction{},
+			&notificationEntities.NotificationObject{},
+			&notificationEntities.Notification{},
+			&notificationEntities.NotificationChange{},
 		); err != nil {
 		log.Panic("failed to migrate database: ", err)
 	}
+
+	/* conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	failOnError(err, "Failed to connect to RabbitMQ")
+	defer conn.Close()
+
+	ch, err := conn.Channel()
+	failOnError(err, "Failed to open a channel")
+	defer ch.Close()
+
+	q, err := ch.QueueDeclare(
+		"golang-queue", // name
+		false,          // durable
+		false,          // delete when unused
+		false,          // exclusive
+		false,          // no-wait
+		nil,            // arguments
+	)
+	failOnError(err, "Failed to declare a queue")
+
+	// We set the payload for the message.
+	body := "Golang is awesome - Keep Moving Forward!"
+	err = ch.Publish(
+		"",     // exchange
+		q.Name, // routing key
+		false,  // mandatory
+		false,  // immediate
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        []byte(body),
+		})
+	// If there is an error publishing the message, a log will be displayed in the terminal.
+	failOnError(err, "Failed to publish a message")
+	log.Printf(" [x] Congrats, sending message: %s", body) */
 
 	//Minio
 	minioClient, err := util.ConnectMinio(cfg)
 	if err != nil {
 		panic("Fail to load Minio")
 	}
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     cfg.Redis.URI,
+		Password: cfg.Redis.Password,
+		DB:       cfg.Redis.DB,
+	})
 
 	//middlerware
 	middle := middleware.NewJWTMiddleware(cfg.AuthConfig.JWTSecret)
@@ -90,18 +141,18 @@ func main() {
 	//post
 	postRepo := gorm_repository.NewPostGormRepository(db)
 	postUC := usecase.NewPostUseCase(postRepo)
-	postHandler := handler.NewPostHandler(postUC, slugUC, userUC, cfg, minioClient)
+	postHandler := handler.NewPostHandler(postUC, slugUC, userUC, cfg, minioClient, rdb)
 
 	// comment
 	commentRepo := gorm_repository.NewCommentGormRepository(db)
 	commentUC := usecase.NewCommentUseCase(commentRepo)
-	commentHandler := handler.NewCommentHandler(commentUC)
+	commentHandler := handler.NewCommentHandler(commentUC, rdb)
+
+	notifyRepo := notification.NewNotifyRepository(db, rdb)
 
 	//app
 	app := fiber.New()
-	app.Use(cors.New(cors.Config{
-		AllowCredentials: true,
-	}))
+	app.Use(cors.New())
 	app.Use(logger.New())
 	app.Use(recover.New())
 	app.Use(compress.New())
@@ -109,6 +160,7 @@ func main() {
 	app.Use(func(c *fiber.Ctx) error {
 		c.Locals("db", db)
 		c.Locals("userService", userUC)
+		c.Locals("notifyRepository", *notifyRepo)
 		return c.Next()
 	})
 	prometheus := fiberprometheus.New("my-service-name")

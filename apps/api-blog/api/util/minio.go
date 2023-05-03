@@ -2,7 +2,6 @@ package util
 
 import (
 	"api-blog/api/config"
-	"fmt"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -16,6 +15,5 @@ func ConnectMinio(cfg *config.Config) (*minio.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("Connect Minio success")
 	return minioClient, nil
 }

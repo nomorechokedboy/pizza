@@ -1,11 +1,18 @@
 name: CD workflows
 on:
+        workflow_run:
+                workflows:
+                        ['Publish api', 'Publish api-blog', 'Publish noisy-boi']
+                branches: [main, dev]
+                types:
+                        - completed
         push:
                 branches:
                         - dev
                 paths:
                         - apps/api/**
                         - apps/api-blog/**
+                        - apps/noisy-boi/**
 jobs:
         deploy:
                 runs-on: ubuntu-latest

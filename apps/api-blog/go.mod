@@ -13,6 +13,8 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.4.2
 	github.com/jackc/pgx/v5 v5.3.0
 	github.com/minio/minio-go/v7 v7.0.50
+	github.com/rabbitmq/amqp091-go v1.8.0
+	github.com/redis/go-redis/v9 v9.0.3
 	github.com/swaggo/swag v1.16.1
 	golang.org/x/crypto v0.7.0
 	gorm.io/driver/postgres v1.4.8
@@ -26,6 +28,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
 	github.com/go-openapi/jsonreference v0.20.2 // indirect

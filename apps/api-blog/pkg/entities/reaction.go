@@ -7,10 +7,10 @@ import (
 type Reaction struct {
 	UserID        uint      `json:"-" gorm:"primaryKey;autoIncrement:false"`
 	User          User      `json:"user"`
-	ReactableID   uint      `json:"-" gorm:"primaryKey;autoIncrement:false"`
+	ReactableID   uint      `json:"-" gorm:"primaryKey;autoIncrement:false;"`
 	ReactableType string    `json:"-" gorm:"primaryKey"`
-	CreatedAt     time.Time `json:"createdAt"`
-	UpdatedAt     time.Time `json:"updatedAt"`
+	CreatedAt     time.Time `json:"createdAt" gorm:"not null"`
+	UpdatedAt     time.Time `json:"updatedAt" gorm:"not null"`
 }
 
 type WriteReactionBody struct {

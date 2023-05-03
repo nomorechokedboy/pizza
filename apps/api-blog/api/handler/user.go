@@ -7,6 +7,7 @@ import (
 	"api-blog/pkg/usecase"
 	"api-blog/templates"
 	"bytes"
+	"log"
 	"net/http"
 	"net/smtp"
 	"strings"
@@ -162,20 +163,21 @@ func (handler *UserHandler) UpdateUserById(c *fiber.Ctx) error {
 	return c.JSON(newUser)
 }
 
+type UserEmailReq struct {
+	Email string
+}
+
 // ForgotPassword
 // @ForgotPassword godoc
 // @Summary option when user forgot password
 // @Description send email to user for reset password
 // @Tags Auth
 // @Accept json
-// @Param todo body handler.ForgotPassword.userEmailReq true "user email"
+// @Param todo body handler.UserEmailReq true "user email"
 // @Success 200
 // @Router /auth/forgot-password [post]
 func (handler *UserHandler) ForgotPassword(c *fiber.Ctx) error {
-	type userEmailReq struct {
-		Email string
-	}
-	reqEmail := new(userEmailReq)
+	reqEmail := new(UserEmailReq)
 	if err := c.BodyParser(reqEmail); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
 	}
@@ -183,6 +185,11 @@ func (handler *UserHandler) ForgotPassword(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.ErrNotFound.Code, err.Error())
 	}
+	go handler.sendMail(reqEmail, user)
+	return c.SendString("Please check your email")
+}
+
+func (handler *UserHandler) sendMail(reqEmail *UserEmailReq, user *entities.User) {
 	accessToken, _ := util.GenerateToken(user.Id, []byte(handler.config.AuthConfig.JWTSecret), []byte(handler.config.AuthConfig.JWTRefreshToken))
 
 	auth := smtp.PlainAuth(
@@ -192,7 +199,7 @@ func (handler *UserHandler) ForgotPassword(c *fiber.Ctx) error {
 		"smtp.gmail.com",
 	)
 	var emailReponse entities.ResponseEmail
-	emailReponse.Link = handler.config.AppAPI.Link + "/userId:" + accessToken
+	emailReponse.Link = handler.config.AppAPI.Link + "/forgot-password?token=" + accessToken
 	emailReponse.Username = user.Username
 	emailReponse.Sender = "Blog team"
 	tmpl := template.Must(template.New("").Parse(templates.TemplateEmail))
@@ -203,17 +210,15 @@ func (handler *UserHandler) ForgotPassword(c *fiber.Ctx) error {
 	mine := "MINE-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 	msg := []byte(subject + mine + buff.String())
 
-	sendMailErr := smtp.SendMail(
+	if err := smtp.SendMail(
 		"smtp.gmail.com:587",
 		auth,
 		handler.config.AuthEmail.Email,
 		[]string{reqEmail.Email},
 		msg,
-	)
-	if sendMailErr != nil {
-		return fiber.NewError(fiber.ErrInternalServerError.Code, sendMailErr.Error())
+	); err != nil {
+		log.Println("Failed to send email! Err: ", err)
 	}
-	return c.SendString("Please check your email")
 }
 
 // resetpassword

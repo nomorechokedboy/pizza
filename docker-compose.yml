@@ -1,9 +1,7 @@
 version: '3.8'
 services:
         api:
-                build:
-                        context: .
-                        dockerfile: apps/api/Dockerfile
+                image: ghcr.io/nomorechokedboy/api:latest
                 depends_on:
                         - postgres
                         - minio-svc
@@ -36,27 +34,22 @@ services:
                         - storage-network
                         - monitor-network
         api-blog:
-                build:
-                        context: .
-                        dockerfile: apps/api-blog/Dockerfile
+                image: ghcr.io/nomorechokedboy/api-blog:latest
                 depends_on:
                         postgres:
                                 condition: service_healthy
                         minio-svc:
                                 condition: service_healthy
-                deploy:
-                        replicas: 3
                 env_file:
                         - apps/api-blog/.env
                 environment:
-                        - DB_PORT=5432
                         - DB_HOST=postgres
-                        - DB_NAME=pizza
-                        - DB_USER=postgres
-                        - DB_PASSWORD=postgres
                         - AUDIO_KEY=${AUDIO_KEY}
                         - AUDIO_LINK=${AUDIO_LINK}
                         - ENV=prod
+                        - REDIS_URI=redis:6379
+                        - JWT_SECRET=$TOKEN_SECRET
+                        - JWT_REFRESH_SECRET=$REFRESH_SECRET
                 ports:
                         - '8080:8080'
                 healthcheck:
@@ -68,6 +61,38 @@ services:
                                         '--tries=1',
                                         '--spider',
                                         'http://localhost:8080/healthCheck'
+                                ]
+                        interval: 1m30s
+                        timeout: 30s
+                        retries: 5
+                        start_period: 30s
+                restart: always
+                networks:
+                        - monitor-network
+                        - cache-network
+                        - db-network
+                        - storage-network
+                        # - message-broker-network
+        noisy-boi:
+                image: ghcr.io/nomorechokedboy/noisy-boi:latest
+                depends_on:
+                        - api-blog
+                environment:
+                        - database_host=postgres
+                        - redis_host=redis
+                        - server_host=true
+                        - server_tokenSecret=$TOKEN_SECRET
+                ports:
+                        - '5000:5000'
+                healthcheck:
+                        test:
+                                [
+                                        'CMD',
+                                        '/usr/bin/wget',
+                                        '--no-verbose',
+                                        '--tries=1',
+                                        '--spider',
+                                        'http://localhost:5000/api/v1/healthz'
                                 ]
                         interval: 1m30s
                         timeout: 30s
@@ -169,6 +194,40 @@ services:
                         - grafana:/var/lib/grafana
                 networks:
                         - monitor-network
+                        # notification_db:
+                        #   image: postgres:14.1-alpine
+                        #   restart: always
+                        #   networks:
+                        #     - db-network
+                        #   environment:
+                        #     - POSTGRES_USER=postgres
+                        #     - POSTGRES_PASSWORD=postgres
+                        #     - POSTGRES_DB=crazy_noisy_bizarre_town
+                        #   ports:
+                        #     - '5433:5432'
+                        #   volumes:
+                        #     - notification_db-data:/var/lib/postgresql/data
+                        #   healthcheck:
+                        #     test: ['CMD-SHELL', 'pg_isready -d db_prod']
+                        #     interval: 30s
+                        #     timeout: 60s
+                        #     retries: 5
+                        #     start_period: 30s
+                        # rabbitmq:
+                        #   image: rabbitmq:3-management-alpine
+                        #   ports:
+                        #     - 5672:5672
+                        #     - 15672:15672
+                        #   volumes:
+                        #     - rabbitmq-data:/var/lib/rabbitmq/
+                        #     - rabbitmq-log:/var/log/rabbitmq
+                        #   networks:
+                        #     - message-broker-network
+                        #   healthcheck:
+                        #     test: rabbitmq-diagnostics -q ping
+                        #     interval: 30s
+                        #     timeout: 30s
+                        #     retries: 3
 networks:
         cache-network:
                 driver: bridge
@@ -178,6 +237,8 @@ networks:
                 driver: bridge
         monitor-network:
                 driver: bridge
+                # message-broker-network:
+                #   driver: bridge
 volumes:
         redis-data:
                 driver: local
@@ -203,3 +264,21 @@ volumes:
                         type: none
                         o: bind
                         device: ${PWD}/data/grafana
+        # notification_db-data:
+        #   driver: local
+        #   driver_opts:
+        #     type: none
+        #     o: bind
+        #     device: ${PWD}/data/notification_db
+        # rabbitmq-data:
+        #   driver: local
+        #   driver_opts:
+        #     type: none
+        #     o: bind
+        #     device: ${PWD}/data/rabbitmq-data
+        # rabbitmq-log:
+        #   driver: local
+        #   driver_opts:
+        #     type: none
+        #     o: bind
+        #     device: ${PWD}/data/rabbitmq-log
