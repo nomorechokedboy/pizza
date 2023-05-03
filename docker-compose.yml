@@ -1,7 +1,9 @@
 version: '3.8'
 services:
         api:
-                image: ghcr.io/nomorechokedboy/api:latest
+                build:
+                        context: .
+                        dockerfile: ./apps/api/Dockerfile
                 depends_on:
                         - postgres
                         - minio-svc
@@ -34,7 +36,9 @@ services:
                         - storage-network
                         - monitor-network
         api-blog:
-                image: ghcr.io/nomorechokedboy/api-blog:latest
+                build:
+                        context: .
+                        dockerfile: ./apps/api-blog/Dockerfile
                 depends_on:
                         postgres:
                                 condition: service_healthy
@@ -48,8 +52,6 @@ services:
                         - AUDIO_LINK=${AUDIO_LINK}
                         - ENV=prod
                         - REDIS_URI=redis:6379
-                        - JWT_SECRET=$TOKEN_SECRET
-                        - JWT_REFRESH_SECRET=$REFRESH_SECRET
                 ports:
                         - '8080:8080'
                 healthcheck:
@@ -74,14 +76,15 @@ services:
                         - storage-network
                         # - message-broker-network
         noisy-boi:
-                image: ghcr.io/nomorechokedboy/noisy-boi:latest
+                build:
+                        context: .
+                        dockerfile: ./apps/noisy-boi/Dockerfile
                 depends_on:
                         - api-blog
                 environment:
                         - database_host=postgres
                         - redis_host=redis
                         - server_host=true
-                        - server_token_secret=$TOKEN_SECRET
                 ports:
                         - '5000:5000'
                 healthcheck:

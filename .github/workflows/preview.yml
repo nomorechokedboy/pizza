@@ -3,6 +3,7 @@ on:
         workflow_run:
                 workflows:
                         ['Publish api', 'Publish api-blog', 'Publish noisy-boi']
+                branches: [dev]
                 types:
                         - completed
         pull_request:
@@ -11,6 +12,13 @@ on:
                 paths:
                         - apps/api/**
                         - apps/api-blog/**
+                        - apps/noisy-boi/**
+                        - docker-compose.yml
+                        - .dockerignore
+                        - Cargo.lock
+                        - Cargo.toml
+                        - deploy/**
+                        - .github/workflows/**
 jobs:
         deploy-preview:
                 runs-on: ubuntu-latest
