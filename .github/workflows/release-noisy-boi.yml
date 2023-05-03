@@ -23,8 +23,8 @@ jobs:
                         - name: Build Docker images
                           run: |
                                   docker pull ghcr.io/nomorechokedboy/noisy-boi:latest || true
-                                  docker build \\
-                                  --cache-from=ghcr.io/nomorechokedboy/noisy-boi:latest \\
-                                  -t ghcr.io/nomorechokedboy/noisy-boi:latest \\
+                                  docker build \
+                                  --cache-from=ghcr.io/nomorechokedboy/noisy-boi:latest \
+                                  -t ghcr.io/nomorechokedboy/noisy-boi:latest \
                                   -f apps/noisy-boi/Dockerfile .
                                   docker push ghcr.io/nomorechokedboy/noisy-boi:latest
