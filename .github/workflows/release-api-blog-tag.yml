@@ -1,4 +1,4 @@
-name: publish
+name: Publish api-blog
 on:
         push:
                 branches:
@@ -10,7 +10,7 @@ on:
                         - dev
                         - main
 jobs:
-        publish-hello-docker-image:
+        publish-image:
                 runs-on: ubuntu-latest
                 steps:
                         - uses: actions/checkout@v2
