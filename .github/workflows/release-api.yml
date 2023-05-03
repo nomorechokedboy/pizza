@@ -1,0 +1,27 @@
+name: publish
+on:
+        push:
+                branches:
+                        - main
+                paths:
+                        - apps/api/**
+        pull_request:
+                branches:
+                        - dev
+                        - main
+jobs:
+        publish-hello-docker-image:
+                runs-on: ubuntu-latest
+                steps:
+                        - uses: actions/checkout@v2
+                        - name: Login to GitHub Container Registry
+                          uses: docker/login-action@v1
+                          with:
+                                  registry: ghcr.io
+                                  username: ${{ github.actor }}
+                                  password: ${{ secrets.GITHUB_TOKEN }}
+                        - name: Build Docker images
+                          run: |
+                                  docker pull ghcr.io/nomorechokedboy/api:latest || true
+                                  docker build -t ghcr.io/nomorechokedboy/api:latest -f apps/api/Dockerfile .
+                                  docker push ghcr.io/nomorechokedboy/api:latest
