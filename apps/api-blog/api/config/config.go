@@ -26,7 +26,7 @@ type Config struct {
 		Password string `env:"EMAIL_PASSWORD"`
 	}
 	AppAPI struct {
-		Link string `env:"FE_URL" env-default:"pizza-web-nuxt.vercel.app"`
+		Link string `env:"FE_URL" env-default:"https://pizza-web-nuxt.vercel.app"`
 	}
 	AudioAPI struct {
 		Link string `env:"LINK"`
