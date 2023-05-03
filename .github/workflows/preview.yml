@@ -22,3 +22,4 @@ jobs:
                                   GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
                           with:
                                   name: pr-${{ github.event.number }}-nomorechokedboy
+                                  timeout: 30m
