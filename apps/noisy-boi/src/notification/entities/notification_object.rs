@@ -1,6 +1,5 @@
-use crate::common::from_db_flatten::FromDBFlatten;
-
 use super::{notification::Notification, notification_change::NotificationChange, user::User};
+use crate::common::from_db_flatten::FromDBFlatten;
 use chrono::{DateTime, Utc};
 use sea_query::Iden;
 use serde::{Deserialize, Serialize};
