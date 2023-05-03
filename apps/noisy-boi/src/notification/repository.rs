@@ -22,7 +22,7 @@ pub struct GetNotificationRepository {
 }
 
 impl GetNotificationRepository {
-    fn get_query(&self, user_id: i64, query: GetNotificationQuery) -> (String, SqlxValues) {
+    fn get_query(&self, user_id: i64, query: &GetNotificationQuery) -> (String, SqlxValues) {
         let actor_alias = Alias::new("actor");
         let notifier_alias = Alias::new("notifier");
         Query::select()
@@ -183,9 +183,16 @@ impl GetNotificationRepository {
                 .equals((actor_alias, UserIden::Id)),
             )
             .cond_where(
-                Expr::col((NotificationIden::Table, NotificationIden::NotifierId)).eq(user_id),
+                Expr::col((NotificationIden::Table, NotificationIden::NotifierId))
+                    .eq(user_id)
+                    .and(
+                        Expr::col((
+                            NotificationObjectDBIden::Table,
+                            NotificationObjectDBIden::Id,
+                        ))
+                        .lte(query.get_cursor()),
+                    ),
             )
-            .offset(query.get_offset())
             .limit(query.get_page_size())
             .order_by(
                 (
@@ -200,7 +207,7 @@ impl GetNotificationRepository {
     pub async fn exec(
         &self,
         user_id: i64,
-        query: GetNotificationQuery,
+        query: &GetNotificationQuery,
     ) -> Result<Vec<NotificationObject>, actix_web::Error> {
         let conn = &self.conn;
         let (sql, values) = self.get_query(user_id, query);

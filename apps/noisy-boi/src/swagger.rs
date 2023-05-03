@@ -1,4 +1,11 @@
-use crate::misc::HealthCheckResponse;
+use crate::{
+    common::PaginationRes,
+    misc::HealthCheckResponse,
+    notification::entities::{
+        notification::Notification, notification_change::NotificationChange,
+        notification_object::NotificationObject, post::Post, user::User,
+    },
+};
 use utoipa::{
     openapi::{
         security::{HttpAuthScheme, HttpBuilder, SecurityScheme},
@@ -18,11 +25,12 @@ use utoipa::{
     modifiers(&SecurityAddon),
     components(
         schemas(HealthCheckResponse,
-                crate::notification::entities::user::User,
-                crate::notification::entities::post::Post,
-                crate::notification::entities::notification_object::NotificationObject,
-                crate::notification::entities::notification::Notification,
-                crate::notification::entities::notification_change::NotificationChange
+                PaginationRes<NotificationObject>,
+                User,
+                Post,
+                NotificationObject,
+                Notification,
+                NotificationChange
         )
     )
 )]
