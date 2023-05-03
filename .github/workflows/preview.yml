@@ -18,6 +18,7 @@ on:
                         - Cargo.lock
                         - Cargo.toml
                         - deploy/**
+                        - .github/workflows/**
 jobs:
         deploy-preview:
                 runs-on: ubuntu-latest
