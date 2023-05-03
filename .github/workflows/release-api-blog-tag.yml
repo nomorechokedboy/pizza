@@ -1,27 +1,27 @@
-# name: publish
-# on:
-#         push:
-#                 branches:
-#                         - main
-#                 paths:
-#                         - apps/api-blog/**
-#         pull_request:
-#                 branches:
-#                         - dev
-#                         - main
-# jobs:
-#         publish-hello-docker-image:
-#                 runs-on: ubuntu-latest
-#                 steps:
-#                         - uses: actions/checkout@v2
-#                         - name: Login to GitHub Container Registry
-#                           uses: docker/login-action@v1
-#                           with:
-#                                   registry: ghcr.io
-#                                   username: ${{ github.actor }}
-#                                   password: ${{ secrets.GITHUB_TOKEN }}
-#                         - name: Build Docker images
-#                           run: |
-#                                   docker pull ghcr.io/nomorechokedboy/api-blog:latest || true
-#                                   docker build -t ghcr.io/nomorechokedboy/api-blog:latest -f apps/api-blog/Dockerfile .
-#                                   docker push ghcr.io/nomorechokedboy/api-blog:latest
+name: publish
+on:
+        push:
+                branches:
+                        - main
+                paths:
+                        - apps/api-blog/**
+        pull_request:
+                branches:
+                        - dev
+                        - main
+jobs:
+        publish-hello-docker-image:
+                runs-on: ubuntu-latest
+                steps:
+                        - uses: actions/checkout@v2
+                        - name: Login to GitHub Container Registry
+                          uses: docker/login-action@v1
+                          with:
+                                  registry: ghcr.io
+                                  username: ${{ github.actor }}
+                                  password: ${{ secrets.GITHUB_TOKEN }}
+                        - name: Build Docker images
+                          run: |
+                                  docker pull ghcr.io/nomorechokedboy/api-blog:latest || true
+                                  docker build -t ghcr.io/nomorechokedboy/api-blog:latest -f apps/api-blog/Dockerfile .
+                                  docker push ghcr.io/nomorechokedboy/api-blog:latest
