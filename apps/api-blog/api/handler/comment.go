@@ -40,6 +40,7 @@ func NewCommentHandler(usecase usecase.CommentUsecase, rdb *redis.Client) *Comme
 // @Success 200 {object} common.BasePaginationResponse[entities.Comment]
 // @Failure 404
 // @Failure 500
+// @Tags Comments
 // @Router /comments/ [get]
 func (handler *CommentHandler) GetAllComments(c *fiber.Ctx) error {
 	query := new(entities.CommentQuery)
