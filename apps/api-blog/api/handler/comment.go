@@ -26,6 +26,14 @@ func NewCommentHandler(usecase usecase.CommentUsecase, rdb *redis.Client) *Comme
 	return &CommentHandler{usecase: usecase, rdb: rdb}
 }
 
+// @GetAllComments godoc
+// @Summary Show all comments from comment
+// @Description get all comments from specfied comment
+// @Tags Comments
+// @Param  userID query int false "User ID"
+// @Param  postID query int false "Post ID"
+// @Param  parentID query int false "Parent ID"
+// @Param  page query int false "Page"
 // @Param  pageSize query int false "Page Size"
 // @Param sort query string false "Sort direction" Enums(asc, desc) default(desc)
 // @Param sortBy query string false "Sort by" Enums(id, user_id, parent_id) default(id)
