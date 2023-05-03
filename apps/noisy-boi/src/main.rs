@@ -49,7 +49,7 @@ async fn main() -> anyhow::Result<()> {
     let get_notification_repo = GetNotificationRepository::new(pool);
 
     let broadcaster = Broadcaster::create();
-    let pubsub_con = client::pubsub_connect(&settings.redis.host, settings.redis.port)
+    let pubsub_con = client::pubsub_connect(&settings.redis.host, 6379)
         .await
         .context("Cannot connect to Redis")?;
     let msgs = pubsub_con

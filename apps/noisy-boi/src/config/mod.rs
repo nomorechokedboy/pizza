@@ -1,7 +1,6 @@
-use std::net::Ipv4Addr;
-
 use config::{Environment, File, FileFormat};
 use serde::Deserialize;
+use std::net::Ipv4Addr;
 
 const CONFIG_PATH: &str = "./src/config/config";
 
@@ -38,7 +37,7 @@ pub struct AppSettings {
 #[derive(Clone, Debug, Deserialize)]
 pub struct Redis {
     pub host: String,
-    pub port: u16,
+    // pub port: u16,
 }
 
 impl AppSettings {
