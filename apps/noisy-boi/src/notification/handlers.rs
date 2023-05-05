@@ -23,19 +23,23 @@ impl From<&Sort> for Order {
 #[derive(Clone, Debug, Deserialize, IntoParams)]
 #[serde(rename_all = "camelCase")]
 pub struct GetNotificationQuery {
-    cursor: Option<u64>,
+    page: Option<u64>,
     page_size: Option<u64>,
     #[param(inline)]
     sort: Option<Sort>,
 }
 
 impl GetNotificationQuery {
-    pub fn get_cursor(&self) -> u64 {
-        self.cursor.unwrap_or_default() + self.get_page_size()
+    pub fn get_page(&self) -> u64 {
+        self.page.unwrap_or_default()
     }
 
     pub fn get_page_size(&self) -> u64 {
         self.page_size.unwrap_or(10)
+    }
+
+    pub fn get_offset(&self) -> u64 {
+        self.get_page() * self.get_page_size()
     }
 
     pub fn get_sort(&self) -> Order {
@@ -65,7 +69,7 @@ pub async fn get_notifications(
     let repo = &app_state.get_notification_repo;
     let query = query.into_inner();
     let data = repo.exec(user_id, &query).await?;
-    let res = PaginationRes::new(query.get_cursor(), data, query.get_page_size());
+    let res = PaginationRes::new(query.get_page(), data, query.get_page_size());
     Ok(web::Json(res))
 }
 
