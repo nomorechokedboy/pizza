@@ -63,8 +63,9 @@ func ReactToEntity(c *fiber.Ctx) error {
 		}
 	}
 
-	if req.ReactableType == "posts" && notiferID != nil {
-		notificationRequest := notificationEntities.NotificationRequest{ActorID: reaction.UserID,
+	if req.ReactableType == "posts" && notiferID != nil && *notiferID != UserID {
+		notificationRequest := notificationEntities.NotificationRequest{
+			ActorID:    reaction.UserID,
 			ActionType: "reacted to your post",
 			EntityData: *entityData,
 			EntityID:   reaction.ReactableID,
@@ -103,21 +104,45 @@ func DropEntityReaction(c *fiber.Ctx) error {
 	}
 
 	db := c.Locals("db").(*gorm.DB)
+	notifyRepo := c.Locals("notifyRepository").(notification.NotifyRepository)
 	userSvc := c.Locals("userService").(usecase.UserUsecase)
 	user, err := userSvc.GetUserById(UserID)
 	if err != nil {
 		return fiber.NewError(fiber.StatusConflict, "User does not exist")
 	}
 
-	reaction := entities.Reaction{UserID: UserID, User: *user, ReactableID: req.ReactableID, ReactableType: req.ReactableType}
+	reaction := entities.Reaction{UserID: UserID,
+		User:          *user,
+		ReactableID:   req.ReactableID,
+		ReactableType: req.ReactableType,
+	}
 	res := db.
-		Debug().
 		Delete(&reaction)
 	if res.Error != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "Internal error")
 	}
 	if res.RowsAffected == 0 {
 		return fiber.NewError(fiber.StatusNotFound, "Not found")
+	}
+
+	var notiferID *uint
+	if req.ReactableType == "posts" {
+		post := entities.Post{ID: req.ReactableID}
+		if err := db.First(&post).Error; err != nil {
+			return fiber.NewError(fiber.StatusUnprocessableEntity, "Reacted entity does not exist")
+		}
+		notiferID = &post.UserID
+	}
+
+	if req.ReactableType == "posts" && notiferID != nil && *notiferID != UserID {
+		notificationRequest := notificationEntities.NotificationRequest{
+			ActorID:    reaction.UserID,
+			ActionType: "reacted to your post",
+			EntityID:   reaction.ReactableID,
+			EntityType: "post",
+			NotifierID: *notiferID,
+		}
+		go notifyRepo.DeleteNotification(notificationRequest)
 	}
 
 	return c.JSON(reaction)

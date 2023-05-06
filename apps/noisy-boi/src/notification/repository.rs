@@ -183,16 +183,9 @@ impl GetNotificationRepository {
                 .equals((actor_alias, UserIden::Id)),
             )
             .cond_where(
-                Expr::col((NotificationIden::Table, NotificationIden::NotifierId))
-                    .eq(user_id)
-                    .and(
-                        Expr::col((
-                            NotificationObjectDBIden::Table,
-                            NotificationObjectDBIden::Id,
-                        ))
-                        .lte(query.get_cursor()),
-                    ),
+                Expr::col((NotificationIden::Table, NotificationIden::NotifierId)).eq(user_id),
             )
+            .offset(query.get_offset())
             .limit(query.get_page_size())
             .order_by(
                 (
