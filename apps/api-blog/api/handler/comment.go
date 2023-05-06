@@ -129,8 +129,9 @@ func (handler *CommentHandler) CreateComment(c *fiber.Ctx) error {
 		log.Println("REDIS ERR: ", err)
 	}
 
+	isOwner := authID == comment.Post.UserID
 	notifyRepo := c.Locals("notifyRepository").(notification.NotifyRepository)
-	if req.ParentID == nil {
+	if req.ParentID == nil && !isOwner {
 		notificationRequest := notificationEntities.NotificationRequest{
 			ActionType: "commented on your post",
 			ActorID:    authID,
@@ -196,15 +197,27 @@ func (handler *CommentHandler) UpdateComment(c *fiber.Ctx) error {
 // @Router /comments/{id} [delete]
 func (handler *CommentHandler) DeleteComment(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
-
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid comment ID")
 	}
 
 	comment, err := handler.usecase.DeleteComment(uint(id))
-
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to delete specfied comment")
+	}
+
+	notifyRepo := c.Locals("notifyRepository").(notification.NotifyRepository)
+	isOwner := comment.UserID == comment.Post.UserID
+	if !isOwner {
+		req := notificationEntities.NotificationRequest{
+			ActorID:    comment.UserID,
+			ActionType: "commented on your post",
+			EntityData: comment.Content,
+			EntityType: "comment",
+			EntityID:   comment.ID,
+			NotifierID: comment.Post.UserID,
+		}
+		go notifyRepo.DeleteNotification(req)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(comment)
