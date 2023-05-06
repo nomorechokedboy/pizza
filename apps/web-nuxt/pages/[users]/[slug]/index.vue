@@ -167,9 +167,15 @@ useSeoMeta({
 					class="bg-white border border-neutral-200"
 				>
 					<nuxt-img
+						class="md:h-80 md:w-full"
 						v-if="postDetails?.image"
 						sizes="sm:100vw md:680px, 806px"
+						height="160"
+						:alt="`${postDetails.title} image`"
 						:src="postDetails.image"
+						:modifiers="{
+							default: '/image_not_available.png'
+						}"
 					/>
 					<section
 						class="flex flex-col gap-3 p-4"

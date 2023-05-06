@@ -46,6 +46,7 @@
 	},
 	"dependencies": {
 		"@codemirror/lang-markdown": "^6.1.0",
+		"@microsoft/fetch-event-source": "^2.0.1",
 		"@replit/codemirror-emacs": "^6.0.1",
 		"@replit/codemirror-vim": "^6.0.11",
 		"@resvg/resvg-js": "^2.4.1",

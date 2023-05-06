@@ -1,11 +1,17 @@
 <script setup lang="ts">
+import { fetchEventSource } from '@microsoft/fetch-event-source'
 import { ActionIcon, Button } from 'ui-vue'
-import { dicebearMedia } from '~/constants'
+import { dicebearMedia, notifyUrl } from '~/constants'
+import IconBell from '~icons/ph/bell-simple'
 import Avatar from './Avatar.vue'
 import Dropdown from './Dropdown.vue'
 
 function handleToggle() {
 	toggle.value = !toggle.value
+}
+
+function handleCleanupSSE() {
+	eventSource.value?.close()
 }
 
 const token = useAuthToken()
@@ -20,27 +26,40 @@ const userAvatar = computed(
 		userProfile.value?.avatar ||
 		`${dicebearMedia}${userProfile.value.name}`
 )
-watchEffect(() => {
-	if (isLoggedIn.value) {
-		$blogApi.auth.authMeGet().then(({ data }) => {
-			if (data) {
-				const {
-					avatar,
-					username,
-					id,
-					email,
-					fullname
-				} = data
-				setUserProfile({
-					name: fullname,
-					email,
-					id,
-					username,
-					avatar
-				})
+const isSSEConnected = ref(false)
+watchEffect((onStop) => {
+	if (!isLoggedIn.value) {
+		return
+	}
+
+	$blogApi.auth.authMeGet().then(({ data }) => {
+		if (data) {
+			const { avatar, username, id, email, fullname } = data
+			setUserProfile({
+				name: fullname,
+				email,
+				id,
+				username,
+				avatar
+			})
+		}
+	})
+
+	if (process.client && userProfile.value.id && !isSSEConnected.value) {
+		fetchEventSource(`${notifyUrl}/${userProfile.value.id}`, {
+			headers: {
+				Authorization: `Bearer ${token.value.accessToken}`
+			},
+			onmessage: (ev: unknown) => {
+				console.log(ev)
+			},
+			onopen: async () => {
+				isSSEConnected.value = true
 			}
 		})
 	}
+
+	onStop(handleCleanupSSE)
 })
 </script>
 
@@ -68,7 +87,7 @@ watchEffect(() => {
 						>Create Post</Button
 					>
 				</NuxtLink>
-				<!-- <ActionIcon
+				<ActionIcon
 					color="indigo"
 					class="group"
 					size="lg"
@@ -80,7 +99,7 @@ watchEffect(() => {
 					>
 						<IconBell />
 					</span>
-				</ActionIcon> -->
+				</ActionIcon>
 				<div
 					class="relative inline-block"
 					v-if="isLoggedIn"
