@@ -13,14 +13,13 @@ const loadingClass = { skeleton: loading }
 
 <template>
 	<div class="flex flex-row gap-2">
-		<div>
+		<div :class="{ 'h-8': loading }">
 			<div class="skeleton" v-if="loading">
 				<div class="w-8 h-8" />
 			</div>
-			<nuxt-img
+			<Avatar
 				v-else
 				:alt="alt"
-				class="rounded-full"
 				:src="src"
 				width="32"
 				height="32"

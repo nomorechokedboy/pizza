@@ -17,11 +17,7 @@ import { Configuration } from './configuration'
 // @ts-ignore
 import globalAxios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 
-export const BASE_PATH =
-	'https://noisy-boi-dev-nomorechokedboy.cloud.okteto.net/api/v1'.replace(
-		/\/+$/,
-		''
-	)
+export const BASE_PATH = '/api/v1'.replace(/\/+$/, '')
 
 /**
  *
