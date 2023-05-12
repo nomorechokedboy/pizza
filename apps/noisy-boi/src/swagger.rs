@@ -20,7 +20,8 @@ use utoipa::{
     paths(
         crate::misc::health_check,
         crate::notification::handlers::get_notifications,
-        crate::notification::handlers::notify
+        crate::notification::handlers::notify,
+        crate::notification::handlers::read_at
     ),
     modifiers(&SecurityAddon),
     components(

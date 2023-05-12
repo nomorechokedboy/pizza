@@ -1,6 +1,6 @@
-use super::entities::notification_object::NotificationObject;
+use super::entities::{notification::Notification, notification_object::NotificationObject};
 use crate::common::{app_state::AppState, auth_guard::AuthGuard, PaginationRes};
-use actix_web::{get, web, Responder, Result};
+use actix_web::{get, put, web, Responder, Result};
 use sea_query::Order;
 use serde::Deserialize;
 use utoipa::{IntoParams, ToSchema};
@@ -89,4 +89,25 @@ pub async fn notify(
 ) -> impl Responder {
     let broadcaster = &app_state.sse_broadcaster;
     broadcaster.new_client(user_id).await
+}
+
+#[utoipa::path(
+    responses(
+        (status = 200, description = "OK", body = Notification),
+        (status = 500, description = "Internal error", body = String)
+    ),
+    tag = "Notification",
+    security(
+        ("bearer" = [])
+    )
+)]
+#[put("/{notification_object_id}/read_at")]
+pub async fn read_at(
+    app_state: web::Data<AppState>,
+    notification_id: web::Path<i64>,
+    _: AuthGuard,
+) -> Result<web::Json<Notification>> {
+    let notification_id = notification_id.into_inner();
+    let repo = &app_state.get_notification_repo;
+    repo.exec_read_at(notification_id).await.map(web::Json)
 }
