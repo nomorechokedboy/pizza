@@ -11,6 +11,7 @@ const formData = reactive({
 const loading = ref(false)
 const { $blogApi } = useNuxtApp()
 const token = useAuthToken()
+const refreshToken = useRefreshToken()
 function formDataRules() {
 	return {
 		identifier: {
@@ -46,8 +47,8 @@ async function handleLogin() {
 			identifier: formData.identifier
 		})
 
-		token.value.refreshToken = tokenData.refresh_token
-		token.value.accessToken = tokenData.token
+		refreshToken.value = tokenData.refresh_token
+		token.value = tokenData.token
 		notify({
 			content: 'Login success',
 			type: 'success',
