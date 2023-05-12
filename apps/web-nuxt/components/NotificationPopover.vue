@@ -1,19 +1,10 @@
 <script setup lang="ts">
-import { useInfiniteQuery } from '@tanstack/vue-query'
 import { onClickOutside } from '@vueuse/core'
 import { ActionIcon, Button } from 'ui-vue'
 import IconBell from '~icons/ph/bell-simple'
 
-const PAGE_SIZE = 10
-
 function handleToggle() {
 	toggle.value = !toggle.value
-}
-
-async function fetchNotifications({ pageParam = 0 }) {
-	return $blogApi.notification
-		.getNotifications(pageParam, PAGE_SIZE)
-		.then((res) => res.data)
 }
 
 const toggle = ref(false)
@@ -28,14 +19,7 @@ const {
 	fetchNextPage,
 	hasNextPage,
 	refetch
-} = useInfiniteQuery({
-	queryKey: ['notifications'],
-	queryFn: fetchNotifications,
-	getNextPageParam: (lastPage) =>
-		lastPage.page && lastPage.data.length === PAGE_SIZE
-			? lastPage.page + 1
-			: undefined
-})
+} = useNotificationPagination()
 const unread = computed(() => {
 	let count = 0
 	if (!notifications.value) {
@@ -58,6 +42,9 @@ const isLoggedIn = computed(() => !!token.value)
 const notificationEventSource = useNotificationEventSource()
 
 onClickOutside(target, () => (toggle.value = false))
+watchEffect(() => {
+	console.log({ hasNextPage: hasNextPage?.value })
+})
 watchEffect((onStop) => {
 	if (
 		!isLoggedIn.value ||
@@ -166,6 +153,7 @@ watchEffect((onStop) => {
 									userProfile?.id
 							)?.readAt
 						"
+						:id="notification.id"
 					/>
 				</template>
 			</template>
@@ -176,6 +164,7 @@ watchEffect((onStop) => {
 					isLoading
 				"
 				v-for="n in 3"
+				:id="n"
 				actionType=""
 				createdAt=""
 				:loading="true"
