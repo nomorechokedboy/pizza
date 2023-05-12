@@ -5,7 +5,7 @@ import { Button } from 'ui-vue'
 import TextInput from '~~/components/TextInput.vue'
 
 definePageMeta({
-	middleware: ['authn', 'reset-password-guard']
+	middleware: ['redirect', 'reset-password-guard']
 })
 
 const { $blogApi } = useNuxtApp()
