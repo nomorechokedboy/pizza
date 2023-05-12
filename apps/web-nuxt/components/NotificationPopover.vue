@@ -17,7 +17,7 @@ async function fetchNotifications({ pageParam = 1 }) {
 }
 
 const toggle = ref(false)
-const userProfile = useUserProfile()
+const { data: userProfile } = useUserProfile()
 const target = ref<HTMLDivElement | null>(null)
 const { $blogApi } = useNuxtApp()
 const {
@@ -114,7 +114,7 @@ onClickOutside(target, () => (toggle.value = false))
 									n
 										.notifier
 										.id ===
-									userProfile.id
+									userProfile?.id
 							)?.readAt
 						"
 					/>

@@ -2,13 +2,13 @@ import { dicebearMedia } from '~~/constants'
 import { useUserProfile } from './useUserProfile'
 
 export function useAvatarFallback(fallbackName = 'A6blog') {
-	const userProfile = useUserProfile()
+	const { data: userProfile } = useUserProfile()
 
 	return computed(
 		() =>
-			userProfile.value.avatar ||
+			userProfile.value?.avatar ||
 			`${dicebearMedia}${
-				userProfile.value.name || fallbackName
+				userProfile.value?.name || fallbackName
 			}`
 	)
 }

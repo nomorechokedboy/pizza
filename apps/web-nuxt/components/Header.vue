@@ -7,16 +7,6 @@ const refreshToken = useRefreshToken()
 const isLoggedIn = computed(() => !!token.value)
 const { $blogApi } = useNuxtApp()
 const notificationEventSource = useNotificationEventSource()
-const toggle = ref(false)
-const { data: userProfile } = useUserProfile()
-const userAvatar = computed(
-	() =>
-		userProfile.value?.avatar ||
-		`${config.public.dicebearMedia}${
-			userProfile.value?.name ||
-			'A6Blog&backgroundColor=000000'
-		}`
-)
 
 watchEffect((onStop) => {
 	if (

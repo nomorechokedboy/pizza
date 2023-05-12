@@ -10,13 +10,6 @@ export function useAuthToken() {
 	})
 }
 
-export function onRefreshToken(resp: AxiosResponse<EntitiesAuth, any>) {
-	const token = useAuthToken()
-	const refreshToken = useRefreshToken()
-	token.value = undefined
-	refreshToken.value = undefined
-}
-
 export function useRefreshToken() {
 	const config = useRuntimeConfig()
 	return useCookie<string | undefined>('refreshToken', {
@@ -34,6 +27,14 @@ export function onRefreshToken(resp: AxiosResponse<EntitiesAuth, any>) {
 	token.value = resp.data.token
 }
 
+export function removeToken() {
+	const token = useAuthToken()
+	const refreshToken = useRefreshToken()
+
+	refreshToken.value = undefined
+	token.value = undefined
+}
+
 export function onRefreshTokenError() {
 	removeToken()
 	cleanupNotificationEventSource()
@@ -46,8 +47,10 @@ export function onRefreshTokenError() {
 
 export function useIsAuthenticated() {
 	const token = useAuthToken()
+	const refreshToken = useRefreshToken()
+
 	function computeIsAuthenticated() {
-		return token.value.accessToken && token.value.refreshToken
+		return token.value && refreshToken.value
 	}
 
 	return computed(computeIsAuthenticated)

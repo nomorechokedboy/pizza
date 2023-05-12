@@ -13,12 +13,12 @@ function handleToggle() {
 	toggle.value = !toggle.value
 }
 
-const userProfile = useUserProfile()
+const { data: userProfile } = useUserProfile()
 const toggle = ref(false)
 const userAvatar = computed(
 	() =>
 		userProfile.value?.avatar ||
-		`${dicebearMedia}${userProfile.value.name}`
+		`${dicebearMedia}${userProfile.value?.name}`
 )
 const target = ref<HTMLDivElement | null>(null)
 onClickOutside(target, () => (toggle.value = false))
@@ -43,13 +43,13 @@ onClickOutside(target, () => (toggle.value = false))
 					<div>
 						<span class="fw-medium block">
 							{{
-								userProfile.name ||
+								userProfile?.name ||
 								'Oof'
 							}}
 						</span>
 						<small class="text-gray-400"
 							>@{{
-								userProfile.username ||
+								userProfile?.username ||
 								'Oof'
 							}}
 						</small>
