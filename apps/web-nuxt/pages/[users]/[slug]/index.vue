@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { Button } from 'ui-vue'
-import { dicebearMedia } from '~~/constants'
 
 function computePostedOn() {
 	return `${
@@ -40,6 +39,7 @@ async function handleDeletePost() {
 	}
 }
 
+const appConfig = useRuntimeConfig()
 const route = useRoute()
 // const tags = ['tag1', 'tag2']
 let slug: string = ''
@@ -195,7 +195,7 @@ provide('slug', slug)
 										postDetails
 											?.user
 											?.avatar ||
-										`${dicebearMedia}${postDetails?.user?.fullName}`
+										`${appConfig.public.dicebearMedia}${postDetails?.user?.fullName}`
 									"
 									:title="
 										postDetails

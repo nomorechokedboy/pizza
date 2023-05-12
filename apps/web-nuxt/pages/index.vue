@@ -3,7 +3,6 @@ import { useInfiniteQuery } from '@tanstack/vue-query'
 import { useElementVisibility } from '@vueuse/core'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { dicebearMedia } from '~~/constants'
 
 dayjs.extend(relativeTime)
 
@@ -18,6 +17,7 @@ async function fetchPosts({ pageParam: page = 1 }) {
 		.then((resp) => resp.data)
 }
 
+const appConfig = useRuntimeConfig()
 const pageSize = 50
 const { $blogApi } = useNuxtApp()
 const headerNav: HeaderNav[] = [
@@ -121,7 +121,7 @@ useSeoMeta({
 							:owner="{
 								src:
 									user?.avatar ||
-									`${dicebearMedia}${user?.fullName}`,
+									`${appConfig.public.dicebearMedia}${user?.fullName}`,
 								name:
 									user?.fullName ||
 									'User name',

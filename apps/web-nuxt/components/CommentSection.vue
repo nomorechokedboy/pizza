@@ -2,10 +2,10 @@
 import { useElementVisibility } from '@vueuse/core'
 import { ActionIcon, Button } from 'ui-vue'
 import { EntitiesComment } from '~/codegen/api'
-import { dicebearMedia } from '~/constants'
 import ChevronIcon from '~icons/mdi/chevron-up-down'
 import { CommentProps } from './Comment.vue'
 
+const appConfig = useRuntimeConfig()
 const { $blogApi } = useNuxtApp()
 const { data: userProfile } = useUserProfile()
 const isAuth = useIsAuthenticated()
@@ -40,7 +40,7 @@ const targetIsVisible = useElementVisibility(target)
 function computeUserAvatar() {
 	return (
 		userProfile.value?.avatar ||
-		`${dicebearMedia}${
+		`${appConfig.public.dicebearMedia}${
 			userProfile.value?.name ||
 			'A6Blog&backgroundColor=000000'
 		}`
@@ -69,7 +69,7 @@ function commentToProps({
 			name: user?.fullName || 'Error no fullName',
 			avatarUrl:
 				!user?.avatar || user.avatar === ''
-					? `${dicebearMedia}${
+					? `${appConfig.public.dicebearMedia}${
 							user?.fullName ||
 							'A6Blog'
 					  }`

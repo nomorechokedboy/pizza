@@ -1,13 +1,13 @@
-import { dicebearMedia } from '~~/constants'
 import { useUserProfile } from './useUserProfile'
 
 export function useAvatarFallback(fallbackName = 'A6blog') {
+	const appConfig = useRuntimeConfig()
 	const { data: userProfile } = useUserProfile()
 
 	return computed(
 		() =>
 			userProfile.value?.avatar ||
-			`${dicebearMedia}${
+			`${appConfig.public.dicebearMedia}${
 				userProfile.value?.name || fallbackName
 			}`
 	)
