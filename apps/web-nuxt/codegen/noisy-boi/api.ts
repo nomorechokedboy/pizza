@@ -22,6 +22,7 @@ import { Configuration } from './configuration'
 // @ts-ignore
 import {
 	DUMMY_BASE_URL,
+	assertParamExists,
 	createRequestFunction,
 	setBearerAuthToObject,
 	setSearchParams,
@@ -482,6 +483,70 @@ export const NotificationApiAxiosParamCreator = function (
 				url: toPathString(localVarUrlObj),
 				options: localVarRequestOptions
 			}
+		},
+		/**
+		 *
+		 * @param {number} notificationObjectId
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		readAt: async (
+			notificationObjectId: number,
+			options: AxiosRequestConfig = {}
+		): Promise<RequestArgs> => {
+			// verify required parameter 'notificationObjectId' is not null or undefined
+			assertParamExists(
+				'readAt',
+				'notificationObjectId',
+				notificationObjectId
+			)
+			const localVarPath =
+				`/{notification_object_id}/read_at`.replace(
+					`{${'notification_object_id'}}`,
+					encodeURIComponent(
+						String(notificationObjectId)
+					)
+				)
+			// use dummy base URL string because the URL constructor only accepts absolute URLs.
+			const localVarUrlObj = new URL(
+				localVarPath,
+				DUMMY_BASE_URL
+			)
+			let baseOptions
+			if (configuration) {
+				baseOptions = configuration.baseOptions
+			}
+
+			const localVarRequestOptions = {
+				method: 'PUT',
+				...baseOptions,
+				...options
+			}
+			const localVarHeaderParameter = {} as any
+			const localVarQueryParameter = {} as any
+
+			// authentication bearer required
+			// http bearer authentication required
+			await setBearerAuthToObject(
+				localVarHeaderParameter,
+				configuration
+			)
+
+			setSearchParams(localVarUrlObj, localVarQueryParameter)
+			let headersFromBaseOptions =
+				baseOptions && baseOptions.headers
+					? baseOptions.headers
+					: {}
+			localVarRequestOptions.headers = {
+				...localVarHeaderParameter,
+				...headersFromBaseOptions,
+				...options.headers
+			}
+
+			return {
+				url: toPathString(localVarUrlObj),
+				options: localVarRequestOptions
+			}
 		}
 	}
 }
@@ -548,6 +613,33 @@ export const NotificationApiFp = function (configuration?: Configuration) {
 				BASE_PATH,
 				configuration
 			)
+		},
+		/**
+		 *
+		 * @param {number} notificationObjectId
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		async readAt(
+			notificationObjectId: number,
+			options?: AxiosRequestConfig
+		): Promise<
+			(
+				axios?: AxiosInstance,
+				basePath?: string
+			) => AxiosPromise<Notification>
+		> {
+			const localVarAxiosArgs =
+				await localVarAxiosParamCreator.readAt(
+					notificationObjectId,
+					options
+				)
+			return createRequestFunction(
+				localVarAxiosArgs,
+				globalAxios,
+				BASE_PATH,
+				configuration
+			)
 		}
 	}
 }
@@ -590,6 +682,20 @@ export const NotificationApiFactory = function (
 			return localVarFp
 				.notify(options)
 				.then((request) => request(axios, basePath))
+		},
+		/**
+		 *
+		 * @param {number} notificationObjectId
+		 * @param {*} [options] Override http request option.
+		 * @throws {RequiredError}
+		 */
+		readAt(
+			notificationObjectId: number,
+			options?: any
+		): AxiosPromise<Notification> {
+			return localVarFp
+				.readAt(notificationObjectId, options)
+				.then((request) => request(axios, basePath))
 		}
 	}
 }
@@ -630,6 +736,22 @@ export class NotificationApi extends BaseAPI {
 	public notify(options?: AxiosRequestConfig) {
 		return NotificationApiFp(this.configuration)
 			.notify(options)
+			.then((request) => request(this.axios, this.basePath))
+	}
+
+	/**
+	 *
+	 * @param {number} notificationObjectId
+	 * @param {*} [options] Override http request option.
+	 * @throws {RequiredError}
+	 * @memberof NotificationApi
+	 */
+	public readAt(
+		notificationObjectId: number,
+		options?: AxiosRequestConfig
+	) {
+		return NotificationApiFp(this.configuration)
+			.readAt(notificationObjectId, options)
 			.then((request) => request(this.axios, this.basePath))
 	}
 }
