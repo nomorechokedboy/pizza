@@ -1,55 +1,8 @@
 <script setup lang="ts">
 import { Button } from 'ui-vue'
 
-const config = useRuntimeConfig()
 const token = useAuthToken()
-const refreshToken = useRefreshToken()
 const isLoggedIn = computed(() => !!token.value)
-const { $blogApi } = useNuxtApp()
-const notificationEventSource = useNotificationEventSource()
-
-watchEffect((onStop) => {
-	if (
-		!isLoggedIn.value ||
-		notificationEventSource.value ||
-		!process.client
-	) {
-		return
-	}
-
-	notificationEventSource.value = new EventSource(
-		config.public.notifyUrl,
-		{ withCredentials: true }
-	)
-	notificationEventSource.value?.addEventListener('notification', (e) => {
-		console.debug(e.data)
-	})
-	notificationEventSource.value.onerror = () => {
-		if (!token.value || !refreshToken.value) {
-			cleanupNotificationEventSource()
-			return
-		}
-
-		try {
-			const isExpired = isTokenExpired(token.value)
-			if (isExpired) {
-				$blogApi.auth
-					.authRefreshTokenPost({
-						refresh_token:
-							refreshToken.value
-					})
-					.then((resp) => {
-						onRefreshToken(resp)
-					})
-					.catch(cleanupNotificationEventSource)
-			}
-		} catch (err) {
-			console.error({ err })
-		}
-	}
-
-	onStop(cleanupNotificationEventSource)
-})
 </script>
 
 <template>

@@ -10,7 +10,7 @@ function handleToggle() {
 	toggle.value = !toggle.value
 }
 
-async function fetchNotifications({ pageParam = 1 }) {
+async function fetchNotifications({ pageParam = 0 }) {
 	return $blogApi.notification
 		.getNotifications(pageParam, PAGE_SIZE)
 		.then((res) => res.data)
@@ -26,7 +26,8 @@ const {
 	isFetchingNextPage,
 	isLoading,
 	fetchNextPage,
-	hasNextPage
+	hasNextPage,
+	refetch
 } = useInfiniteQuery({
 	queryKey: ['notifications'],
 	queryFn: fetchNotifications,
@@ -50,8 +51,56 @@ const unread = computed(() => {
 
 	return count
 })
+const config = useRuntimeConfig()
+const token = useAuthToken()
+const refreshToken = useRefreshToken()
+const isLoggedIn = computed(() => !!token.value)
+const notificationEventSource = useNotificationEventSource()
 
 onClickOutside(target, () => (toggle.value = false))
+watchEffect((onStop) => {
+	if (
+		!isLoggedIn.value ||
+		notificationEventSource.value ||
+		!process.client
+	) {
+		return
+	}
+
+	notificationEventSource.value = new EventSource(
+		config.public.notifyUrl,
+		{ withCredentials: true }
+	)
+	notificationEventSource.value?.addEventListener('notification', (e) => {
+		console.debug(e.data)
+		refetch()
+	})
+	notificationEventSource.value.onerror = () => {
+		if (!token.value || !refreshToken.value) {
+			cleanupNotificationEventSource()
+			return
+		}
+
+		try {
+			const isExpired = isTokenExpired(token.value)
+			if (isExpired) {
+				$blogApi.auth
+					.authRefreshTokenPost({
+						refresh_token:
+							refreshToken.value
+					})
+					.then((resp) => {
+						onRefreshToken(resp)
+					})
+					.catch(cleanupNotificationEventSource)
+			}
+		} catch (err) {
+			console.error({ err })
+		}
+	}
+
+	onStop(cleanupNotificationEventSource)
+})
 </script>
 
 <template>
