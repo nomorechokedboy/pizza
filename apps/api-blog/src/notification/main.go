@@ -1,7 +1,8 @@
 package notification
 
 import (
-	"api-blog/src/notification/entities"
+	"api-blog/pkg/entities"
+	notificationEntities "api-blog/src/notification/entities"
 	"context"
 	"encoding/json"
 	"log"
@@ -21,8 +22,8 @@ func NewNotifyRepository(db *gorm.DB, rdb *redis.Client) *NotifyRepository {
 	return &NotifyRepository{db: db, rdb: rdb}
 }
 
-func (n *NotifyRepository) Notify(req entities.NotificationRequest) {
-	notificationObject := entities.NotificationObject{
+func (n *NotifyRepository) Notify(req notificationEntities.NotificationRequest) {
+	notificationObject := notificationEntities.NotificationObject{
 		EntityID:   req.EntityID,
 		EntityType: req.EntityType,
 		ActionType: req.ActionType,
@@ -32,12 +33,13 @@ func (n *NotifyRepository) Notify(req entities.NotificationRequest) {
 		log.Println("Error happen sometimes lol", err)
 	}
 
-	notification := entities.Notification{
+	notification := notificationEntities.Notification{
 		NotifierID:           req.NotifierID,
 		NotificationObjectID: notificationObject.ID,
+		Notifier:             entities.User{Id: req.NotifierID},
 	}
 
-	notificationChange := entities.NotificationChange{
+	notificationChange := notificationEntities.NotificationChange{
 		NotificationObjectID: notificationObject.ID,
 		ActorID:              req.ActorID,
 	}
@@ -59,9 +61,12 @@ func (n *NotifyRepository) Notify(req entities.NotificationRequest) {
 		log.Println(err)
 	}
 
-	notificationObject.Notifications = []entities.Notification{notification}
+	notificationObject.Notifications = []notificationEntities.Notification{notification}
 	notificationObject.NotificationChange = notificationChange
-	notificationPayload := entities.NotificationObjectPayload{NotificationObject: notificationObject, EntityData: req.EntityData}
+	notificationPayload := notificationEntities.NotificationObjectPayload{
+		NotificationObject: notificationObject,
+		EntityData:         req.EntityData,
+	}
 
 	ctx := context.Background()
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
@@ -78,8 +83,8 @@ func (n *NotifyRepository) Notify(req entities.NotificationRequest) {
 	}
 }
 
-func (n *NotifyRepository) DeleteNotification(req entities.NotificationRequest) {
-	notificationObject := entities.NotificationObject{
+func (n *NotifyRepository) DeleteNotification(req notificationEntities.NotificationRequest) {
+	notificationObject := notificationEntities.NotificationObject{
 		EntityID:   req.EntityID,
 		EntityType: req.EntityType,
 		ActionType: req.ActionType,
@@ -97,13 +102,13 @@ func (n *NotifyRepository) DeleteNotification(req entities.NotificationRequest) 
 			if err := tx.
 				Where("notification_object_id = ?", notificationObject.ID).
 				Where("notifier_id = ?", req.NotifierID).
-				Delete(&entities.Notification{}).Error; err != nil {
+				Delete(&notificationEntities.Notification{}).Error; err != nil {
 				return err
 			}
 			if err := tx.
 				Where("notification_object_id = ?", notificationObject.ID).
 				Where("actor_id = ?", req.ActorID).
-				Delete(&entities.NotificationChange{}).Error; err != nil {
+				Delete(&notificationEntities.NotificationChange{}).Error; err != nil {
 				return err
 			}
 			if err := tx.
