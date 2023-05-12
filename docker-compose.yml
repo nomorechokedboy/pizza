@@ -52,6 +52,8 @@ services:
                         - AUDIO_LINK=${AUDIO_LINK}
                         - ENV=prod
                         - REDIS_URI=redis:6379
+                        - EMAIL=$BLOG_EMAIL
+                        - EMAIL_PASSWORD=$BLOG_EMAIL_PASSWORD
                 ports:
                         - '8080:8080'
                 healthcheck:
