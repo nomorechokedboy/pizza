@@ -199,7 +199,7 @@ func (handler *UserHandler) sendMail(reqEmail *UserEmailReq, user *entities.User
 		"smtp.gmail.com",
 	)
 	var emailReponse entities.ResponseEmail
-	emailReponse.Link = handler.config.AppAPI.Link + "/forgot-password?token=" + accessToken
+	emailReponse.Link = handler.config.AppAPI.Link + "/reset-password?token=" + accessToken
 	emailReponse.Username = user.Username
 	emailReponse.Sender = "Blog team"
 	tmpl := template.Must(template.New("").Parse(templates.TemplateEmail))
