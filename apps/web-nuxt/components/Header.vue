@@ -1,46 +1,71 @@
 <script setup lang="ts">
-import { ActionIcon, Button } from 'ui-vue'
-import { dicebearMedia } from '~/constants'
-import Avatar from './Avatar.vue'
-import Dropdown from './Dropdown.vue'
+import { Button } from 'ui-vue'
 
-function handleToggle() {
-	toggle.value = !toggle.value
-}
-
+const config = useRuntimeConfig()
 const token = useAuthToken()
-const isLoggedIn = computed(
-	() => token.value.accessToken && token.value.refreshToken
-)
+const refreshToken = useRefreshToken()
+const isLoggedIn = computed(() => !!token.value)
 const { $blogApi } = useNuxtApp()
-const toggle = ref(false)
-const userProfile = useUserProfile()
-const userAvatar = computed(
-	() =>
-		userProfile.value?.avatar ||
-		`${dicebearMedia}${userProfile.value.name}`
-)
+const notificationEventSource = useNotificationEventSource()
 watchEffect(() => {
-	if (isLoggedIn.value) {
-		$blogApi.auth.authMeGet().then(({ data }) => {
-			if (data) {
-				const {
-					avatar,
-					username,
-					id,
-					email,
-					fullname
-				} = data
-				setUserProfile({
-					name: fullname,
-					email,
-					id,
-					username,
-					avatar
-				})
-			}
-		})
+	if (!isLoggedIn.value) {
+		return
 	}
+
+	$blogApi.auth.authMeGet().then(({ data }) => {
+		if (data) {
+			const { avatar, username, id, email, fullname } = data
+			setUserProfile({
+				name: fullname,
+				email,
+				id,
+				username,
+				avatar
+			})
+		}
+	})
+})
+watchEffect((onStop) => {
+	if (
+		!isLoggedIn.value ||
+		notificationEventSource.value ||
+		!process.client
+	) {
+		return
+	}
+
+	notificationEventSource.value = new EventSource(
+		config.public.notifyUrl,
+		{ withCredentials: true }
+	)
+	notificationEventSource.value?.addEventListener('notification', (e) => {
+		console.debug(e.data)
+	})
+	notificationEventSource.value.onerror = () => {
+		if (!token.value || !refreshToken.value) {
+			cleanupNotificationEventSource()
+			return
+		}
+
+		try {
+			const isExpired = isTokenExpired(token.value)
+			if (isExpired) {
+				$blogApi.auth
+					.authRefreshTokenPost({
+						refresh_token:
+							refreshToken.value
+					})
+					.then((resp) => {
+						onRefreshToken(resp)
+					})
+					.catch(cleanupNotificationEventSource)
+			}
+		} catch (err) {
+			console.error({ err })
+		}
+	}
+
+	onStop(cleanupNotificationEventSource)
 })
 </script>
 
@@ -49,7 +74,7 @@ watchEffect(() => {
 		<div
 			class="max-w-7xl w-full flex flex-row items-center justify-between px-2"
 		>
-			<div class="flex items-center gap-4 w-1/2">
+			<div class="flex items-center gap-4 lg:w-1/2">
 				<NuxtLink to="/">
 					<nuxt-img
 						alt="Accessiblog logo"
@@ -68,47 +93,8 @@ watchEffect(() => {
 						>Create Post</Button
 					>
 				</NuxtLink>
-				<!-- <ActionIcon
-					color="indigo"
-					class="group"
-					size="lg"
-					variant="subtle"
-					v-if="isLoggedIn"
-				>
-					<span
-						class="group-hover:text-indigo-500 text-black"
-					>
-						<IconBell />
-					</span>
-				</ActionIcon> -->
-				<div
-					class="relative inline-block"
-					v-if="isLoggedIn"
-				>
-					<ActionIcon
-						radius="xl"
-						size="lg"
-						variant="subtle"
-						@click="handleToggle"
-						class="focus:ring-4 focus:outline-none focus:ring-gray-300"
-					>
-						<Avatar
-							width="32"
-							:src="userAvatar"
-						/>
-					</ActionIcon>
-					<Dropdown
-						:open="toggle"
-						:user="{
-							name:
-								userProfile?.name ||
-								'No username',
-							username:
-								userProfile?.username ||
-								'No username'
-						}"
-					/>
-				</div>
+				<NotificationPopover v-if="isLoggedIn" />
+				<UserPopover v-if="isLoggedIn" />
 				<NuxtLink
 					v-if="!isLoggedIn"
 					class="hidden md:inline"

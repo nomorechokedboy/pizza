@@ -1,7 +1,7 @@
 use super::{
     entities::{
         comment::CommentIden,
-        notification::NotificationIden,
+        notification::{Notification, NotificationIden},
         notification_change::NotificationChangeIden,
         notification_object::{NotificationObject, NotificationObjectDB, NotificationObjectDBIden},
         post::PostIden,
@@ -10,7 +10,7 @@ use super::{
     handlers::GetNotificationQuery,
 };
 use crate::common::from_db_flatten::FromDBFlatten;
-use actix_web::error::ErrorInternalServerError;
+use actix_web::error::{ErrorConflict, ErrorInternalServerError};
 use sea_query::{Alias, Expr, JoinType, PostgresQueryBuilder, Query};
 use sea_query_binder::{SqlxBinder, SqlxValues};
 use sqlx::{Pool, Postgres};
@@ -225,5 +225,59 @@ impl GetNotificationRepository {
 
     pub fn new(conn: Pool<Postgres>) -> Self {
         Self { conn }
+    }
+
+    fn update_read_at_query(&self, notification_id: i64) -> (String, SqlxValues) {
+        let (update_query, values) = Query::update()
+            .table(NotificationIden::Table)
+            .values([(NotificationIden::ReadAt, Expr::current_timestamp().into())])
+            .and_where(
+                Expr::col(NotificationIden::Id)
+                    .eq(notification_id)
+                    .and(Expr::col(NotificationIden::ReadAt).is_null()),
+            )
+            .returning(Query::returning().columns([
+                NotificationIden::Id,
+                NotificationIden::ReadAt,
+                NotificationIden::NotifierId,
+                NotificationIden::NotificationObjectId,
+            ]))
+            .build_sqlx(PostgresQueryBuilder);
+        let sql = format!(
+            r#"
+                WITH updated_notification AS ({update_query})
+                SELECT 
+                users.id AS "users.id", users.avatar AS "users.avatar",
+                users.identifier AS "users.identifier", users.username AS "users.username",
+                users.fullname AS "users.fullname",
+                updated_notification.id, updated_notification.read_at
+                FROM updated_notification
+                INNER JOIN users
+                ON users.id = updated_notification.notifier_id;
+            "#
+        );
+        (sql, values)
+    }
+
+    pub async fn exec_read_at(
+        &self,
+        notification_id: i64,
+    ) -> Result<Notification, actix_web::Error> {
+        let conn = &self.conn;
+        let (sql, values) = self.update_read_at_query(notification_id);
+        let row = sqlx::query_with(&sql, values)
+            .fetch_optional(conn)
+            .await
+            .map_err(|e| {
+                error!("Error getting notification: {e}");
+                ErrorInternalServerError(e)
+            })?;
+        match row {
+            Some(row) => Notification::try_from(row).map_err(|e| {
+                error!("Error mapping notification: {e}");
+                ErrorInternalServerError(e)
+            }),
+            None => Err(ErrorConflict("Notification already read")),
+        }
     }
 }

@@ -9,7 +9,10 @@ use crate::{
     common::app_state::AppState,
     config::AppSettings,
     misc::{health_check, index},
-    notification::{handlers::get_notifications, repository::GetNotificationRepository},
+    notification::{
+        handlers::{get_notifications, read_at},
+        repository::GetNotificationRepository,
+    },
     redis_subscriber::subscriber_task,
     swagger::ApiDoc,
 };
@@ -74,7 +77,8 @@ async fn main() -> anyhow::Result<()> {
                 Scope::new("/api/v1")
                     .service(health_check)
                     .service(get_notifications)
-                    .service(notify),
+                    .service(notify)
+                    .service(read_at),
             )
             .service(index)
             .service(SwaggerUi::new("/docs/{_:.*}").url("/api-docs/openapi.json", openapi.clone()))

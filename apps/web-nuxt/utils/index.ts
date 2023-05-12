@@ -1,7 +1,9 @@
 import { AxiosError } from 'axios'
 import dayjs from 'dayjs'
+import jwtDecode, { JwtPayload } from 'jwt-decode'
 import { AlertProps } from '~~/components/Alert.vue'
 import { notify } from '~~/composables/useNotification'
+
 export * from './astToVue'
 export * from './rehypeFilter'
 export * from './storyFixture'
@@ -43,4 +45,11 @@ export function convertDate(d?: string): string {
 	}
 
 	return dayjs(date).format('MMM D')
+}
+
+export function isTokenExpired(token: string): boolean {
+	const { exp } = jwtDecode<JwtPayload>(token)
+	if (!exp) return false
+
+	return !(Date.now() >= exp * 1000)
 }

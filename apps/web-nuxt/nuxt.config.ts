@@ -73,6 +73,17 @@ export default defineNuxtConfig(async () => {
 		},
 		sitemap: {
 			siteUrl: 'https://pizza-web-nuxt.vercel.app'
+		},
+		runtimeConfig: {
+			public: {
+				tokenExpTime: 29 * 60 * 60 * 24,
+				apiUrl: 'https://api-blog-dev-nomorechokedboy.cloud.okteto.net',
+				mediaUrl: 'https://api-blog-dev-nomorechokedboy.cloud.okteto.net/api/v1/media/',
+				dicebearMedia:
+					'https://api.dicebear.com/6.x/initials/svg?seed=',
+				notificationUrl: 'http://localhost:5000',
+				notifyUrl: 'http://localhost:5000/api/v1/notify'
+			}
 		}
 	}
 

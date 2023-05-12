@@ -18,8 +18,10 @@ type Config struct {
 		Port string `env:"PORT" env-default:"8080"`
 	}
 	AuthConfig struct {
-		JWTRefreshToken string `env:"JWT_REFRESH_SECRET" env-default:"refresh-secret"`
-		JWTSecret       string `env:"JWT_SECRET" env-default:"token-secret"`
+		JWTRefreshToken     string `env:"JWT_REFRESH_SECRET" env-default:"refresh-secret"`
+		JWTSecret           string `env:"JWT_SECRET" env-default:"token-secret"`
+		TokenExpire         int    `env:"TOKEN_EXPIRE" env-default:"15"`
+		RefreshTokenExpires int    `env:"REFRESH_TOKEN_EXPIRE" env-default:"720"`
 	}
 	AuthEmail struct {
 		Email    string `env:"EMAIL"`
