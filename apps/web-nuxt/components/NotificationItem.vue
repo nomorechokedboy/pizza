@@ -34,7 +34,10 @@ const { refetch } = useNotificationPagination()
 <template>
 	<button
 		class="flex items-center gap-3 p-2 relative rounded-lg hover:bg-blue-50"
-		:class="{ 'bg-blue-50': readAt === null && loading == false }"
+		:class="{
+			'bg-blue-50': readAt === null && loading == false,
+			'pointer-events-none': readAt !== null
+		}"
 		@click="handleReadNotification"
 	>
 		<div :class="{ 'h-8': loading }">
