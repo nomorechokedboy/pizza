@@ -42,9 +42,6 @@ const isLoggedIn = computed(() => !!token.value)
 const notificationEventSource = useNotificationEventSource()
 
 onClickOutside(target, () => (toggle.value = false))
-watchEffect(() => {
-	console.log({ hasNextPage: hasNextPage?.value })
-})
 watchEffect((onStop) => {
 	if (
 		!isLoggedIn.value ||
