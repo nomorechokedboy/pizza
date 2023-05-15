@@ -170,7 +170,7 @@ impl GetNotificationRepository {
                 UserIden::Table,
                 notifier_alias.clone(),
                 Expr::col((NotificationIden::Table, NotificationIden::NotifierId))
-                    .equals((notifier_alias, UserIden::Id)),
+                    .equals((notifier_alias.clone(), UserIden::Id)),
             )
             .join_as(
                 JoinType::InnerJoin,
@@ -180,10 +180,15 @@ impl GetNotificationRepository {
                     NotificationChangeIden::Table,
                     NotificationChangeIden::ActorId,
                 ))
-                .equals((actor_alias, UserIden::Id)),
+                .equals((actor_alias.clone(), UserIden::Id)),
             )
             .cond_where(
-                Expr::col((NotificationIden::Table, NotificationIden::NotifierId)).eq(user_id),
+                Expr::col((NotificationIden::Table, NotificationIden::NotifierId))
+                    .eq(user_id)
+                    .and(
+                        Expr::col((actor_alias, UserIden::Id))
+                            .not_equals((notifier_alias, UserIden::Id)),
+                    ),
             )
             .offset(query.get_offset())
             .limit(query.get_page_size())
