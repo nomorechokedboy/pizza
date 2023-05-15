@@ -111,7 +111,7 @@ func (handler *CommentHandler) CreateComment(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to create new comment")
 	}
 
-	invalidateCache(handler.rdb, int(req.PostID))
+	go invalidateCommentCache(handler.rdb, int(req.PostID))
 
 	isOwner := authID == comment.Post.UserID
 	notifyRepo := c.Locals("notifyRepository").(notification.NotifyRepository)
@@ -163,7 +163,7 @@ func (handler *CommentHandler) UpdateComment(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to update specfied comment")
 	}
 
-	invalidateCache(handler.rdb, int(comment.PostID))
+	go invalidateCommentCache(handler.rdb, int(comment.PostID))
 
 	return c.Status(fiber.StatusOK).JSON(comment)
 }
@@ -204,18 +204,23 @@ func (handler *CommentHandler) DeleteComment(c *fiber.Ctx) error {
 		go notifyRepo.DeleteNotification(req)
 	}
 
-	invalidateCache(handler.rdb, int(comment.PostID))
+	go invalidateCommentCache(handler.rdb, int(comment.PostID))
 
 	return c.Status(fiber.StatusOK).JSON(comment)
 }
 
-func invalidateCache(rdb *redis.Client, postID int) {
+func invalidateCommentCache(rdb *redis.Client, postID int) {
+	key := fmt.Sprintf("comments-%d*", postID)
+	invalidateCache(rdb, key)
+}
+
+func invalidateCache(rdb *redis.Client, key string) {
 	ctx := context.Background()
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
 	pipe := rdb.Pipeline()
-	match := fmt.Sprintf("comments-%d*", postID)
+	match := fmt.Sprintf(key)
 	iter := rdb.Scan(ctx, 0, match, 0).Iterator()
 	for iter.Next(ctx) {
 		pipe.Del(ctx, iter.Val())
