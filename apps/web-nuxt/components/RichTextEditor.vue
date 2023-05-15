@@ -10,6 +10,7 @@ import UnderlineIcon from '~icons/mdi/format-underline'
 export interface RichTextEditorProps {
 	modelValue?: string
 	reversed?: boolean
+	placeholder?: string
 }
 
 /* function handleScroll(event: any) {
@@ -111,7 +112,7 @@ const icons = [
 						.value
 				)
 			"
-			placeholder="Post content here..."
+			:placeholder="placeholder"
 			ref="input"
 		/>
 	</div>

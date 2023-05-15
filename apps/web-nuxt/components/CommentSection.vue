@@ -31,7 +31,7 @@ const blankCommentProps: Omit<CommentProps, 'id'> = {
 	createdAt: '',
 	updated: false,
 	replies: [],
-	user: { avatarUrl: '', name: '' },
+	user: { avatarUrl: '', name: '', id: 1 },
 	content: ''
 }
 const target = ref(null)
@@ -66,6 +66,7 @@ function commentToProps({
 		id: id || 0,
 		content: content || 'Error: No content',
 		user: {
+			id: user?.id!,
 			name: user?.fullName || 'Error no fullName',
 			avatarUrl:
 				!user?.avatar || user.avatar === ''
@@ -165,12 +166,13 @@ watchEffect(() => {
 								v-model="
 									formData.content
 								"
+								placeholder="Your comment..."
 								reversed
 							/>
 						</main>
 					</div>
 					<div
-						class="flex items-center gap-3 justify-end"
+						class="flex items-center gap-3 justify-start"
 						v-if="isAuth"
 					>
 						<Button

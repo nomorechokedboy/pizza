@@ -9,6 +9,7 @@ export interface CommentProps {
 	user: {
 		name: string
 		avatarUrl: string
+		id: number
 	}
 	updated: boolean
 	like: number
@@ -19,6 +20,32 @@ export interface CommentProps {
 	id: number
 }
 
+function handleReply() {
+	replyMode.value = true
+}
+
+function handleDismiss() {
+	replyMode.value = false
+}
+
+function handlePreview() {
+	previewMode.value = !previewMode.value
+}
+
+async function handleSubmitReply(content: string) {
+	try {
+		await $blogApi.comment.commentsPost({
+			content,
+			parentId: id,
+			postId: postDetails.value?.id
+		})
+		handleDismiss()
+		await refetchComments()
+	} catch (e) {
+		console.error('Error submit reply: ', e)
+	}
+}
+
 const isAuth = useIsAuthenticated()
 const { $blogApi } = useNuxtApp()
 const { content, updated, like, replies, createdAt, id } =
@@ -26,12 +53,15 @@ const { content, updated, like, replies, createdAt, id } =
 const opened = ref(false)
 const target = ref<HTMLDivElement | null>(null)
 const editMode = ref(false)
+const replyMode = ref(false)
+const previewMode = ref(false)
 const isFormValid = computed(computeFormValidity)
 const formData = reactive({ content })
 const formLoading = ref(false)
 const slug = inject<string>('slug', 'no slug')
 const { data: postDetails } = usePostDetails(slug)
 const { refetch: refetchComments } = usePostComments()
+const { data: userProfile } = useUserProfile()
 
 function handleToggleDropdown() {
 	opened.value = !opened.value
@@ -48,6 +78,7 @@ function toEditMode() {
 function toReadonlyMode() {
 	editMode.value = false
 	opened.value = false
+	previewMode.value = false
 }
 
 async function handleSubmitEditForm() {
@@ -60,7 +91,7 @@ async function handleSubmitEditForm() {
 		await $blogApi.comment.commentsIdPut(id, {
 			content: formData.content
 		})
-		refetchComments()
+		await refetchComments()
 		formData.content = ''
 	} catch (e) {
 		notifyError(e)
@@ -146,7 +177,9 @@ onClickOutside(target, handleCloseDropdown)
 							ref="target"
 							v-if="
 								!editMode &&
-								isAuth
+								isAuth &&
+								user.id ===
+									userProfile?.id
 							"
 						>
 							<ActionIcon
@@ -165,31 +198,50 @@ onClickOutside(target, handleCloseDropdown)
 							<Dropdown
 								:open="opened"
 							>
-								<div
+								<Button
 									@click="
 										toEditMode
 									"
+									color="blue"
+									variant="subtle"
+									block
 								>
 									Edit
-								</div>
-								<div
+								</Button>
+								<Button
 									@click="
 										handleDeleteComment
 									"
+									color="red"
+									variant="subtle"
+									block
 								>
 									Delete
-								</div>
+								</Button>
 							</Dropdown>
 						</div>
 					</header>
 					<main>
-						<textarea
-							v-if="editMode"
+						<RichTextEditor
+							v-if="
+								editMode &&
+								!previewMode
+							"
 							v-model="
 								formData.content
 							"
-						></textarea>
-						<template v-else>
+							reversed
+						/>
+						<VueMarkdown
+							v-if="
+								editMode &&
+								previewMode
+							"
+							:source="
+								formData.content
+							"
+						/>
+						<template v-if="!editMode">
 							<textarea
 								class="skeleton resize-none"
 								v-if="loading"
@@ -206,6 +258,7 @@ onClickOutside(target, handleCloseDropdown)
 				<footer
 					class="flex items-center"
 					:class="{ skeleton: loading }"
+					v-if="!replyMode"
 				>
 					<div
 						class="flex items-center gap-3"
@@ -217,8 +270,14 @@ onClickOutside(target, handleCloseDropdown)
 							"
 							>Submit</Button
 						>
-						<Button color="gray"
-							>Preview</Button
+						<Button
+							@click="handlePreview"
+							color="gray"
+							>{{
+								previewMode
+									? 'Continue'
+									: 'Preview'
+							}}</Button
 						>
 						<Button
 							@click="toReadonlyMode"
@@ -263,6 +322,9 @@ onClickOutside(target, handleCloseDropdown)
 								</span>
 							</Button>
 							<Button
+								@click="
+									handleReply
+								"
 								color="gray"
 								variant="subtle"
 								size="xs"
@@ -283,10 +345,16 @@ onClickOutside(target, handleCloseDropdown)
 						</template>
 					</template>
 				</footer>
+				<CommentForm
+					class="mt-3"
+					v-else
+					:onDismiss="handleDismiss"
+					:onSubmit="handleSubmitReply"
+				/>
 			</div>
 		</div>
 	</div>
-	<div class="pl-3" v-if="!loading">
+	<div class="pl-3 flex flex-col gap-6" v-if="!loading">
 		<Comment
 			v-for="(comment, i) in replies"
 			:key="i"
