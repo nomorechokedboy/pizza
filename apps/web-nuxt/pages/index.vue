@@ -3,7 +3,6 @@ import { useInfiniteQuery } from '@tanstack/vue-query'
 import { useElementVisibility } from '@vueuse/core'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { dicebearMedia } from '~~/constants'
 
 dayjs.extend(relativeTime)
 
@@ -12,12 +11,14 @@ type HeaderNav = {
 	match: string
 }
 
-async function fetchPosts({ pageParam = 1 }) {
+async function fetchPosts({ pageParam: page = 1 }) {
 	return $blogApi.post
-		.postsGet(undefined, undefined, pageParam, undefined, 'desc')
+		.postsGet(undefined, undefined, page, pageSize, 'desc')
 		.then((resp) => resp.data)
 }
 
+const appConfig = useRuntimeConfig()
+const pageSize = 50
 const { $blogApi } = useNuxtApp()
 const headerNav: HeaderNav[] = [
 	{ content: 'Relevant', match: '/' }
@@ -36,7 +37,7 @@ const {
 	queryKey: ['posts'],
 	queryFn: fetchPosts,
 	getNextPageParam: (lastPage) =>
-		lastPage.page && lastPage.items?.length === 10
+		lastPage.page && lastPage.items?.length === pageSize
 			? lastPage.page + 1
 			: undefined
 })
@@ -120,7 +121,7 @@ useSeoMeta({
 							:owner="{
 								src:
 									user?.avatar ||
-									`${dicebearMedia}${user?.fullName}`,
+									`${appConfig.public.dicebearMedia}${user?.fullName}`,
 								name:
 									user?.fullName ||
 									'User name',
@@ -154,15 +155,15 @@ useSeoMeta({
 							v-for="n in 3"
 							:owner="{
 								id: n,
-								name: 'lmao',
-								src: 'https://res.cloudinary.com/practicaldev/image/fetch/s--5VEqFAA8--/c_fill,f_auto,fl_progressive,h_90,q_66,w_90/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/909049/9a19683f-1e9f-4933-bdba-e7ea2fe5e71c.gif'
+								name: '',
+								src: ''
 							}"
 							slug="test"
-							publishedAt="Lmao"
-							title="test"
+							publishedAt=""
+							title=""
 							:comments="0"
 							:like="0"
-							src="https://res.cloudinary.com/practicaldev/image/fetch/s--xow1lZzw--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/ndp8r87ccsoa5yzw6zqh.png"
+							src=""
 							:key="n"
 							showImage
 							loading

@@ -99,7 +99,10 @@ definePageMeta({ layout: 'new', middleware: ['authn'] })
 				/>
 			</header>
 			<div class="flex flex-1 item-center w-full h-full">
-				<RichTextEditor v-model="formData.content" />
+				<RichTextEditor
+					placeholder="Post content here..."
+					v-model="formData.content"
+				/>
 				<div
 					class="hidden flex-1 bg-white max-w-1/2 border-l pt-10 overflow-auto preview rounded-r md:block"
 				>

@@ -9,16 +9,36 @@ export interface NotificationItemProps {
 	loading?: boolean
 	readAt?: string | null
 	createdAt: string
+	id: number
 }
 
-defineProps<NotificationItemProps>()
+async function handleReadNotification() {
+	if (loading !== false && readAt !== null) {
+		return
+	}
+
+	try {
+		await $blogApi.notification.readAt(id)
+		refetch()
+	} catch (e) {
+		console.error({ e })
+	}
+}
+
+const { id, loading, readAt } = defineProps<NotificationItemProps>()
+const { $blogApi } = useNuxtApp()
 const appConfig = useRuntimeConfig()
+const { refetch } = useNotificationPagination()
 </script>
 
 <template>
-	<div
+	<button
 		class="flex items-center gap-3 p-2 relative rounded-lg hover:bg-blue-50"
-		:class="{ 'bg-blue-50': readAt === null && loading == false }"
+		:class="{
+			'bg-blue-50': readAt === null && loading == false,
+			'pointer-events-none': readAt !== null
+		}"
+		@click="handleReadNotification"
 	>
 		<div :class="{ 'h-8': loading }">
 			<div class="skeleton rounded-full" v-if="loading">
@@ -36,7 +56,7 @@ const appConfig = useRuntimeConfig()
 				:alt="`${fullName || userName} avatar`"
 			/>
 		</div>
-		<div class="flex flex-col gap-1 pr-2">
+		<div class="flex flex-col flex-1 gap-1 pr-2 text-start">
 			<div :class="{ skeleton: loading }">
 				<br v-if="loading" />
 				<template v-else>
@@ -52,5 +72,5 @@ const appConfig = useRuntimeConfig()
 				dayjs(createdAt).fromNow()
 			}}</span>
 		</div>
-	</div>
+	</button>
 </template>

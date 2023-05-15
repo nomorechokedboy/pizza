@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { Button } from 'ui-vue'
-import { dicebearMedia } from '~~/constants'
 
 function computePostedOn() {
 	return `${
@@ -40,6 +39,7 @@ async function handleDeletePost() {
 	}
 }
 
+const appConfig = useRuntimeConfig()
 const route = useRoute()
 // const tags = ['tag1', 'tag2']
 let slug: string = ''
@@ -57,10 +57,11 @@ const postedOn = computed(computePostedOn)
 const { $blogApi } = useNuxtApp()
 const openedModal = ref(false)
 const loading = ref(false)
-const userProfile = useUserProfile()
+const { data: userProfile } = useUserProfile()
 const editUrl = computed(
 	() => `/${postDetails.value?.user?.id}/${postDetails.value?.slug}/edit`
 )
+const isAuthenticated = useIsAuthenticated()
 useSeoMeta({
 	title: postDetails.value?.title,
 	description: postDetails.value?.content,
@@ -70,6 +71,7 @@ useSeoMeta({
 	ogImageHeight: 600,
 	twitterImage: url
 })
+provide('slug', slug)
 </script>
 
 <template>
@@ -193,7 +195,7 @@ useSeoMeta({
 										postDetails
 											?.user
 											?.avatar ||
-										`${dicebearMedia}${postDetails?.user?.fullName}`
+										`${appConfig.public.dicebearMedia}${postDetails?.user?.fullName}`
 									"
 									:title="
 										postDetails
@@ -206,10 +208,11 @@ useSeoMeta({
 							<div
 								class="flex items-center gap-3"
 								v-if="
+									isAuthenticated &&
 									postDetails
 										?.user
 										?.id ===
-									userProfile?.id
+										userProfile?.id
 								"
 							>
 								<Button

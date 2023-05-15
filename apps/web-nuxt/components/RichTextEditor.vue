@@ -9,6 +9,8 @@ import UnderlineIcon from '~icons/mdi/format-underline'
 
 export interface RichTextEditorProps {
 	modelValue?: string
+	reversed?: boolean
+	placeholder?: string
 }
 
 /* function handleScroll(event: any) {
@@ -81,7 +83,8 @@ const icons = [
 
 <template>
 	<div
-		class="flex-1 flex flex-col gap-2 max-w-1/2 overflow-auto break-words bg-white rounded-l"
+		class="flex-1 flex gap-2 max-w-1/2 overflow-auto break-words bg-white rounded-l"
+		:class="{ 'flex-col': !reversed, 'flex-col-reverse': reversed }"
 		ref="editor"
 	>
 		<div class="flex items-center gap-3 p-2 bg-neutral-300">
@@ -109,7 +112,7 @@ const icons = [
 						.value
 				)
 			"
-			placeholder="Post content here..."
+			:placeholder="placeholder"
 			ref="input"
 		/>
 	</div>

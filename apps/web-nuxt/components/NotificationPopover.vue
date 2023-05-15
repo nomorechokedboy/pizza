@@ -1,23 +1,14 @@
 <script setup lang="ts">
-import { useInfiniteQuery } from '@tanstack/vue-query'
 import { onClickOutside } from '@vueuse/core'
 import { ActionIcon, Button } from 'ui-vue'
 import IconBell from '~icons/ph/bell-simple'
-
-const PAGE_SIZE = 10
 
 function handleToggle() {
 	toggle.value = !toggle.value
 }
 
-async function fetchNotifications({ pageParam = 1 }) {
-	return $blogApi.notification
-		.getNotifications(pageParam, PAGE_SIZE)
-		.then((res) => res.data)
-}
-
 const toggle = ref(false)
-const userProfile = useUserProfile()
+const { data: userProfile } = useUserProfile()
 const target = ref<HTMLDivElement | null>(null)
 const { $blogApi } = useNuxtApp()
 const {
@@ -26,15 +17,9 @@ const {
 	isFetchingNextPage,
 	isLoading,
 	fetchNextPage,
-	hasNextPage
-} = useInfiniteQuery({
-	queryKey: ['notifications'],
-	queryFn: fetchNotifications,
-	getNextPageParam: (lastPage) =>
-		lastPage.page && lastPage.data.length === PAGE_SIZE
-			? lastPage.page + 1
-			: undefined
-})
+	hasNextPage,
+	refetch
+} = useNotificationPagination()
 const unread = computed(() => {
 	let count = 0
 	if (!notifications.value) {
@@ -50,8 +35,56 @@ const unread = computed(() => {
 
 	return count
 })
+const config = useRuntimeConfig()
+const token = useAuthToken()
+const refreshToken = useRefreshToken()
+const isLoggedIn = computed(() => !!token.value)
+const notificationEventSource = useNotificationEventSource()
 
 onClickOutside(target, () => (toggle.value = false))
+watchEffect((onStop) => {
+	if (
+		!isLoggedIn.value ||
+		notificationEventSource.value ||
+		!process.client
+	) {
+		return
+	}
+
+	notificationEventSource.value = new EventSource(
+		config.public.notifyUrl,
+		{ withCredentials: true }
+	)
+	notificationEventSource.value?.addEventListener('notification', (e) => {
+		console.debug(e.data)
+		refetch()
+	})
+	notificationEventSource.value.onerror = () => {
+		if (!token.value || !refreshToken.value) {
+			cleanupNotificationEventSource()
+			return
+		}
+
+		try {
+			const isExpired = isTokenExpired(token.value)
+			if (isExpired) {
+				$blogApi.auth
+					.authRefreshTokenPost({
+						refresh_token:
+							refreshToken.value
+					})
+					.then((resp) => {
+						onRefreshToken(resp)
+					})
+					.catch(cleanupNotificationEventSource)
+			}
+		} catch (err) {
+			console.error({ err })
+		}
+	}
+
+	onStop(cleanupNotificationEventSource)
+})
 </script>
 
 <template>
@@ -114,9 +147,10 @@ onClickOutside(target, () => (toggle.value = false))
 									n
 										.notifier
 										.id ===
-									userProfile.id
+									userProfile?.id
 							)?.readAt
 						"
+						:id="notification.id"
 					/>
 				</template>
 			</template>
@@ -127,6 +161,7 @@ onClickOutside(target, () => (toggle.value = false))
 					isLoading
 				"
 				v-for="n in 3"
+				:id="n"
 				actionType=""
 				createdAt=""
 				:loading="true"
