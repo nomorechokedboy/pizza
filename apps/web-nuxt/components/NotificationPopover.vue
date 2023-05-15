@@ -28,7 +28,7 @@ const unread = computed(() => {
 
 	for (let i = 0; i < notifications.value.pages.length; i++) {
 		const notification = notifications.value.pages[0].data[i]
-		if (notification.notifications[0].readAt === null) {
+		if (notification?.notifications?.[0].readAt === null) {
 			count++
 		}
 	}
@@ -40,6 +40,21 @@ const token = useAuthToken()
 const refreshToken = useRefreshToken()
 const isLoggedIn = computed(() => !!token.value)
 const notificationEventSource = useNotificationEventSource()
+const isEmpty = computed(() => {
+	let count = 0
+	if (!notifications.value) {
+		return true
+	}
+
+	for (let i = 0; i < notifications.value.pages.length; i++) {
+		const notification = notifications.value.pages[0].data[i]
+		if (notification?.notifications?.[0].readAt === null) {
+			count++
+		}
+	}
+
+	return count === 0
+})
 
 onClickOutside(target, () => (toggle.value = false))
 watchEffect((onStop) => {
@@ -106,7 +121,7 @@ watchEffect((onStop) => {
 			</span>
 		</ActionIcon>
 		<Dropdown
-			class="h-[90vh] overflow-y-auto px-2 flex flex-col gap-2"
+			class="max-h-[90vh] overflow-y-auto px-2 flex flex-col gap-2"
 			:open="toggle"
 		>
 			<div class="py-2 px-4">
@@ -167,8 +182,8 @@ watchEffect((onStop) => {
 				:loading="true"
 				userName=""
 			/>
-			<template v-if="notifications?.pages.length === 0">
-				<div>You have no notification</div>
+			<template v-if="isEmpty">
+				<div>You have no notification!</div>
 			</template>
 			<div class="pt-3 w-full grid place-items-center">
 				<Button
