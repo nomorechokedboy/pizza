@@ -6,7 +6,6 @@ import (
 	"api-blog/pkg/usecase"
 	"api-blog/src/notification"
 	notificationEntities "api-blog/src/notification/entities"
-
 	"context"
 	"encoding/json"
 	"fmt"
@@ -65,7 +64,6 @@ func (handler *CommentHandler) GetAllComments(c *fiber.Ctx) error {
 	commentsString, err := handler.rdb.Get(ctx, key).Result()
 	if err == redis.Nil {
 		comments, err := handler.usecase.GetAllComments(query)
-
 		if err != nil {
 			return fiber.NewError(fiber.StatusInternalServerError, "failed to get all comments")
 		}
@@ -113,22 +111,7 @@ func (handler *CommentHandler) CreateComment(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to create new comment")
 	}
 
-	ctx := context.Background()
-	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
-	defer cancel()
-
-	pipe := handler.rdb.Pipeline()
-	match := fmt.Sprintf("comments-%d*", req.PostID)
-	iter := handler.rdb.Scan(ctx, 0, match, 0).Iterator()
-	for iter.Next(ctx) {
-		pipe.Del(ctx, iter.Val())
-	}
-	if err := iter.Err(); err != nil {
-		log.Println("REDIS ERR: ", err)
-	}
-	if _, err = pipe.Exec(ctx); err != nil {
-		log.Println("REDIS ERR: ", err)
-	}
+	invalidateCache(handler.rdb, int(req.PostID))
 
 	isOwner := authID == comment.Post.UserID
 	notifyRepo := c.Locals("notifyRepository").(notification.NotifyRepository)
@@ -165,7 +148,6 @@ func (handler *CommentHandler) UpdateComment(c *fiber.Ctx) error {
 	}
 
 	id, err := c.ParamsInt("id")
-
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid comment ID")
 	}
@@ -177,10 +159,11 @@ func (handler *CommentHandler) UpdateComment(c *fiber.Ctx) error {
 	}
 
 	comment, err := handler.usecase.UpdateComment(uint(id), req.Content)
-
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to update specfied comment")
 	}
+
+	invalidateCache(handler.rdb, int(comment.PostID))
 
 	return c.Status(fiber.StatusOK).JSON(comment)
 }
@@ -221,5 +204,26 @@ func (handler *CommentHandler) DeleteComment(c *fiber.Ctx) error {
 		go notifyRepo.DeleteNotification(req)
 	}
 
+	invalidateCache(handler.rdb, int(comment.PostID))
+
 	return c.Status(fiber.StatusOK).JSON(comment)
+}
+
+func invalidateCache(rdb *redis.Client, postID int) {
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+
+	pipe := rdb.Pipeline()
+	match := fmt.Sprintf("comments-%d*", postID)
+	iter := rdb.Scan(ctx, 0, match, 0).Iterator()
+	for iter.Next(ctx) {
+		pipe.Del(ctx, iter.Val())
+	}
+	if err := iter.Err(); err != nil {
+		log.Println("REDIS ERR: ", err)
+	}
+	if _, err := pipe.Exec(ctx); err != nil {
+		log.Println("REDIS ERR: ", err)
+	}
 }
