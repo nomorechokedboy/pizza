@@ -5,15 +5,13 @@ import (
 	"api-blog/pkg/common"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
-	"encoding/json"
-	"log"
-	"time"
-
-	"fmt"
-
 	"context"
 	"crypto/sha256"
+	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gosimple/slug"
@@ -30,7 +28,14 @@ type PostHandler struct {
 	rdb         *redis.Client
 }
 
-func NewPostHandler(usecase usecase.PostUsecase, slugUsecase usecase.SlugUsecase, userUsecase usecase.UserUsecase, config *config.Config, mionioClient *minio.Client, rdb *redis.Client) *PostHandler {
+func NewPostHandler(
+	usecase usecase.PostUsecase,
+	slugUsecase usecase.SlugUsecase,
+	userUsecase usecase.UserUsecase,
+	config *config.Config,
+	mionioClient *minio.Client,
+	rdb *redis.Client,
+) *PostHandler {
 	return &PostHandler{
 		usecase:     usecase,
 		slugUsecase: slugUsecase,
@@ -86,7 +91,6 @@ func (handler *PostHandler) GetAllPosts(c *fiber.Ctx) error {
 				SortBy:   query.SortBy,
 			},
 		})
-
 		if err != nil {
 			return fiber.NewError(fiber.StatusInternalServerError, "failed to get all posts")
 		}
@@ -133,7 +137,6 @@ func (handler *PostHandler) GetAllPosts(c *fiber.Ctx) error {
 func (handler *PostHandler) GetPostBySlug(c *fiber.Ctx) error {
 	slug := c.Params("slug")
 	post, err := handler.usecase.GetPostBySlug(slug)
-
 	if err != nil {
 		return fiber.NewError(fiber.StatusNotFound, "failed to get post")
 	}
@@ -176,7 +179,6 @@ func (handler *PostHandler) CreatePost(c *fiber.Ctx) error {
 	}
 
 	post, err := handler.usecase.CreatePost(authID, postSlug, req)
-
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to create new post")
 	}
@@ -201,7 +203,6 @@ func (handler *PostHandler) CreatePost(c *fiber.Ctx) error {
 // @Router /posts/{id} [put]
 func (handler *PostHandler) UpdatePost(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
-
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid post ID")
 	}
@@ -219,7 +220,6 @@ func (handler *PostHandler) UpdatePost(c *fiber.Ctx) error {
 	}
 
 	post, err := handler.usecase.UpdatePost(uint(id), postSlug, req)
-
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to update specfied post")
 	}
@@ -244,16 +244,16 @@ func (handler *PostHandler) UpdatePost(c *fiber.Ctx) error {
 // @Router /posts/{id} [delete]
 func (handler *PostHandler) DeletePost(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
-
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid post ID")
 	}
 
 	post, err := handler.usecase.DeletePost(uint(id))
-
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to delete specfied post")
 	}
+
+	go invalidateCache(handler.rdb, "posts-page*")
 
 	return c.Status(fiber.StatusOK).JSON(post.ToResponse())
 }
@@ -282,7 +282,12 @@ func (handler *PostHandler) GetPostAudio(c *fiber.Ctx) error {
 	c.Set("Content-Type", "audio/mpeg")
 
 	if _, err := handler.minioClient.StatObject(ctx, "audio", objectName, minio.StatObjectOptions{}); err != nil {
-		url := fmt.Sprintf("%s?key=%s&hl=en-us&c=MP3&src=%s", handler.config.AudioAPI.Link, handler.config.AudioAPI.Key, content)
+		url := fmt.Sprintf(
+			"%s?key=%s&hl=en-us&c=MP3&src=%s",
+			handler.config.AudioAPI.Link,
+			handler.config.AudioAPI.Key,
+			content,
+		)
 		res, _ := http.Get(url)
 
 		if exists, _ := handler.minioClient.BucketExists(ctx, "audio"); !exists {
@@ -298,8 +303,12 @@ func (handler *PostHandler) GetPostAudio(c *fiber.Ctx) error {
 		return c.SendStream(res.Body)
 	}
 
-	audioObject, err := handler.minioClient.GetObject(ctx, "audio", objectName, minio.GetObjectOptions{})
-
+	audioObject, err := handler.minioClient.GetObject(
+		ctx,
+		"audio",
+		objectName,
+		minio.GetObjectOptions{},
+	)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
