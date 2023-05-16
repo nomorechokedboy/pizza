@@ -1,6 +1,7 @@
 import { AxiosError } from 'axios'
 import dayjs from 'dayjs'
 import calendar from 'dayjs/plugin/calendar'
+import relativeTime from 'dayjs/plugin/relativeTime'
 import jwtDecode, { JwtPayload } from 'jwt-decode'
 import { AlertProps } from '~~/components/Alert.vue'
 import { notify } from '~~/composables/useNotification'
@@ -12,6 +13,7 @@ export * from './types'
 export * from './uriTransformer'
 
 dayjs.extend(calendar)
+dayjs.extend(relativeTime)
 
 export function notifyError(e: unknown) {
 	if (e instanceof AxiosError) {
@@ -41,13 +43,13 @@ function checkErrorType(e: unknown): string {
 	return JSON.stringify(e)
 }
 
-export function convertDate(d?: string): string {
+export function convertDate(d?: string, format = 'MMM D'): string {
 	let date = d
 	if (!date) {
 		date = dayjs().toISOString()
 	}
 
-	return dayjs(date).format('MMM D')
+	return dayjs(date).format(format)
 }
 
 export function isTokenExpired(token: string): boolean {
@@ -63,4 +65,8 @@ export function getCalendarTime(d?: string) {
 		date = dayjs().toISOString()
 	}
 	return dayjs(date).calendar()
+}
+
+export function timeFromNow(d: string) {
+	return dayjs(d).fromNow()
 }
