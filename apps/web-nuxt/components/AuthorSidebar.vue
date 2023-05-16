@@ -3,9 +3,10 @@ import { Button } from 'ui-vue'
 
 function computeUserAvatar() {
 	return (
-		userProfile.value?.avatar ||
+		postDetails.value?.user?.avatar ||
 		`${appConfig.public.dicebearMedia}${
-			userProfile.value?.name ||
+			postDetails.value?.user?.fullName ||
+			postDetails.value?.user?.userName ||
 			'A6Blog&backgroundColor=000000'
 		}`
 	)
