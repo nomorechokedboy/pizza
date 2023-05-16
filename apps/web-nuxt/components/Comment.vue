@@ -45,24 +45,6 @@ async function handleSubmitReply(content: string) {
 		console.error('Error submit reply: ', e)
 	}
 }
-
-const isAuth = useIsAuthenticated()
-const { $blogApi } = useNuxtApp()
-const { content, updated, like, replies, createdAt, id } =
-	defineProps<CommentProps>()
-const opened = ref(false)
-const target = ref<HTMLDivElement | null>(null)
-const editMode = ref(false)
-const replyMode = ref(false)
-const previewMode = ref(false)
-const isFormValid = computed(computeFormValidity)
-const formData = reactive({ content })
-const formLoading = ref(false)
-const slug = inject<string>('slug', 'no slug')
-const { data: postDetails } = usePostDetails(slug)
-const { refetch: refetchComments } = usePostComments()
-const { data: userProfile } = useUserProfile()
-
 function handleToggleDropdown() {
 	opened.value = !opened.value
 }
@@ -108,23 +90,93 @@ function computeFormValidity() {
 	)
 }
 
+function handleCloseModal() {
+	openedModal.value = false
+}
+
 async function handleDeleteComment() {
 	try {
 		await $blogApi.comment.commentsIdDelete(id)
-		refetchComments()
+		await refetchComments()
 	} catch (e) {
 		notifyError(e)
 	}
 }
 
+function handleOpenModal() {
+	openedModal.value = true
+}
+
+const isAuth = useIsAuthenticated()
+const { $blogApi } = useNuxtApp()
+const { content, updated, like, replies, createdAt, id } =
+	defineProps<CommentProps>()
+const opened = ref(false)
+const target = ref<HTMLDivElement | null>(null)
+const editMode = ref(false)
+const replyMode = ref(false)
+const previewMode = ref(false)
+const isFormValid = computed(computeFormValidity)
+const formData = reactive({ content })
+const formLoading = ref(false)
+const slug = inject<string>('slug', 'du di me may')
+const { data: postDetails } = usePostDetails(slug)
+const { refetch: refetchComments } = usePostComments()
+const { data: userProfile } = useUserProfile()
+const openedModal = ref(false)
+
 onClickOutside(target, handleCloseDropdown)
 </script>
 
 <template>
+	<Modal :opened="openedModal" :onClose="handleCloseModal">
+		<div class="p-6 text-center">
+			<svg
+				aria-hidden="true"
+				class="mx-auto mb-4 text-gray-400 w-14 h-14 dark:text-gray-200"
+				fill="none"
+				stroke="currentColor"
+				viewBox="0 0 24 24"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+				></path>
+			</svg>
+			<h3
+				class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400"
+			>
+				But sir, are you sure you want to
+				<br />
+				delete this comment?
+			</h3>
+			<div class="flex items-center justify-center gap-3">
+				<Button
+					color="red"
+					@click="handleDeleteComment"
+					:loading="loading"
+				>
+					Yes, just do it
+				</Button>
+				<Button
+					@click="handleCloseModal"
+					:disabled="loading"
+				>
+					Wait, I changed my mind</Button
+				>
+			</div>
+		</div>
+	</Modal>
 	<div class="flex flex-col gap-4">
 		<div class="flex gap-2">
 			<div>
-				<div class="skeleton" v-if="loading">
+				<div
+					class="skeleton !rounded-full"
+					v-if="loading"
+				>
 					<div class="w-6 h-6 md:!w-8 md:h-8" />
 				</div>
 				<Avatar
@@ -210,7 +262,7 @@ onClickOutside(target, handleCloseDropdown)
 								</Button>
 								<Button
 									@click="
-										handleDeleteComment
+										handleOpenModal
 									"
 									color="red"
 									variant="subtle"

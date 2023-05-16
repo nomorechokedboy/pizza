@@ -7,7 +7,7 @@ import { CommentProps } from './Comment.vue'
 
 const appConfig = useRuntimeConfig()
 const { $blogApi } = useNuxtApp()
-const { data: userProfile } = useUserProfile()
+const { data: userProfile, isLoading: isUserProfileLoading } = useUserProfile()
 const isAuth = useIsAuthenticated()
 const userAvatar = computed(computeUserAvatar)
 const formData = reactive({ content: '' })
@@ -152,10 +152,19 @@ watchEffect(() => {
 			<div class="flex gap-2">
 				<div class="w-full max-w-[32px]">
 					<Avatar
+						v-if="!isUserProfileLoading"
 						class="md:w-8"
 						width="24"
 						:src="userAvatar"
 					/>
+					<div
+						class="skeleton !rounded-full"
+						v-else
+					>
+						<div
+							class="w-6 h-6 md:!w-8 md:h-8"
+						/>
+					</div>
 				</div>
 				<form class="flex flex-col gap-4 flex-1">
 					<div
