@@ -31,8 +31,8 @@ type Config struct {
 		Link string `env:"FE_URL" env-default:"https://pizza-web-nuxt.vercel.app"`
 	}
 	AudioAPI struct {
-		Link string `env:"LINK"`
-		Key  string `env:"KEY"`
+		Link string `env:"AUDIO_LINK"`
+		Key  string `env:"AUDIO_KEY"`
 	}
 	Minio struct {
 		EndPoint        string `env:"END_POINT" env-default:"localhost:9000"`
@@ -45,9 +45,9 @@ type Config struct {
 }
 
 type RedisConfig struct {
-	URI      string `env:"REDIS_URI" env-default:"localhost:6379"`
+	URI      string `env:"REDIS_URI"      env-default:"localhost:6379"`
 	Password string `env:"REDIS_PASSWORD" env-default:""`
-	DB       int    `env:"REDIS_DB" env-default:"0"`
+	DB       int    `env:"REDIS_DB"       env-default:"0"`
 }
 
 func LoadConfig() (*Config, error) {

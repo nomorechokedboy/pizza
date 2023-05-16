@@ -1,6 +1,9 @@
 <script lang="ts" setup>
-import { Button } from 'ui-vue'
+import { ActionIcon, Button } from 'ui-vue'
+import { useAVWaveform } from 'vue-audio-visual'
 import { EntitiesPostResponse } from '~/codegen/api'
+import RoundPauseCircleIcon from '~icons/ic/round-pause-circle'
+import RoundPlayCircleIcon from '~icons/ic/round-play-circle'
 
 function computePostedOn() {
 	return `${
@@ -40,6 +43,22 @@ async function handleDeletePost() {
 	}
 }
 
+function handleAudioButton() {
+	if (player.value?.paused) {
+		player.value?.play()
+	} else {
+		player.value?.pause()
+	}
+}
+
+function updatePauseState() {
+	if (!player.value) {
+		return
+	}
+
+	isPause.value = player.value.paused
+}
+
 const appConfig = useRuntimeConfig()
 const route = useRoute()
 // const tags = ['tag1', 'tag2']
@@ -50,9 +69,10 @@ if (typeof route.params.slug === 'object') {
 	slug = route.params.slug
 }
 
-const { data: postDetails } = await useAsyncData<EntitiesPostResponse>(
-	`${slug}-details`,
-	() => $fetch(`${appConfig.public.apiUrl}/api/v1/posts/${slug}`)
+const { data: postDetails } = await useAsyncData(`${slug}-details`, () =>
+	$fetch<EntitiesPostResponse>(
+		`${appConfig.public.apiUrl}/api/v1/posts/${slug}`
+	)
 )
 const url =
 	postDetails.value?.image ??
@@ -66,6 +86,14 @@ const editUrl = computed(
 	() => `/${postDetails.value?.user?.id}/${postDetails.value?.slug}/edit`
 )
 const isAuthenticated = useIsAuthenticated()
+const audioUrl = computed(
+	() =>
+		`${appConfig.public.apiUrl}/api/v1/posts/t2s/${postDetails.value?.content}`
+)
+const player = ref<HTMLAudioElement | null>(null)
+const canvas = ref<HTMLCanvasElement | null>(null)
+const isPause = ref(true)
+
 useSeoMeta({
 	title: postDetails.value?.title,
 	description: postDetails.value?.content,
@@ -74,6 +102,21 @@ useSeoMeta({
 	ogImageWidth: 1200,
 	ogImageHeight: 600,
 	twitterImage: url
+})
+useAVWaveform(player, canvas, {
+	src: audioUrl,
+	canvHeight: 56,
+	canvWidth: 768,
+	barColor: 'lime'
+})
+
+onMounted(() => {
+	player.value?.addEventListener('play', updatePauseState)
+	player.value?.addEventListener('pause', updatePauseState)
+})
+onBeforeUnmount(() => {
+	player.value?.removeEventListener('play', updatePauseState)
+	player.value?.removeEventListener('pause', updatePauseState)
 })
 provide('slug', slug)
 </script>
@@ -143,6 +186,38 @@ provide('slug', slug)
 							default: '/image_not_available.png'
 						}"
 					/>
+					<div class="px-2">
+						<div
+							aria-label="Audio"
+							class="flex items-center border border-green-500 rounded"
+						>
+							<ActionIcon
+								aria-label="Play audio"
+								@click="
+									handleAudioButton
+								"
+								color="green"
+								size="xl"
+								variant="transparent"
+							>
+								<RoundPlayCircleIcon
+									v-if="
+										isPause
+									"
+								/>
+								<RoundPauseCircleIcon
+									v-else
+								/>
+							</ActionIcon>
+							<canvas ref="canvas" />
+						</div>
+						<audio
+							class="hidden"
+							ref="player"
+							:src="audioUrl"
+							controls
+						/>
+					</div>
 					<section
 						class="flex flex-col gap-3 p-4"
 					>
