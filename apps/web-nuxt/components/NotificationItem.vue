@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import dayjs from 'dayjs'
-
 export interface NotificationItemProps {
 	avatar?: string
 	actionType: string
@@ -69,7 +67,7 @@ const { refetch } = useNotificationPagination()
 				</template>
 			</div>
 			<span class="text-sm text-slate-500">{{
-				dayjs(createdAt).fromNow()
+				timeFromNow(createdAt)
 			}}</span>
 		</div>
 	</button>

@@ -13,7 +13,7 @@ function handleToggle() {
 }
 
 const appConfig = useRuntimeConfig()
-const { data: userProfile } = useUserProfile()
+const { data: userProfile, isLoading: isUserProfileLoading } = useUserProfile()
 const toggle = ref(false)
 const userAvatar = computed(
 	() =>
@@ -33,7 +33,14 @@ onClickOutside(target, () => (toggle.value = false))
 			@click="handleToggle"
 			class="focus:ring-4 focus:outline-none focus:ring-gray-300"
 		>
-			<Avatar width="32" :src="userAvatar" />
+			<Avatar
+				v-if="!isUserProfileLoading"
+				width="32"
+				:src="userAvatar"
+			/>
+			<div class="skeleton !rounded-full" v-else>
+				<div class="w-6 h-6 md:!w-8 md:h-8" />
+			</div>
 		</ActionIcon>
 		<Dropdown :open="toggle">
 			<div
