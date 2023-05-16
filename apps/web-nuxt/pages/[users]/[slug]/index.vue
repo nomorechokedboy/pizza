@@ -188,9 +188,11 @@ provide('slug', slug)
 					/>
 					<div class="px-2">
 						<div
+							aria-label="Audio"
 							class="flex items-center border border-green-500 rounded"
 						>
 							<ActionIcon
+								aria-label="Play audio"
 								@click="
 									handleAudioButton
 								"
