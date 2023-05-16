@@ -23,7 +23,7 @@ type PostHandler struct {
 	usecase     usecase.PostUsecase
 	slugUsecase usecase.SlugUsecase
 	userUsecase usecase.UserUsecase
-	minioClient minio.Client
+	minioClient *minio.Client
 	config      *config.Config
 	rdb         *redis.Client
 }
@@ -40,7 +40,7 @@ func NewPostHandler(
 		usecase:     usecase,
 		slugUsecase: slugUsecase,
 		userUsecase: userUsecase,
-		minioClient: *mionioClient,
+		minioClient: mionioClient,
 		config:      config,
 		rdb:         rdb,
 	}
@@ -281,26 +281,37 @@ func (handler *PostHandler) GetPostAudio(c *fiber.Ctx) error {
 
 	c.Set("Content-Type", "audio/mpeg")
 
-	if _, err := handler.minioClient.StatObject(ctx, "audio", objectName, minio.StatObjectOptions{}); err != nil {
+	if _, err := handler.
+		minioClient.
+		StatObject(ctx, "audio", objectName, minio.StatObjectOptions{}); err != nil {
 		url := fmt.Sprintf(
 			"%s?key=%s&hl=en-us&c=MP3&src=%s",
 			handler.config.AudioAPI.Link,
 			handler.config.AudioAPI.Key,
 			content,
 		)
-		res, _ := http.Get(url)
+		res, err := http.Get(url)
+		if err != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, "Internal error")
+		}
+
+		if res.StatusCode != http.StatusOK {
+			return fiber.NewError(fiber.StatusInternalServerError, "Failed to retrieve audio")
+		}
 
 		if exists, _ := handler.minioClient.BucketExists(ctx, "audio"); !exists {
 			handler.minioClient.MakeBucket(ctx, "audio", minio.MakeBucketOptions{})
 		}
 
 		if _, err := handler.minioClient.PutObject(
-			ctx, "audio", objectName, res.Body, res.ContentLength,
+			ctx,
+			"audio",
+			objectName,
+			res.Body,
+			res.ContentLength,
 			minio.PutObjectOptions{ContentType: "audio/mpeg"}); err != nil {
 			return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 		}
-
-		return c.SendStream(res.Body)
 	}
 
 	audioObject, err := handler.minioClient.GetObject(
