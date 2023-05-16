@@ -63,6 +63,7 @@
 		"satori": "^0.4.7",
 		"ui-vue": "workspace:*",
 		"v-satori": "^0.1.9",
+		"vue-audio-visual": "^3.0.5",
 		"vue-codemirror": "^6.1.1"
 	}
 }
