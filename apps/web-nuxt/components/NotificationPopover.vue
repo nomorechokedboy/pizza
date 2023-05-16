@@ -40,21 +40,7 @@ const token = useAuthToken()
 const refreshToken = useRefreshToken()
 const isLoggedIn = computed(() => !!token.value)
 const notificationEventSource = useNotificationEventSource()
-const isEmpty = computed(() => {
-	let count = 0
-	if (!notifications.value) {
-		return true
-	}
-
-	for (let i = 0; i < notifications.value.pages.length; i++) {
-		const notification = notifications.value.pages[0].data[i]
-		if (notification?.notifications?.[0].readAt === null) {
-			count++
-		}
-	}
-
-	return count === 0
-})
+const isEmpty = computed(() => notifications.value?.pages[0].data.length === 0)
 
 onClickOutside(target, () => (toggle.value = false))
 watchEffect((onStop) => {
