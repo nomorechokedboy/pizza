@@ -89,15 +89,17 @@ const player = ref<HTMLAudioElement | null>(null)
 const canvas = ref<HTMLCanvasElement | null>(null)
 const isPause = ref(true)
 
-useSeoMeta({
-	title: postDetails.value?.title,
-	description: postDetails.value?.content,
-	ogImage: url,
-	ogImageSecureUrl: url,
-	ogImageWidth: 1200,
-	ogImageHeight: 600,
-	twitterImage: url
-})
+if (postDetails.value) {
+	useSeoMeta({
+		title: postDetails.value?.title,
+		description: postDetails.value?.content,
+		ogImage: url,
+		ogImageSecureUrl: url,
+		ogImageWidth: 1200,
+		ogImageHeight: 600,
+		twitterImage: url
+	})
+}
 if (process.client) {
 	useAVWaveform(player, canvas, {
 		src: audioUrl,
