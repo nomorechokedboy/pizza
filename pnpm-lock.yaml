@@ -2471,14 +2471,14 @@ packages:
                         - supports-color
                 dev: true
 
-        /@nuxt/kit-edge/3.5.0-28069857.70c5ec86_rollup@3.20.2:
+        /@nuxt/kit-edge/3.5.1-28070767.9683c3da_rollup@3.20.2:
                 resolution:
                         {
-                                integrity: sha512-OSsiMrKbI8RYGUfR/e05Jto0x6k50VjxFScgqEy4yrZQ/IVWzwS5paJ5pTNbihPOcfnKlWKdRZZ5Ub53VWe6pQ==
+                                integrity: sha512-EQXvLW+HV17yht2GJMUwhZpYl/aTk5/ZJHQQa2Kf3Sx71t59WC86hPg7Jk228LK+WjDLLF+7ToHcQR8Xva4cow==
                         }
                 engines: { node: ^14.18.0 || >=16.10.0 }
                 dependencies:
-                        '@nuxt/schema': /@nuxt/schema-edge/3.5.0-28069857.70c5ec86_rollup@3.20.2
+                        '@nuxt/schema': /@nuxt/schema-edge/3.5.1-28070767.9683c3da_rollup@3.20.2
                         c12: 1.4.1
                         consola: 3.1.0
                         defu: 6.1.2
@@ -2711,10 +2711,10 @@ packages:
                         - supports-color
                 dev: true
 
-        /@nuxt/schema-edge/3.5.0-28069857.70c5ec86_rollup@3.20.2:
+        /@nuxt/schema-edge/3.5.1-28070767.9683c3da_rollup@3.20.2:
                 resolution:
                         {
-                                integrity: sha512-UpTDVytn4V9m2MgaG1vtX45o+IJmf3NwLKAnTPjAVUjrOafeyeqcDoggDOGR/tp5cma7pgHkiAGnGs2+Hcy7yg==
+                                integrity: sha512-UuTxNpP8l5LgVTT7607HIBioGntRx++PFgaWWOzuw4BVh7G10Kx6ZXDCa9EGJ06lfEO+PGxFx43V94AhforHdw==
                         }
                 engines: { node: ^14.18.0 || >=16.10.0 }
                 dependencies:
@@ -13436,7 +13436,7 @@ packages:
                                 integrity: sha512-rluyaY2S2ey8MrUNyA5fJHcNQsgPtBn5fKyYgDb4Wr5foP2ICwJcoN/Jp8czwfuHSEnPek0t4XXmjOSvChk+WA==
                         }
                 dependencies:
-                        '@nuxt/kit': /@nuxt/kit-edge/3.5.0-28069857.70c5ec86_rollup@3.20.2
+                        '@nuxt/kit': /@nuxt/kit-edge/3.5.1-28070767.9683c3da_rollup@3.20.2
                         svgo-loader: 3.0.3
                         vite-svg-loader: 3.6.0
                         vue-loader: 17.0.1_vue@3.2.47+webpack@5.78.0

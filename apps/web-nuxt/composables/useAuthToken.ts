@@ -6,6 +6,7 @@ export function useAuthToken() {
 	return useCookie<string | undefined>('token', {
 		default: undefined,
 		sameSite: 'strict',
+		secure: true,
 		maxAge: config.public.tokenExpTime
 	})
 }
@@ -15,6 +16,7 @@ export function useRefreshToken() {
 	return useCookie<string | undefined>('refreshToken', {
 		default: undefined,
 		sameSite: 'strict',
+		secure: true,
 		maxAge: config.public.tokenExpTime
 	})
 }

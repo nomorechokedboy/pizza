@@ -4,7 +4,7 @@ import { ActionIcon } from 'ui-vue'
 
 async function logout() {
 	removeToken()
-	cleanupNotificationEventSource()
+	notifyController?.abort()
 	await navigateTo('/login')
 }
 
@@ -21,6 +21,8 @@ const userAvatar = computed(
 		`${appConfig.public.dicebearMedia}${userProfile.value?.name}`
 )
 const target = ref<HTMLDivElement | null>(null)
+const notifyController = inject<AbortController>('notifyController')
+
 onClickOutside(target, () => (toggle.value = false))
 </script>
 

@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import {
+	EventStreamContentType,
+	fetchEventSource
+} from '@microsoft/fetch-event-source'
 import { onClickOutside } from '@vueuse/core'
 import { ActionIcon, Button } from 'ui-vue'
 import IconBell from '~icons/ph/bell-simple'
@@ -22,12 +26,12 @@ const {
 } = useNotificationPagination()
 const unread = computed(() => {
 	let count = 0
-	if (!notifications.value) {
+	if (!notifications.value?.pages) {
 		return count
 	}
 
 	for (let i = 0; i < notifications.value.pages.length; i++) {
-		const notification = notifications.value.pages[0].data[i]
+		const notification = notifications.value.pages.at(0)?.data[i]
 		if (notification?.notifications?.[0].readAt === null) {
 			count++
 		}
@@ -38,53 +42,94 @@ const unread = computed(() => {
 const config = useRuntimeConfig()
 const token = useAuthToken()
 const refreshToken = useRefreshToken()
-const isLoggedIn = computed(() => !!token.value)
-const notificationEventSource = useNotificationEventSource()
+const isLoggedIn = useIsAuthenticated()
 const isEmpty = computed(() => notifications.value?.pages[0].data.length === 0)
+const notifyController = inject<AbortController>('notifyController')
 
 onClickOutside(target, () => (toggle.value = false))
-watchEffect((onStop) => {
-	if (
-		!isLoggedIn.value ||
-		notificationEventSource.value ||
-		!process.client
-	) {
+watchEffect(() => {
+	if (!isLoggedIn.value) {
 		return
 	}
 
-	notificationEventSource.value = new EventSource(
-		config.public.notifyUrl,
-		{ withCredentials: true }
-	)
-	notificationEventSource.value?.addEventListener('notification', (e) => {
-		console.debug(e.data)
-		refetch()
-	})
-	notificationEventSource.value.onerror = () => {
-		if (!token.value || !refreshToken.value) {
-			cleanupNotificationEventSource()
-			return
-		}
+	fetchEventSource(config.public.notifyUrl, {
+		signal: notifyController?.signal,
+		openWhenHidden: true,
+		headers: {
+			Authorization: `Bearer ${token.value}`
+		},
+		async onopen(response) {
+			if (
+				response.ok &&
+				response.headers.get('content-type') ===
+					EventStreamContentType
+			) {
+				return // everything's good
+			} else if (response.status === 401) {
+				if (!token.value || !refreshToken.value) {
+					throw Error('Fatal')
+				}
 
-		try {
-			const isExpired = isTokenExpired(token.value)
-			if (isExpired) {
-				$blogApi.auth
-					.authRefreshTokenPost({
-						refresh_token:
-							refreshToken.value
-					})
-					.then((resp) => {
-						onRefreshToken(resp)
-					})
-					.catch(cleanupNotificationEventSource)
+				try {
+					const isExpired = isTokenExpired(
+						token.value
+					)
+					if (isExpired) {
+						$blogApi.auth
+							.authRefreshTokenPost({
+								refresh_token:
+									refreshToken.value
+							})
+							.then((resp) => {
+								onRefreshToken(
+									resp
+								)
+								throw Error(
+									'Retry'
+								)
+							})
+							.catch(() => {
+								throw Error(
+									'Fatal'
+								)
+							})
+					}
+				} catch (err) {
+					console.error({ err })
+					throw err
+				}
+			} else if (
+				response.status !== 401 &&
+				response.status >= 400 &&
+				response.status < 500 &&
+				response.status !== 429
+			) {
+				// client-side errors are usually non-retriable:
+				throw Error('Fatal')
+			} else {
+				throw Error('Retry')
 			}
-		} catch (err) {
-			console.error({ err })
+		},
+		onmessage(msg) {
+			// if the server emits an error message, throw an exception
+			// so it gets handled by the onerror callback below:
+			if (msg.event === 'notification') {
+				refetch()
+			}
+		},
+		onclose() {
+			// if the server closes the connection unexpectedly, retry:
+			throw Error('Retry')
+		},
+		onerror(err) {
+			if (err === Error('Fatal')) {
+				throw err // rethrow to stop the operation
+			} else {
+				// do nothing to automatically retry. You can also
+				// return a specific retry interval here.
+			}
 		}
-	}
-
-	onStop(cleanupNotificationEventSource)
+	})
 })
 </script>
 
