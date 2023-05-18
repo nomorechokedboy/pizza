@@ -1,14 +1,44 @@
 <script setup lang="ts">
-import {
-	EventStreamContentType,
-	fetchEventSource
-} from '@microsoft/fetch-event-source'
 import { onClickOutside } from '@vueuse/core'
 import { ActionIcon, Button } from 'ui-vue'
 import IconBell from '~icons/ph/bell-simple'
 
 function handleToggle() {
 	toggle.value = !toggle.value
+}
+
+async function setupNotifyConnectionWithRetry(): Promise<void> {
+	console.log('Recurring')
+
+	return setupNotifyConnection(refetch, notifyController).catch(
+		async (e) => {
+			console.log('On retry error')
+
+			if (!isAuthError(e)) {
+				return
+			}
+
+			if (!token.value || !refreshToken.value) {
+				return
+			}
+
+			try {
+				const resp =
+					await $blogApi.auth.authRefreshTokenPost(
+						{
+							refresh_token:
+								refreshToken.value
+						}
+					)
+
+				onRefreshToken(resp)
+			} catch (err) {
+				console.error('Refresh token err: ', err)
+			}
+
+			return setupNotifyConnectionWithRetry()
+		}
+	)
 }
 
 const toggle = ref(false)
@@ -39,96 +69,19 @@ const unread = computed(() => {
 
 	return count
 })
-const config = useRuntimeConfig()
 const token = useAuthToken()
 const refreshToken = useRefreshToken()
-const isLoggedIn = useIsAuthenticated()
 const isEmpty = computed(() => notifications.value?.pages[0].data.length === 0)
 const notifyController = inject<AbortController>('notifyController')
 
 onClickOutside(target, () => (toggle.value = false))
 watchEffect(() => {
-	if (!isLoggedIn.value) {
+	if (!token.value || !refreshToken.value) {
 		return
 	}
 
-	fetchEventSource(config.public.notifyUrl, {
-		signal: notifyController?.signal,
-		openWhenHidden: true,
-		headers: {
-			Authorization: `Bearer ${token.value}`
-		},
-		async onopen(response) {
-			if (
-				response.ok &&
-				response.headers.get('content-type') ===
-					EventStreamContentType
-			) {
-				return // everything's good
-			} else if (response.status === 401) {
-				if (!token.value || !refreshToken.value) {
-					throw Error('Fatal')
-				}
-
-				try {
-					const isExpired = isTokenExpired(
-						token.value
-					)
-					if (isExpired) {
-						$blogApi.auth
-							.authRefreshTokenPost({
-								refresh_token:
-									refreshToken.value
-							})
-							.then((resp) => {
-								onRefreshToken(
-									resp
-								)
-								throw Error(
-									'Retry'
-								)
-							})
-							.catch(() => {
-								throw Error(
-									'Fatal'
-								)
-							})
-					}
-				} catch (err) {
-					console.error({ err })
-					throw err
-				}
-			} else if (
-				response.status !== 401 &&
-				response.status >= 400 &&
-				response.status < 500 &&
-				response.status !== 429
-			) {
-				// client-side errors are usually non-retriable:
-				throw Error('Fatal')
-			} else {
-				throw Error('Retry')
-			}
-		},
-		onmessage(msg) {
-			// if the server emits an error message, throw an exception
-			// so it gets handled by the onerror callback below:
-			if (msg.event === 'notification') {
-				refetch()
-			}
-		},
-		onclose() {
-			// if the server closes the connection unexpectedly, retry:
-			throw Error('Retry')
-		},
-		onerror(err) {
-			if (err === Error('Fatal')) {
-				throw err // rethrow to stop the operation
-			} else {
-				// do nothing to automatically retry. You can also
-				// return a specific retry interval here.
-			}
-		}
+	setupNotifyConnectionWithRetry().catch((e) => {
+		console.error('Notify connection err: ', e)
 	})
 })
 </script>
