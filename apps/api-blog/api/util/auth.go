@@ -1,15 +1,24 @@
 package util
 
 import (
+	"api-blog/api/config"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func GenerateToken(uId uint, jwtSecret []byte, jwtRefreshSecret []byte) (string, string) {
-	accessToken := GenerateAccessClaims(uId, jwtSecret, 15*time.Minute)
-	refreshToken := GenerateAccessClaims(uId, jwtRefreshSecret, 30*24*time.Hour)
+func GenerateToken(uId uint, authConfig config.AuthConfig) (string, string) {
+	accessToken := GenerateAccessClaims(
+		uId,
+		[]byte(authConfig.JWTSecret),
+		time.Duration(authConfig.TokenExpire)*time.Minute,
+	)
+	refreshToken := GenerateAccessClaims(
+		uId,
+		[]byte(authConfig.JWTRefreshToken),
+		time.Duration(authConfig.RefreshTokenExpires)*time.Hour,
+	)
 	return accessToken, refreshToken
 }
 
@@ -34,7 +43,6 @@ func ParseToken(tokenString string, jwtSecret []byte) (uint, error) {
 		}
 		return jwtSecret, nil
 	})
-
 	if err != nil {
 		return userId, fiber.NewError(fiber.StatusUnauthorized, "invalid or missing token")
 	}
