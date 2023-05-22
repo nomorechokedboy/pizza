@@ -54,6 +54,7 @@ services:
                         - REDIS_URI=redis:6379
                         - EMAIL=$BLOG_EMAIL
                         - EMAIL_PASSWORD=$BLOG_EMAIL_PASSWORD
+                        - END_POINT=minio-svc:9000
                 ports:
                         - '8080:8080'
                 healthcheck:
