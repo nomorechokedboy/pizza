@@ -83,7 +83,7 @@ const editUrl = computed(
 const isAuthenticated = useIsAuthenticated()
 const audioUrl = computed(
 	() =>
-		`${appConfig.public.apiUrl}/api/v1/posts/t2s/${postDetails.value?.content}`
+		`${appConfig.public.apiUrl}/api/v1/posts/t2s/${postDetails.value?.slug}`
 )
 const player = ref<HTMLAudioElement | null>(null)
 const canvas = ref<HTMLCanvasElement | null>(null)

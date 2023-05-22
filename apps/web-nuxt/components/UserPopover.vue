@@ -48,22 +48,21 @@ onClickOutside(target, () => (toggle.value = false))
 			<div
 				class="pb-2 mb-2 hover:underline hover:rounded-lg px-4 py-3 hover:bg-gray-100"
 			>
-				<a href="#">
-					<div>
-						<span class="fw-medium block">
-							{{
-								userProfile?.name ||
-								'Oof'
-							}}
-						</span>
-						<small class="text-gray-400"
-							>@{{
-								userProfile?.username ||
-								'Oof'
-							}}
-						</small>
-					</div>
-				</a>
+				<NuxtLink
+					:to="`/${
+						userProfile?.name || 'User name'
+					}`"
+				>
+					<span class="fw-medium block">
+						{{ userProfile?.name || 'Oof' }}
+					</span>
+					<small class="text-gray-400"
+						>@{{
+							userProfile?.username ||
+							'Oof'
+						}}
+					</small>
+				</NuxtLink>
 			</div>
 			<ul
 				class="py-2 text-gray-700"

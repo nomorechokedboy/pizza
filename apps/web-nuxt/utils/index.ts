@@ -74,8 +74,16 @@ export function getCalendarTime(d?: string) {
 	return dayjs(date).calendar()
 }
 
-export function timeFromNow(d: string) {
-	return dayjs(d).fromNow()
+export function timeFromNow(
+	d?: string,
+	withSuffix: boolean | undefined = undefined
+) {
+	let date = d
+	if (!date) {
+		date = dayjs().toISOString()
+	}
+
+	return dayjs(d).fromNow(withSuffix)
 }
 
 export function flattenPostData(
