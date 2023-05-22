@@ -1,16 +1,16 @@
 package handler
 
 import (
-	"api-blog/pkg/common"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
 	"api-blog/src/notification"
 	notificationEntities "api-blog/src/notification/entities"
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"time"
+
+	_ "api-blog/pkg/common"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/redis/go-redis/v9"
@@ -48,43 +48,50 @@ func (handler *CommentHandler) GetAllComments(c *fiber.Ctx) error {
 		return err
 	}
 
-	key := fmt.Sprintf(
-		"comments-%d-page:%d-pageSize:%d-sort:%s-sortBy:%s-userID:%d",
-		query.PostID,
-		query.Page,
-		query.PageSize,
-		query.Sort,
-		query.SortBy,
-		query.UserID,
-	)
-	ctx := context.Background()
-	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
-	defer cancel()
+	// key := fmt.Sprintf(
+	// 	"comments-%d-page:%d-pageSize:%d-sort:%s-sortBy:%s-userID:%d",
+	// 	query.PostID,
+	// 	query.Page,
+	// 	query.PageSize,
+	// 	query.Sort,
+	// 	query.SortBy,
+	// 	query.UserID,
+	// )
+	// ctx := context.Background()
+	// ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	// defer cancel()
+	//
+	// commentsString, err := handler.rdb.Get(ctx, key).Result()
+	// if err == redis.Nil {
+	// 	comments, err := handler.usecase.GetAllComments(query)
+	// 	if err != nil {
+	// 		return fiber.NewError(fiber.StatusInternalServerError, "failed to get all comments")
+	// 	}
+	//
+	// 	commentsJSON, err := json.Marshal(comments)
+	// 	err = handler.rdb.Set(ctx, key, commentsJSON, time.Hour*5).Err()
+	// 	if err != nil {
+	// 		log.Println("There is some problem with redis")
+	// 	}
+	//
+	// 	return c.JSON(comments)
+	// } else if err != nil {
+	// 	return fiber.NewError(fiber.StatusInternalServerError, "Internal error")
+	// }
+	//
+	// cacheComments := new(common.BasePaginationResponse[entities.Comment])
+	// if err := json.Unmarshal([]byte(commentsString), cacheComments); err != nil {
+	// 	return fiber.NewError(fiber.StatusInternalServerError, "Internal error")
+	// }
 
-	commentsString, err := handler.rdb.Get(ctx, key).Result()
-	if err == redis.Nil {
-		comments, err := handler.usecase.GetAllComments(query)
-		if err != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, "failed to get all comments")
-		}
+	// return c.JSON(cacheComments)
 
-		commentsJSON, err := json.Marshal(comments)
-		err = handler.rdb.Set(ctx, key, commentsJSON, time.Hour*5).Err()
-		if err != nil {
-			log.Println("There is some problem with redis")
-		}
-
-		return c.JSON(comments)
-	} else if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Internal error")
+	comments, err := handler.usecase.GetAllComments(query)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "failed to get all comments")
 	}
 
-	cacheComments := new(common.BasePaginationResponse[entities.Comment])
-	if err := json.Unmarshal([]byte(commentsString), cacheComments); err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Internal error")
-	}
-
-	return c.JSON(cacheComments)
+	return c.JSON(comments)
 }
 
 // @CreateComment godoc
