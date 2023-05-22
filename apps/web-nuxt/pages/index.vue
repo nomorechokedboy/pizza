@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useInfiniteQuery } from '@tanstack/vue-query'
-import { useElementVisibility } from '@vueuse/core'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
@@ -17,7 +16,6 @@ async function fetchPosts({ pageParam: page = 1 }) {
 		.then((resp) => resp.data)
 }
 
-const appConfig = useRuntimeConfig()
 const pageSize = 50
 const { $blogApi } = useNuxtApp()
 const headerNav: HeaderNav[] = [
@@ -27,7 +25,7 @@ const headerNav: HeaderNav[] = [
 ]
 const route = useRoute()
 const {
-	data: testPosts,
+	data: postData,
 	isFetching,
 	isFetchingNextPage,
 	isLoading,
@@ -43,6 +41,8 @@ const {
 })
 const target = ref(null)
 const targetIsVisible = useElementVisibility(target)
+const posts = computed(() => flattenPostData(postData))
+
 watchEffect(() => {
 	const loading =
 		isFetching.value || isLoading.value || isFetchingNextPage.value
@@ -50,6 +50,7 @@ watchEffect(() => {
 		fetchNextPage()
 	}
 })
+
 useSeoMeta({
 	title: 'Accessiblog',
 	description:
@@ -105,70 +106,14 @@ useSeoMeta({
 					</nav>
 				</header>
 				<div class="flex flex-col gap-2">
-					<template
-						v-for="page in testPosts?.pages"
-					>
-						<Article
-							v-for="{
-								user,
-								id,
-								publishedAt,
-								title,
-								slug,
-								commentCount,
-								image
-							} in page.items"
-							:owner="{
-								src:
-									user?.avatar ||
-									`${appConfig.public.dicebearMedia}${user?.fullName}`,
-								name:
-									user?.fullName ||
-									'User name',
-								id: id ?? 0
-							}"
-							:slug="slug || ''"
-							:tags="['tags']"
-							:publishedAt="`${convertDate(
-								publishedAt
-							)} (${dayjs(
-								publishedAt
-							).toNow(true)} ago)`"
-							:title="title || ''"
-							:src="image"
-							:comments="
-								commentCount ||
-								0
-							"
-							:like="0"
-							:key="id"
-						/>
-					</template>
-					<template
-						v-if="
+					<ListArticle
+						:data="posts"
+						:loading="
 							isFetching ||
 							isFetchingNextPage ||
 							isLoading
 						"
-					>
-						<Article
-							v-for="n in 3"
-							:owner="{
-								id: n,
-								name: '',
-								src: ''
-							}"
-							slug="test"
-							publishedAt=""
-							title=""
-							:comments="0"
-							:like="0"
-							src=""
-							:key="n"
-							showImage
-							loading
-						/>
-					</template>
+					/>
 					<div ref="target" />
 				</div>
 			</div>
