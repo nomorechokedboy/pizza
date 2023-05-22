@@ -8,12 +8,8 @@ function handleToggle() {
 }
 
 async function setupNotifyConnectionWithRetry(): Promise<void> {
-	console.log('Recurring')
-
 	return setupNotifyConnection(refetch, notifyController).catch(
 		async (e) => {
-			console.log('On retry error')
-
 			if (!isAuthError(e)) {
 				return
 			}

@@ -146,7 +146,6 @@ export function setupNotifyConnection(
 	notifyController: AbortController | undefined
 ) {
 	const authToken = useAuthToken()
-	console.debug({ authToken: authToken.value })
 	const config = useRuntimeConfig()
 
 	return fetchEventSource(config.public.notifyUrl, {
