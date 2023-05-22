@@ -59,10 +59,11 @@ const userAvatar = computed(computeUserAvatar)
 						</div>
 					</div>
 					<span
-						class="text-neutral-700 text-xl font-bold self-end"
+						class="text-neutral-700 text-xl font-bold self-end truncate"
 						:class="{
 							skeleton: isPostDetailsLoading
 						}"
+						style="--lines: 1"
 					>
 						<template
 							v-if="
