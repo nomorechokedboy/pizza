@@ -7,6 +7,36 @@ function handleToggle() {
 	toggle.value = !toggle.value
 }
 
+async function setupNotifyConnectionWithRetry(): Promise<void> {
+	return setupNotifyConnection(refetch, notifyController).catch(
+		async (e) => {
+			if (!isAuthError(e)) {
+				return
+			}
+
+			if (!token.value || !refreshToken.value) {
+				return
+			}
+
+			try {
+				const resp =
+					await $blogApi.auth.authRefreshTokenPost(
+						{
+							refresh_token:
+								refreshToken.value
+						}
+					)
+
+				onRefreshToken(resp)
+			} catch (err) {
+				console.error('Refresh token err: ', err)
+			}
+
+			return setupNotifyConnectionWithRetry()
+		}
+	)
+}
+
 const toggle = ref(false)
 const { data: userProfile } = useUserProfile()
 const target = ref<HTMLDivElement | null>(null)
@@ -22,12 +52,12 @@ const {
 } = useNotificationPagination()
 const unread = computed(() => {
 	let count = 0
-	if (!notifications.value) {
+	if (!notifications.value?.pages) {
 		return count
 	}
 
 	for (let i = 0; i < notifications.value.pages.length; i++) {
-		const notification = notifications.value.pages[0].data[i]
+		const notification = notifications.value.pages.at(0)?.data[i]
 		if (notification?.notifications?.[0].readAt === null) {
 			count++
 		}
@@ -35,70 +65,20 @@ const unread = computed(() => {
 
 	return count
 })
-const config = useRuntimeConfig()
 const token = useAuthToken()
 const refreshToken = useRefreshToken()
-const isLoggedIn = computed(() => !!token.value)
-const notificationEventSource = useNotificationEventSource()
-const isEmpty = computed(() => {
-	let count = 0
-	if (!notifications.value) {
-		return true
-	}
-
-	for (let i = 0; i < notifications.value.pages.length; i++) {
-		const notification = notifications.value.pages[0].data[i]
-		if (notification?.notifications?.[0].readAt === null) {
-			count++
-		}
-	}
-
-	return count === 0
-})
+const isEmpty = computed(() => notifications.value?.pages[0].data.length === 0)
+const notifyController = inject<AbortController>('notifyController')
 
 onClickOutside(target, () => (toggle.value = false))
-watchEffect((onStop) => {
-	if (
-		!isLoggedIn.value ||
-		notificationEventSource.value ||
-		!process.client
-	) {
+watchEffect(() => {
+	if (!token.value || !refreshToken.value) {
 		return
 	}
 
-	notificationEventSource.value = new EventSource(
-		config.public.notifyUrl,
-		{ withCredentials: true }
-	)
-	notificationEventSource.value?.addEventListener('notification', (e) => {
-		console.debug(e.data)
-		refetch()
+	setupNotifyConnectionWithRetry().catch((e) => {
+		console.error('Notify connection err: ', e)
 	})
-	notificationEventSource.value.onerror = () => {
-		if (!token.value || !refreshToken.value) {
-			cleanupNotificationEventSource()
-			return
-		}
-
-		try {
-			const isExpired = isTokenExpired(token.value)
-			if (isExpired) {
-				$blogApi.auth
-					.authRefreshTokenPost({
-						refresh_token:
-							refreshToken.value
-					})
-					.then((resp) => {
-						onRefreshToken(resp)
-					})
-					.catch(cleanupNotificationEventSource)
-			}
-		} catch (err) {
-			console.error({ err })
-		}
-	}
-
-	onStop(cleanupNotificationEventSource)
 })
 </script>
 

@@ -48,7 +48,7 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	//DB
+	// DB
 	db, err := util.ConnectProstgrest(cfg)
 	if err != nil {
 		panic("Cannot connect Database: %v")
@@ -109,7 +109,7 @@ func main() {
 	failOnError(err, "Failed to publish a message")
 	log.Printf(" [x] Congrats, sending message: %s", body) */
 
-	//Minio
+	// Minio
 	minioClient, err := util.ConnectMinio(cfg)
 	if err != nil {
 		panic("Fail to load Minio")
@@ -121,24 +121,24 @@ func main() {
 		DB:       cfg.Redis.DB,
 	})
 
-	//middlerware
+	// middlerware
 	middle := middleware.NewJWTMiddleware(cfg.AuthConfig.JWTSecret)
 
-	//register usecase
-	authHandler := handler.NewAuthHanlder(cfg.AuthConfig.JWTSecret, cfg.AuthConfig.JWTRefreshToken)
-	//user
+	// register usecase
+	authHandler := handler.NewAuthHanlder(cfg.AuthConfig)
+	// user
 	userRepo := gorm_repository.NewUserGormRepository(db)
 	userUC := usecase.NewUserUsecase(userRepo)
 	userHandler := handler.NewUserHandler(userUC, *cfg)
 
-	//Media
+	// Media
 	mediaHandler := handler.NewMediaHandler(*cfg, minioClient)
 
 	// slug
 	slugRepo := gorm_repository.NewSlugGormRepository(db)
 	slugUC := usecase.NewSlugUseCase(slugRepo)
 
-	//post
+	// post
 	postRepo := gorm_repository.NewPostGormRepository(db)
 	postUC := usecase.NewPostUseCase(postRepo)
 	postHandler := handler.NewPostHandler(postUC, slugUC, userUC, cfg, minioClient, rdb)
@@ -150,7 +150,7 @@ func main() {
 
 	notifyRepo := notification.NewNotifyRepository(db, rdb)
 
-	//app
+	// app
 	app := fiber.New()
 	app.Use(cors.New())
 	app.Use(logger.New())

@@ -22,9 +22,6 @@ RUN chmod a+x /wget
 FROM gcr.io/distroless/cc:nonroot AS runtime
 
 COPY --from=deps /wget /usr/bin/wget
-COPY --from=builder /etc/passwd /etc/passwd
-COPY --from=builder /etc/group /etc/group
-
 WORKDIR /
 
 COPY --from=builder /app/target/release/noisy-boi .

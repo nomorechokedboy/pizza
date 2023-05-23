@@ -77,8 +77,8 @@ export default defineNuxtConfig(async () => {
 		runtimeConfig: {
 			public: {
 				tokenExpTime: 29 * 60 * 60 * 24,
-				apiUrl: 'https://api-blog-dev-nomorechokedboy.cloud.okteto.net',
-				mediaUrl: 'https://api-blog-dev-nomorechokedboy.cloud.okteto.net/api/v1/media/',
+				apiUrl: 'http://localhost:8080',
+				mediaUrl: 'http://localhost:8080/api/v1/media/',
 				dicebearMedia:
 					'https://api.dicebear.com/6.x/initials/svg?seed=',
 				notificationUrl: 'http://localhost:5000',

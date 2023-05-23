@@ -1,24 +1,20 @@
 package handler
 
 import (
-	"time"
-
+	"api-blog/api/config"
 	"api-blog/api/util"
 	"api-blog/pkg/entities"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 type AuthHandler struct {
-	JwtSecret       string
-	JwtRefreshToken string
+	config.AuthConfig
 }
 
-func NewAuthHanlder(jwtSecret string, jwtRefreshSecret string) *AuthHandler {
-	return &AuthHandler{
-		JwtSecret:       jwtSecret,
-		JwtRefreshToken: jwtRefreshSecret,
-	}
+func NewAuthHanlder(authConfig config.AuthConfig) *AuthHandler {
+	return &AuthHandler{AuthConfig: authConfig}
 }
 
 // GetNewAccessToken method for create a new access token.
@@ -37,11 +33,18 @@ func (handler *AuthHandler) RefreshToken(c *fiber.Ctx) error {
 	if err := c.BodyParser(tokenString); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
 	}
-	uId, err := util.ParseToken(tokenString.Refresh_token, []byte(handler.JwtRefreshToken))
+	uId, err := util.ParseToken(
+		tokenString.Refresh_token,
+		[]byte(handler.AuthConfig.JWTRefreshToken),
+	)
 	if err != nil {
 		return fiber.NewError(fiber.ErrUnauthorized.Code, err.Error())
 	}
-	accessToken := util.GenerateAccessClaims(uId, []byte(handler.JwtSecret), 15*time.Minute)
+	accessToken := util.GenerateAccessClaims(
+		uId,
+		[]byte(handler.AuthConfig.JWTSecret),
+		time.Duration(handler.AuthConfig.TokenExpire)*time.Minute,
+	)
 	newToken := new(entities.Auth)
 	newToken.Token = accessToken
 	newToken.RefreshToken = tokenString.Refresh_token

@@ -66,9 +66,12 @@ const { refetch } = useNotificationPagination()
 					<span>{{ ' ' + actionType }}</span>
 				</template>
 			</div>
-			<span class="text-sm text-slate-500">{{
-				timeFromNow(createdAt)
-			}}</span>
+			<span class="text-sm text-slate-500">
+				<template v-if="!loading">
+					{{ timeFromNow(createdAt) }}</template
+				>
+				<br v-else />
+			</span>
 		</div>
 	</button>
 </template>

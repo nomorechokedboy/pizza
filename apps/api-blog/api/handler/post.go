@@ -7,11 +7,8 @@ import (
 	"api-blog/pkg/usecase"
 	"context"
 	"crypto/sha256"
-	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gosimple/slug"
@@ -66,63 +63,87 @@ func (handler *PostHandler) GetAllPosts(c *fiber.Ctx) error {
 		return err
 	}
 
-	key := fmt.Sprintf(
-		"posts-page:%d-pageSize:%d-sort:%s-sortBy:%s-userID:%d-parentID:%d",
-		query.Page,
-		query.PageSize,
-		query.Sort,
-		query.SortBy,
-		query.UserID,
-		query.ParentID,
-	)
-	ctx := context.Background()
-	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
-	defer cancel()
-
-	postSerialized, err := handler.rdb.Get(ctx, key).Result()
-	if err == redis.Nil {
-		posts, err := handler.usecase.GetAllPosts(&entities.PostQuery{
-			UserID:   uint(query.UserID),
-			ParentID: uint(query.ParentID),
-			BaseQuery: common.BaseQuery{
-				Page:     query.Page,
-				PageSize: query.PageSize,
-				Sort:     query.Sort,
-				SortBy:   query.SortBy,
-			},
-		})
-		if err != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, "failed to get all posts")
-		}
-
-		postRes := common.BasePaginationResponse[entities.PostResponse]{
-			Items: []entities.PostResponse{},
-		}
-		postRes.Page = posts.Page
-		postRes.PageSize = posts.PageSize
-		postRes.Total = posts.Total
-
-		for _, post := range posts.Items {
-			postRes.Items = append(postRes.Items, post.ToResponse())
-		}
-
-		postsJSON, err := json.Marshal(postRes)
-		err = handler.rdb.Set(ctx, key, postsJSON, time.Minute*5).Err()
-		if err != nil {
-			log.Println("There is some problem with redis")
-		}
-
-		return c.JSON(postRes)
-	} else if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Internal error")
+	// key := fmt.Sprintf(
+	// 	"posts-page:%d-pageSize:%d-sort:%s-sortBy:%s-userID:%d-parentID:%d",
+	// 	query.Page,
+	// 	query.PageSize,
+	// 	query.Sort,
+	// 	query.SortBy,
+	// 	query.UserID,
+	// 	query.ParentID,
+	// )
+	// ctx := context.Background()
+	// ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	// defer cancel()
+	//
+	// postSerialized, err := handler.rdb.Get(ctx, key).Result()
+	// if err == redis.Nil {
+	// 	posts, err := handler.usecase.GetAllPosts(&entities.PostQuery{
+	// 		UserID:   uint(query.UserID),
+	// 		ParentID: uint(query.ParentID),
+	// 		BaseQuery: common.BaseQuery{
+	// 			Page:     query.Page,
+	// 			PageSize: query.PageSize,
+	// 			Sort:     query.Sort,
+	// 			SortBy:   query.SortBy,
+	// 		},
+	// 	})
+	// 	if err != nil {
+	// 		return fiber.NewError(fiber.StatusInternalServerError, "failed to get all posts")
+	// 	}
+	//
+	// 	postRes := common.BasePaginationResponse[entities.PostResponse]{
+	// 		Items: []entities.PostResponse{},
+	// 	}
+	// 	postRes.Page = posts.Page
+	// 	postRes.PageSize = posts.PageSize
+	// 	postRes.Total = posts.Total
+	//
+	// 	for _, post := range posts.Items {
+	// 		postRes.Items = append(postRes.Items, post.ToResponse())
+	// 	}
+	//
+	// 	postsJSON, err := json.Marshal(postRes)
+	// 	err = handler.rdb.Set(ctx, key, postsJSON, time.Minute*5).Err()
+	// 	if err != nil {
+	// 		log.Println("There is some problem with redis")
+	// 	}
+	//
+	// 	return c.JSON(postRes)
+	// } else if err != nil {
+	// 	return fiber.NewError(fiber.StatusInternalServerError, "Internal error")
+	// }
+	//
+	// cachePosts := new(common.BasePaginationResponse[entities.PostResponse])
+	// if err := json.Unmarshal([]byte(postSerialized), cachePosts); err != nil {
+	// 	return fiber.NewError(fiber.StatusInternalServerError, "Internal error")
+	// }
+	posts, err := handler.usecase.GetAllPosts(&entities.PostQuery{
+		UserID:   uint(query.UserID),
+		ParentID: uint(query.ParentID),
+		BaseQuery: common.BaseQuery{
+			Page:     query.Page,
+			PageSize: query.PageSize,
+			Sort:     query.Sort,
+			SortBy:   query.SortBy,
+		},
+	})
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "failed to get all posts")
 	}
 
-	cachePosts := new(common.BasePaginationResponse[entities.PostResponse])
-	if err := json.Unmarshal([]byte(postSerialized), cachePosts); err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "Internal error")
+	postRes := common.BasePaginationResponse[entities.PostResponse]{
+		Items: []entities.PostResponse{},
+	}
+	postRes.Page = posts.Page
+	postRes.PageSize = posts.PageSize
+	postRes.Total = posts.Total
+
+	for _, post := range posts.Items {
+		postRes.Items = append(postRes.Items, post.ToResponse())
 	}
 
-	return c.JSON(cachePosts)
+	return c.JSON(postRes)
 }
 
 // @GetPostByID godoc
@@ -266,15 +287,17 @@ func (handler *PostHandler) DeletePost(c *fiber.Ctx) error {
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /posts/t2s/{content} [get]
+// @Router /posts/t2s/{postSlug} [get]
 func (handler *PostHandler) GetPostAudio(c *fiber.Ctx) error {
+	postSlug := c.Params("postSlug")
 	ctx := context.Background()
-	content := c.Params("content")
 
-	if content == "" {
-		return fiber.NewError(fiber.StatusBadRequest, "empty or invalid post content")
+	post, err := handler.usecase.GetPostBySlug(postSlug)
+	if err != nil {
+		return fiber.NewError(fiber.ErrNotFound.Code, fiber.ErrNotFound.Message)
 	}
 
+	content := post.Content
 	hash := sha256.New()
 	hash.Write([]byte(content))
 	objectName := fmt.Sprintf("%x", hash.Sum(nil))

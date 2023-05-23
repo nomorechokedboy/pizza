@@ -3,6 +3,8 @@ import { Button } from 'ui-vue'
 
 const token = useAuthToken()
 const isLoggedIn = computed(() => !!token.value)
+const notifyController = new AbortController()
+provide('notifyController', notifyController)
 </script>
 
 <template>

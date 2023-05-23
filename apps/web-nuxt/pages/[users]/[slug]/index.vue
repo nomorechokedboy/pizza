@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ActionIcon, Button } from 'ui-vue'
 import { useAVWaveform } from 'vue-audio-visual'
-import { EntitiesPostResponse } from '~/codegen/api'
 import RoundPauseCircleIcon from '~icons/ic/round-pause-circle'
 import RoundPlayCircleIcon from '~icons/ic/round-play-circle'
 
@@ -69,11 +68,7 @@ if (typeof route.params.slug === 'object') {
 	slug = route.params.slug
 }
 
-const { data: postDetails } = await useAsyncData(`${slug}-details`, () =>
-	$fetch<EntitiesPostResponse>(
-		`${appConfig.public.apiUrl}/api/v1/posts/${slug}`
-	)
-)
+const { data: postDetails } = usePostDetailsSSR(slug)
 const url =
 	postDetails.value?.image ??
 	`/api/seo/og?title=${postDetails.value?.title}`
@@ -88,27 +83,31 @@ const editUrl = computed(
 const isAuthenticated = useIsAuthenticated()
 const audioUrl = computed(
 	() =>
-		`${appConfig.public.apiUrl}/api/v1/posts/t2s/${postDetails.value?.content}`
+		`${appConfig.public.apiUrl}/api/v1/posts/t2s/${postDetails.value?.slug}`
 )
 const player = ref<HTMLAudioElement | null>(null)
 const canvas = ref<HTMLCanvasElement | null>(null)
 const isPause = ref(true)
 
-useSeoMeta({
-	title: postDetails.value?.title,
-	description: postDetails.value?.content,
-	ogImage: url,
-	ogImageSecureUrl: url,
-	ogImageWidth: 1200,
-	ogImageHeight: 600,
-	twitterImage: url
-})
-useAVWaveform(player, canvas, {
-	src: audioUrl,
-	canvHeight: 56,
-	canvWidth: 768,
-	barColor: 'lime'
-})
+if (postDetails.value) {
+	useSeoMeta({
+		title: postDetails.value?.title,
+		description: postDetails.value?.content,
+		ogImage: url,
+		ogImageSecureUrl: url,
+		ogImageWidth: 1200,
+		ogImageHeight: 600,
+		twitterImage: url
+	})
+}
+if (process.client) {
+	useAVWaveform(player, canvas, {
+		src: audioUrl,
+		canvHeight: 56,
+		canvWidth: 768,
+		barColor: 'lime'
+	})
+}
 
 onMounted(() => {
 	player.value?.addEventListener('play', updatePauseState)
@@ -173,7 +172,7 @@ provide('slug', slug)
 			</template>
 			<div class="w-full max-w-[832px]">
 				<article
-					class="bg-white border border-neutral-200 rounded-lg"
+					class="bg-white border border-neutral-200 rounded-lg pt-4"
 				>
 					<nuxt-img
 						class="h-80 md:w-full"
@@ -214,6 +213,10 @@ provide('slug', slug)
 						<audio
 							class="hidden"
 							ref="player"
+							v-if="
+								postDetails?.content !==
+								undefined
+							"
 							:src="audioUrl"
 							controls
 						/>

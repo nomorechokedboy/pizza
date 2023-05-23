@@ -23,7 +23,6 @@ type UserHandler struct {
 }
 
 func NewUserHandler(usecase usecase.UserUsecase, config config.Config) *UserHandler {
-
 	return &UserHandler{
 		usecase: usecase,
 		config:  config,
@@ -70,7 +69,6 @@ func (handler *UserHandler) CreateUser(c *fiber.Ctx) error {
 // @Success 200 {object} entities.Auth{}
 // @Router /auth/login [post]
 func (handler *UserHandler) Login(c *fiber.Ctx) error {
-
 	req := new(entities.UserLogin)
 	if err := c.BodyParser(req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
@@ -83,7 +81,7 @@ func (handler *UserHandler) Login(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusForbidden, "incorrect password")
 	}
 
-	accessToken, refreshToken := util.GenerateToken(user.Id, []byte(handler.config.AuthConfig.JWTSecret), []byte(handler.config.AuthConfig.JWTRefreshToken))
+	accessToken, refreshToken := util.GenerateToken(user.Id, handler.config.AuthConfig)
 
 	if err != nil {
 		return fiber.ErrInternalServerError
@@ -149,8 +147,16 @@ func (handler *UserHandler) UpdateUserById(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request body")
 	}
 
-	updateErr := handler.usecase.UpdateUserInfo(req.Fullname, req.Username, req.PhoneNumber, req.Email, req.Avatar, user.Id)
-	if updateErr != nil && strings.Contains(updateErr.Error(), "duplicate key value violates unique") {
+	updateErr := handler.usecase.UpdateUserInfo(
+		req.Fullname,
+		req.Username,
+		req.PhoneNumber,
+		req.Email,
+		req.Avatar,
+		user.Id,
+	)
+	if updateErr != nil &&
+		strings.Contains(updateErr.Error(), "duplicate key value violates unique") {
 		if strings.Contains(updateErr.Error(), "username") {
 			return fiber.NewError(fiber.StatusConflict, "Username already exist")
 		}
@@ -190,7 +196,10 @@ func (handler *UserHandler) ForgotPassword(c *fiber.Ctx) error {
 }
 
 func (handler *UserHandler) sendMail(reqEmail *UserEmailReq, user *entities.User) {
-	accessToken, _ := util.GenerateToken(user.Id, []byte(handler.config.AuthConfig.JWTSecret), []byte(handler.config.AuthConfig.JWTRefreshToken))
+	accessToken, _ := util.GenerateToken(
+		user.Id,
+		handler.config.AuthConfig,
+	)
 
 	auth := smtp.PlainAuth(
 		"",
@@ -317,5 +326,4 @@ func (handler *UserHandler) UpdatePassword(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 	return c.Status(fiber.StatusOK).SendString("update success")
-
 }

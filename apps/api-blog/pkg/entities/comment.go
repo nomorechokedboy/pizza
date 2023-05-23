@@ -12,14 +12,14 @@ type Comment struct {
 	UserID        uint           `json:"-"`
 	User          User           `json:"user"`
 	PostID        uint           `json:"postId"`
-	Post          Post           `json:"-"`
+	Post          Post           `json:"post"`
 	ParentID      *uint          `json:"-"`
-	Replies       []Comment      `json:"replies" gorm:"foreignkey:ParentID"`
-	Content       string         `gorm:"size:1000" json:"content"`
+	Replies       []Comment      `json:"replies"       gorm:"foreignkey:ParentID"`
+	Content       string         `json:"content"       gorm:"size:1000"`
 	CreatedAt     time.Time      `json:"createdAt"`
 	UpdatedAt     time.Time      `json:"updatedAt"`
 	DeletedAt     gorm.DeletedAt `json:"-"`
-	Reactions     []Reaction     `json:"-" gorm:"polymorphic:Reactable;"`
+	Reactions     []Reaction     `json:"-"             gorm:"polymorphic:Reactable;"`
 	ReactionCount uint           `json:"reactionCount"`
 }
 
