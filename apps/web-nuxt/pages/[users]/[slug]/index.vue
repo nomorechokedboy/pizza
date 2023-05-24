@@ -81,9 +81,10 @@ const editUrl = computed(
 	() => `/${postDetails.value?.user?.id}/${postDetails.value?.slug}/edit`
 )
 const isAuthenticated = useIsAuthenticated()
-const audioUrl = computed(
-	() =>
-		`${appConfig.public.apiUrl}/api/v1/posts/t2s/${postDetails.value?.slug}`
+const audioUrl = computed(() =>
+	postDetails.value?.content
+		? `https://api.voicerss.org/?key=817e51130c864a4ab0d6558d46cbee24&hl=en-us&c=MP3&src=${postDetails.value.content}`
+		: ''
 )
 const player = ref<HTMLAudioElement | null>(null)
 const canvas = ref<HTMLCanvasElement | null>(null)
