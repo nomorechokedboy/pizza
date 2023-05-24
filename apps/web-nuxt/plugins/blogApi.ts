@@ -4,6 +4,7 @@ import {
 	AuthApi,
 	CommentsApi,
 	Configuration,
+	MediaApi,
 	PostsApi,
 	UserApi
 } from '~~/codegen/api'
@@ -21,6 +22,7 @@ type BlogApi = {
 	post: PostsApi
 	user: UserApi
 	notification: NotificationApi
+	media: MediaApi
 }
 
 function autoAttachTokenInterceptor(config: any) {
@@ -58,12 +60,20 @@ export default defineNuxtPlugin(() => {
 	const comment = new CommentsApi(blogApiConfig, undefined, axios)
 	const post = new PostsApi(blogApiConfig, undefined, axios)
 	const user = new UserApi(blogApiConfig, undefined, axios)
+	const media = new MediaApi(blogApiConfig, undefined, axios)
 	const notification = new NotificationApi(
 		notificationApiConfig,
 		undefined,
 		axios
 	)
-	const blogApi: BlogApi = { auth, comment, post, user, notification }
+	const blogApi: BlogApi = {
+		auth,
+		comment,
+		post,
+		user,
+		notification,
+		media
+	}
 
 	function createAxiosResponseInterceptor() {
 		const interceptor = axios.interceptors.response.use(

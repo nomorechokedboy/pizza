@@ -2,14 +2,17 @@
 import { Button } from 'ui-vue'
 
 function computeUserAvatar() {
-	return (
-		postDetails.value?.user?.avatar ||
-		`${appConfig.public.dicebearMedia}${
-			postDetails.value?.user?.fullName ||
-			postDetails.value?.user?.userName ||
-			'A6Blog&backgroundColor=000000'
-		}`
-	)
+	return postDetails.value?.user?.avatar
+		? `${appConfig.public.mediaUrl}${postDetails.value?.user?.avatar}`
+		: `${appConfig.public.dicebearMedia}${
+				postDetails.value?.user?.fullName ||
+				postDetails.value?.user?.userName ||
+				'A6Blog&backgroundColor=000000'
+		  }`
+}
+
+function handleEditProfile() {
+	navigateTo(`/${postDetails.value?.user?.id}/edit`)
 }
 
 const appConfig = useRuntimeConfig()
@@ -86,6 +89,7 @@ const userAvatar = computed(computeUserAvatar)
 						block
 						:loading="isPostDetailsLoading"
 						:loader-position="'center'"
+						@click="handleEditProfile"
 					>
 						{{
 							isUser

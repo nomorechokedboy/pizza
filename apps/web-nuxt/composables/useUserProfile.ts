@@ -7,13 +7,10 @@ type UserProfile = {
 	avatar?: string
 	email?: string
 	username?: string
+	phone?: string
 }
 
-function selectUserProfile({
-	fullname,
-	phone: _phone,
-	...profile
-}: EntitiesUserResponse) {
+function selectUserProfile({ fullname, ...profile }: EntitiesUserResponse) {
 	const userProfile: UserProfile = {
 		name: fullname,
 		...profile
@@ -21,18 +18,31 @@ function selectUserProfile({
 	return userProfile
 }
 
-export function useUserProfile() {
+async function getUserProfile() {
 	const { $blogApi } = useNuxtApp()
+	return $blogApi.auth.authMeGet().then((res) => res.data)
+}
+
+export function useUserProfile() {
 	const isLoggedIn = useIsAuthenticated()
 	const enabled = computed(() => !!isLoggedIn.value)
-	async function getUserProfile() {
-		return $blogApi.auth.authMeGet().then((res) => res.data)
-	}
 
 	return useQuery({
 		queryFn: getUserProfile,
 		queryKey: ['UserProfile'],
 		select: selectUserProfile,
 		enabled
+	})
+}
+
+export function useOtherProfile(id: string) {
+	async function getOtherProfile() {
+		const { $blogApi } = useNuxtApp()
+		return $blogApi.user.userIdGet(id).then((res) => res.data)
+	}
+
+	return useQuery({
+		queryFn: getOtherProfile,
+		queryKey: ['Profile', id]
 	})
 }

@@ -38,13 +38,12 @@ const target = ref(null)
 const targetIsVisible = useElementVisibility(target)
 
 function computeUserAvatar() {
-	return (
-		userProfile.value?.avatar ||
-		`${appConfig.public.dicebearMedia}${
-			userProfile.value?.name ||
-			'A6Blog&backgroundColor=000000'
-		}`
-	)
+	return userProfile.value?.avatar
+		? `${appConfig.public.mediaUrl}${userProfile.value?.avatar}`
+		: `${appConfig.public.dicebearMedia}${
+				userProfile.value?.name ||
+				'A6Blog&backgroundColor=000000'
+		  }`
 }
 
 function computeFormValidity() {

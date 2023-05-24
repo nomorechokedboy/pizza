@@ -236,8 +236,9 @@ provide('slug', slug)
 									:src="
 										postDetails
 											?.user
-											?.avatar ||
-										`${appConfig.public.dicebearMedia}${postDetails?.user?.fullName}`
+											?.avatar
+											? `${appConfig.public.mediaUrl}${postDetails?.user?.avatar}`
+											: `${appConfig.public.dicebearMedia}${postDetails?.user?.fullName}`
 									"
 									:title="
 										postDetails

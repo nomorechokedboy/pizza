@@ -3,10 +3,10 @@ import { Button } from 'ui-vue'
 
 const appConfig = useRuntimeConfig()
 const { data: userProfile, isLoading: isUserProfileLoading } = useUserProfile()
-const userAvatar = computed(
-	() =>
-		userProfile.value?.avatar ||
-		`${appConfig.public.dicebearMedia}${userProfile.value?.name}`
+const userAvatar = computed(() =>
+	userProfile.value?.avatar
+		? `${appConfig.public.mediaUrl}${userProfile.value?.avatar}`
+		: `${appConfig.public.dicebearMedia}${userProfile.value?.name}`
 )
 </script>
 
@@ -55,8 +55,12 @@ const userAvatar = computed(
 				</p>
 			</div>
 		</div>
-		<Button :loading="isUserProfileLoading" loader-position="center"
-			>Edit Profile</Button
+		<NuxtLink :to="`/${$route.params.users}/edit`">
+			<Button
+				:loading="isUserProfileLoading"
+				loader-position="center"
+				>Edit Profile</Button
+			></NuxtLink
 		>
 	</header>
 </template>
