@@ -236,8 +236,9 @@ provide('slug', slug)
 									:src="
 										postDetails
 											?.user
-											?.avatar ||
-										`${appConfig.public.dicebearMedia}${postDetails?.user?.fullName}`
+											?.avatar
+											? `${appConfig.public.mediaUrl}${postDetails?.user?.avatar}`
+											: `${appConfig.public.dicebearMedia}${postDetails?.user?.fullName}`
 									"
 									:title="
 										postDetails
@@ -282,7 +283,7 @@ provide('slug', slug)
 						</h1>
 						<!-- <Tags :tags="tags" /> -->
 						<main class="max-w-full">
-							<VueMarkdown
+							<Markdown
 								class="markdown"
 								:key="
 									postDetails?.content

@@ -32,7 +32,7 @@ function haveComments() {
 	return comments === 0 ? 'Add Comment' : `${comments} comments`
 }
 function calculateTo() {
-	return `/${owner.name}/${slug}`
+	return `/${owner.id}/${slug}`
 }
 
 const comment = computed(haveComments)

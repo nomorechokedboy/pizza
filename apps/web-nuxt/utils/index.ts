@@ -123,10 +123,10 @@ export function flattenPostData(
 				slug: slug || '',
 				title: title || '',
 				user: {
-					avatar:
-						user?.avatar ||
-						`${appConfig.public.dicebearMedia}${user?.fullName}`,
-					id: id || 0,
+					avatar: user?.avatar
+						? `${appConfig.public.mediaUrl}${user?.avatar}`
+						: `${appConfig.public.dicebearMedia}${user?.fullName}`,
+					id: user?.id || 0,
 					name: user?.fullName || 'User name'
 				}
 			}

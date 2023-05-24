@@ -41,7 +41,7 @@ defineProps<ListArticleProps>()
 			:owner="{
 				src: user.avatar,
 				name: user.name,
-				id: id ?? 0
+				id: user.id || 0
 			}"
 			:slug="slug || ''"
 			:tags="['tags']"

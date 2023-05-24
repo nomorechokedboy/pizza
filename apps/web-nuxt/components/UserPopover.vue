@@ -15,10 +15,10 @@ function handleToggle() {
 const appConfig = useRuntimeConfig()
 const { data: userProfile, isLoading: isUserProfileLoading } = useUserProfile()
 const toggle = ref(false)
-const userAvatar = computed(
-	() =>
-		userProfile.value?.avatar ||
-		`${appConfig.public.dicebearMedia}${userProfile.value?.name}`
+const userAvatar = computed(() =>
+	userProfile.value?.avatar
+		? `${appConfig.public.mediaUrl}${userProfile.value?.avatar}`
+		: `${appConfig.public.dicebearMedia}${userProfile.value?.name}`
 )
 const target = ref<HTMLDivElement | null>(null)
 const notifyController = inject<AbortController>('notifyController')
@@ -50,7 +50,7 @@ onClickOutside(target, () => (toggle.value = false))
 			>
 				<NuxtLink
 					:to="`/${
-						userProfile?.name || 'User name'
+						userProfile?.id || 'User name'
 					}`"
 				>
 					<span class="fw-medium block">
