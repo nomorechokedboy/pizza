@@ -283,7 +283,7 @@ provide('slug', slug)
 						</h1>
 						<!-- <Tags :tags="tags" /> -->
 						<main class="max-w-full">
-							<VueMarkdown
+							<Markdown
 								class="markdown"
 								:key="
 									postDetails?.content

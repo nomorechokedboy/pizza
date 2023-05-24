@@ -73,7 +73,7 @@ function commentToProps({
 							user?.fullName ||
 							'A6Blog'
 					  }`
-					: user?.avatar
+					: `${appConfig.public.mediaUrl}${user.avatar}`
 		},
 		like: 0,
 		replies: replies?.map(commentToProps) || [],

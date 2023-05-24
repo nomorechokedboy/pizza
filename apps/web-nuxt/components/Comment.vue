@@ -284,7 +284,7 @@ onClickOutside(target, handleCloseDropdown)
 							"
 							reversed
 						/>
-						<VueMarkdown
+						<Markdown
 							v-if="
 								editMode &&
 								previewMode
@@ -298,7 +298,7 @@ onClickOutside(target, handleCloseDropdown)
 								class="skeleton resize-none"
 								v-if="loading"
 							/>
-							<VueMarkdown
+							<Markdown
 								v-else
 								:source="
 									content

@@ -23,7 +23,7 @@ const previewMode = ref(false)
 			class="text-neutral-900 text-base shadow rounded-md flex-1 flex flex-col gap-4 px-3 pt-2 pb-4"
 		>
 			<main class="min-h-[134px]">
-				<VueMarkdown
+				<Markdown
 					v-if="previewMode"
 					:source="formData.content"
 					:key="formData.content"
