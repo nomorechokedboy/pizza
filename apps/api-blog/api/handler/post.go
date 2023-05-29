@@ -8,7 +8,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 
@@ -317,12 +316,10 @@ func (handler *PostHandler) GetPostAudio(c *fiber.Ctx) error {
 		)
 		res, err := http.Get(url)
 		if err != nil {
-			log.Println("Request audio err:", err)
 			return fiber.NewError(fiber.StatusInternalServerError, "Internal error")
 		}
 
 		if res.StatusCode != http.StatusOK {
-			log.Println("Error retrieve audio:", res, url)
 			return fiber.ErrInternalServerError
 		}
 
