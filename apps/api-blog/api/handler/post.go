@@ -9,6 +9,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gosimple/slug"
@@ -311,7 +312,7 @@ func (handler *PostHandler) GetPostAudio(c *fiber.Ctx) error {
 			"%s?key=%s&hl=en-us&c=MP3&src=%s",
 			handler.config.AudioAPI.Link,
 			handler.config.AudioAPI.Key,
-			content,
+			url.QueryEscape(content),
 		)
 		res, err := http.Get(url)
 		if err != nil {
@@ -319,7 +320,7 @@ func (handler *PostHandler) GetPostAudio(c *fiber.Ctx) error {
 		}
 
 		if res.StatusCode != http.StatusOK {
-			return fiber.NewError(fiber.StatusInternalServerError, "Failed to retrieve audio")
+			return fiber.ErrInternalServerError
 		}
 
 		if exists, _ := handler.minioClient.BucketExists(ctx, "audio"); !exists {

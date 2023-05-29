@@ -37,6 +37,7 @@ async function setupNotifyConnectionWithRetry(): Promise<void> {
 	)
 }
 
+const appConfig = useRuntimeConfig()
 const toggle = ref(false)
 const { data: userProfile } = useUserProfile()
 const target = ref<HTMLDivElement | null>(null)
@@ -115,11 +116,7 @@ watchEffect(() => {
 					:key="notification.id"
 				>
 					<NotificationItem
-						:avatar="
-							notification
-								.notificationChange
-								.actor.avatar
-						"
+						:avatar="`${appConfig.public.mediaUrl}${notification.notificationChange.actor.avatar}`"
 						:actionType="
 							notification.actionType
 						"
