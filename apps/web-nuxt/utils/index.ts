@@ -174,6 +174,7 @@ export function setupNotifyConnection(
 			// so it gets handled by the onerror callback below:
 			if (msg.event === 'notification') {
 				refetch()
+				console.log(msg.data)
 			}
 		},
 		onclose() {

@@ -169,7 +169,7 @@ importers:
                         codemirror: 6.0.1
                         dayjs: 1.11.7
                         jwt-decode: 3.1.2
-                        markdown-vue: 1.0.1_vue@3.2.47
+                        markdown-vue: link:../../../../../Vuejs/markdown-vue
                         prismjs: 1.29.0
                         rehype-prism: 2.2.2_unified@10.1.2
                         rehype-raw: 6.1.1
