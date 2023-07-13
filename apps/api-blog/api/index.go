@@ -1,34 +1,24 @@
-package main
+package handler
 
 import (
 	"api-blog/api/config"
 	"api-blog/api/util"
-	_ "api-blog/docs"
 	"api-blog/pkg/entities"
 	notificationEntities "api-blog/src/notification/entities"
 	"api-blog/src/server"
-	"fmt"
 	"log"
+	"net/http"
 	"time"
 
+	"github.com/gofiber/adaptor/v2"
+	"github.com/minio/minio-go/v7"
 	"github.com/redis/go-redis/v9"
+	"gorm.io/gorm"
 )
 
-func failOnError(err error, msg string) {
-	if err != nil {
-		log.Panicf("%s: %s", msg, err)
-	}
-}
+func Handler(w http.ResponseWriter, r *http.Request) {
+	r.RequestURI = r.URL.String()
 
-// @title web Blog
-// @version 1.0
-// @description This is a web blog
-// @BasePath /api/v1
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name Authorization
-// @description Apply "bearer " before token in authorization
-func main() {
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
@@ -61,7 +51,6 @@ func main() {
 		); err != nil {
 		log.Panic("failed to migrate database: ", err)
 	}
-
 	// Minio
 	minioClient, err := util.ConnectMinio(cfg)
 	if err != nil {
@@ -74,7 +63,16 @@ func main() {
 		DB:       cfg.Redis.DB,
 	})
 
-	app := server.New(cfg, db, minioClient, rdb)
-	port := fmt.Sprintf(":%v", cfg.Server.Port)
-	app.Listen(port)
+	handler(cfg, db, minioClient, rdb).ServeHTTP(w, r)
+}
+
+func handler(
+	config *config.Config,
+	db *gorm.DB,
+	minioClient *minio.Client,
+	rdb *redis.Client,
+) http.HandlerFunc {
+	app := server.New(config, db, minioClient, rdb)
+
+	return adaptor.FiberApp(app)
 }
