@@ -1,0 +1,871 @@
+basePath: /api/v1
+definitions:
+        common.BasePaginationResponse-entities_Comment:
+                properties:
+                        items:
+                                items:
+                                        $ref: '#/definitions/entities.Comment'
+                                type: array
+                        page:
+                                type: integer
+                        page_size:
+                                type: integer
+                        total:
+                                type: integer
+                type: object
+        common.BasePaginationResponse-entities_PostResponse:
+                properties:
+                        items:
+                                items:
+                                        $ref: '#/definitions/entities.PostResponse'
+                                type: array
+                        page:
+                                type: integer
+                        page_size:
+                                type: integer
+                        total:
+                                type: integer
+                type: object
+        entities.Auth:
+                properties:
+                        refresh_token:
+                                type: string
+                        token:
+                                type: string
+                type: object
+        entities.Comment:
+                properties:
+                        content:
+                                type: string
+                        createdAt:
+                                type: string
+                        id:
+                                type: integer
+                        post:
+                                $ref: '#/definitions/entities.Post'
+                        postId:
+                                type: integer
+                        reactionCount:
+                                type: integer
+                        replies:
+                                items:
+                                        $ref: '#/definitions/entities.Comment'
+                                type: array
+                        updatedAt:
+                                type: string
+                        user:
+                                $ref: '#/definitions/entities.User'
+                type: object
+        entities.CommentRequest:
+                properties:
+                        content:
+                                type: string
+                        parentId:
+                                type: integer
+                        postId:
+                                type: integer
+                type: object
+        entities.Post:
+                properties:
+                        content:
+                                type: string
+                        createdAt:
+                                type: string
+                        id:
+                                type: integer
+                        image:
+                                type: string
+                        parentId:
+                                type: integer
+                        published:
+                                type: boolean
+                        publishedAt:
+                                type: string
+                        reactionCount:
+                                type: integer
+                        slug:
+                                type: string
+                        title:
+                                type: string
+                        updatedAt:
+                                type: string
+                        userId:
+                                type: integer
+                type: object
+        entities.PostRequest:
+                properties:
+                        content:
+                                type: string
+                        image:
+                                type: string
+                        parentId:
+                                type: integer
+                        published:
+                                type: boolean
+                        title:
+                                type: string
+                type: object
+        entities.PostResponse:
+                properties:
+                        commentCount:
+                                type: integer
+                        content:
+                                type: string
+                        createdAt:
+                                type: string
+                        id:
+                                type: integer
+                        image:
+                                type: string
+                        parent:
+                                $ref: '#/definitions/entities.Post'
+                        published:
+                                type: boolean
+                        publishedAt:
+                                type: string
+                        reactionCount:
+                                type: integer
+                        reactions:
+                                items:
+                                        $ref: '#/definitions/entities.Reaction'
+                                type: array
+                        slug:
+                                type: string
+                        title:
+                                type: string
+                        updatedAt:
+                                type: string
+                        user:
+                                $ref: '#/definitions/entities.User'
+                type: object
+        entities.Reaction:
+                properties:
+                        createdAt:
+                                type: string
+                        updatedAt:
+                                type: string
+                        user:
+                                $ref: '#/definitions/entities.User'
+                type: object
+        entities.SignUpBody:
+                properties:
+                        email:
+                                type: string
+                        fullname:
+                                type: string
+                        password:
+                                type: string
+                        username:
+                                type: string
+                type: object
+        entities.UpdatePassword:
+                properties:
+                        newPassword:
+                                type: string
+                        oldPassword:
+                                type: string
+                type: object
+        entities.User:
+                properties:
+                        avatar:
+                                type: string
+                        createdAt:
+                                type: string
+                        email:
+                                type: string
+                        fullName:
+                                type: string
+                        id:
+                                type: integer
+                        identifier:
+                                type: string
+                        phoneNumber:
+                                type: string
+                        updatedAt:
+                                type: string
+                        userName:
+                                type: string
+                type: object
+        entities.UserLogin:
+                properties:
+                        identifier:
+                                type: string
+                        password:
+                                type: string
+                type: object
+        entities.UserReq:
+                properties:
+                        avatar:
+                                type: string
+                        email:
+                                type: string
+                        fullname:
+                                type: string
+                        phonenumber:
+                                type: string
+                        username:
+                                type: string
+                type: object
+        entities.UserResponse:
+                properties:
+                        avatar:
+                                type: string
+                        email:
+                                type: string
+                        fullname:
+                                type: string
+                        id:
+                                type: integer
+                        phone:
+                                type: string
+                        username:
+                                type: string
+                type: object
+        entities.WriteReactionBody:
+                properties:
+                        reactableId:
+                                type: integer
+                        reactableType:
+                                enum:
+                                        - posts
+                                        - comments
+                                type: string
+                required:
+                        - reactableId
+                        - reactableType
+                type: object
+        handler.RefreshToken.request:
+                properties:
+                        refresh_token:
+                                type: string
+                type: object
+        handler.ResetPassword.resetPasswordReq:
+                properties:
+                        password:
+                                type: string
+                        token:
+                                type: string
+                type: object
+        handler.UpdateComment.commentRequest:
+                properties:
+                        content:
+                                type: string
+                type: object
+        handler.UserEmailReq:
+                properties:
+                        email:
+                                type: string
+                type: object
+info:
+        contact: {}
+        description: This is a web blog
+        title: web Blog
+        version: '1.0'
+paths:
+        /auth/forgot-password:
+                post:
+                        consumes:
+                                - application/json
+                        description: send email to user for reset password
+                        parameters:
+                                - description: user email
+                                  in: body
+                                  name: todo
+                                  required: true
+                                  schema:
+                                          $ref: '#/definitions/handler.UserEmailReq'
+                        responses:
+                                '200':
+                                        description: OK
+                        summary: option when user forgot password
+                        tags:
+                                - Auth
+        /auth/login:
+                post:
+                        consumes:
+                                - application/json
+                        description: Use for login response the refresh_token and accessToken
+                        parameters:
+                                - description: Login
+                                  in: body
+                                  name: todo
+                                  required: true
+                                  schema:
+                                          $ref: '#/definitions/entities.UserLogin'
+                        responses:
+                                '200':
+                                        description: OK
+                                        schema:
+                                                $ref: '#/definitions/entities.Auth'
+                        summary: User Login
+                        tags:
+                                - Auth
+        /auth/me:
+                get:
+                        consumes:
+                                - application/json
+                        description: Get UserInfo by accessToken
+                        responses:
+                                '200':
+                                        description: OK
+                                        schema:
+                                                $ref: '#/definitions/entities.UserResponse'
+                        security:
+                                - ApiKeyAuth: []
+                        summary: Get user infor by token
+                        tags:
+                                - Auth
+        /auth/refresh-token:
+                post:
+                        description: Create a new access token.
+                        parameters:
+                                - description: refresh_token
+                                  in: body
+                                  name: request
+                                  required: true
+                                  schema:
+                                          $ref: '#/definitions/handler.RefreshToken.request'
+                        produces:
+                                - application/json
+                        responses:
+                                '200':
+                                        description: OK
+                                        schema:
+                                                $ref: '#/definitions/entities.Auth'
+                        summary: create a new access token
+                        tags:
+                                - Auth
+        /auth/register:
+                post:
+                        consumes:
+                                - application/json
+                        description: Create New UserUsecase
+                        parameters:
+                                - description: New User
+                                  in: body
+                                  name: todo
+                                  required: true
+                                  schema:
+                                          $ref: '#/definitions/entities.SignUpBody'
+                        responses:
+                                '200':
+                                        description: OK
+                        summary: Create User
+                        tags:
+                                - Auth
+        /auth/reset-password:
+                put:
+                        consumes:
+                                - application/json
+                        description: reset password by token
+                        parameters:
+                                - description: new Password
+                                  in: body
+                                  name: todo
+                                  required: true
+                                  schema:
+                                          $ref: '#/definitions/handler.ResetPassword.resetPasswordReq'
+                        responses:
+                                '200':
+                                        description: OK
+                        summary: reset user password
+                        tags:
+                                - Auth
+        /auth/update-password:
+                put:
+                        consumes:
+                                - application/json
+                        description: Update Password
+                        parameters:
+                                - description: Updated Password
+                                  in: body
+                                  name: todo
+                                  required: true
+                                  schema:
+                                          $ref: '#/definitions/entities.UpdatePassword'
+                        responses:
+                                '200':
+                                        description: OK
+                        security:
+                                - ApiKeyAuth: []
+                        tags:
+                                - Auth
+        /comments/:
+                get:
+                        description: get all comments from specfied comment
+                        parameters:
+                                - description: User ID
+                                  in: query
+                                  name: userID
+                                  type: integer
+                                - description: Post ID
+                                  in: query
+                                  name: postID
+                                  type: integer
+                                - description: Parent ID
+                                  in: query
+                                  name: parentID
+                                  type: integer
+                                - description: Page
+                                  in: query
+                                  name: page
+                                  type: integer
+                                - description: Page Size
+                                  in: query
+                                  name: pageSize
+                                  type: integer
+                                - default: desc
+                                  description: Sort direction
+                                  enum:
+                                          - asc
+                                          - desc
+                                  in: query
+                                  name: sort
+                                  type: string
+                                - default: id
+                                  description: Sort by
+                                  enum:
+                                          - id
+                                          - user_id
+                                          - parent_id
+                                  in: query
+                                  name: sortBy
+                                  type: string
+                        responses:
+                                '200':
+                                        description: OK
+                                        schema:
+                                                $ref: '#/definitions/common.BasePaginationResponse-entities_Comment'
+                                '404':
+                                        description: Not Found
+                                '500':
+                                        description: Internal Server Error
+                        summary: Show all comments from comment
+                        tags:
+                                - Comments
+                                - Comments
+                post:
+                        consumes:
+                                - application/json
+                        description: Create comment
+                        parameters:
+                                - description: Comment
+                                  in: body
+                                  name: comment
+                                  required: true
+                                  schema:
+                                          $ref: '#/definitions/entities.CommentRequest'
+                        responses:
+                                '201':
+                                        description: Created
+                                        schema:
+                                                $ref: '#/definitions/entities.Comment'
+                                '400':
+                                        description: Bad Request
+                                '500':
+                                        description: Internal Server Error
+                        security:
+                                - ApiKeyAuth: []
+                        summary: Create comment
+                        tags:
+                                - Comments
+        /comments/{id}:
+                delete:
+                        description: Delete comment
+                        parameters:
+                                - description: Comment ID
+                                  in: path
+                                  name: id
+                                  required: true
+                                  type: integer
+                        produces:
+                                - application/json
+                        responses:
+                                '200':
+                                        description: OK
+                                        schema:
+                                                $ref: '#/definitions/entities.Comment'
+                                '400':
+                                        description: Bad Request
+                                '500':
+                                        description: Internal Server Error
+                        security:
+                                - ApiKeyAuth: []
+                        summary: Delete specified comment
+                        tags:
+                                - Comments
+                put:
+                        description: Update comment
+                        parameters:
+                                - description: Comment ID
+                                  in: path
+                                  name: id
+                                  required: true
+                                  type: integer
+                                - description: Comment
+                                  in: body
+                                  name: comment
+                                  required: true
+                                  schema:
+                                          $ref: '#/definitions/handler.UpdateComment.commentRequest'
+                        responses:
+                                '200':
+                                        description: OK
+                                        schema:
+                                                $ref: '#/definitions/entities.Comment'
+                                '400':
+                                        description: Bad Request
+                                '500':
+                                        description: Internal Server Error
+                        security:
+                                - ApiKeyAuth: []
+                        summary: Update comment with new message
+                        tags:
+                                - Comments
+        /media/{uuId}/{objectName}:
+                get:
+                        consumes:
+                                - application/json
+                        parameters:
+                                - description: ID
+                                  in: path
+                                  name: uuId
+                                  required: true
+                                  type: string
+                                - description: object name
+                                  in: path
+                                  name: objectName
+                                  required: true
+                                  type: string
+                        produces:
+                                - image/png
+                        responses:
+                                '200':
+                                        description: OK
+                                '404':
+                                        description: Cannot found the Image
+                                '500':
+                                        description: Cannot get Image
+                        summary: get Media
+                        tags:
+                                - Media
+        /media/upload:
+                post:
+                        consumes:
+                                - multipart/form-data
+                        operationId: image
+                        parameters:
+                                - description: upfile
+                                  in: formData
+                                  name: image
+                                  required: true
+                                  type: file
+                        produces:
+                                - application/json
+                        responses:
+                                '200':
+                                        description: OK
+                        security:
+                                - ApiKeyAuth: []
+                        summary: Post to save image
+                        tags:
+                                - Media
+        /posts:
+                get:
+                        description: get all posts
+                        parameters:
+                                - description: User ID
+                                  in: query
+                                  name: userID
+                                  type: integer
+                                - description: Parent ID
+                                  in: query
+                                  name: parentID
+                                  type: integer
+                                - description: Page
+                                  in: query
+                                  name: page
+                                  type: integer
+                                - description: Page Size
+                                  in: query
+                                  name: pageSize
+                                  type: integer
+                                - default: desc
+                                  description: Sort direction
+                                  enum:
+                                          - asc
+                                          - desc
+                                  in: query
+                                  name: sort
+                                  type: string
+                                - default: id
+                                  description: Sort by
+                                  enum:
+                                          - id
+                                          - title
+                                          - slug
+                                          - user_id
+                                          - parent_id
+                                  in: query
+                                  name: sortBy
+                                  type: string
+                        responses:
+                                '200':
+                                        description: OK
+                                        schema:
+                                                $ref: '#/definitions/common.BasePaginationResponse-entities_PostResponse'
+                                '404':
+                                        description: Not Found
+                                '500':
+                                        description: Internal Server Error
+                        summary: Show all posts
+                        tags:
+                                - Posts
+        /posts/:
+                post:
+                        consumes:
+                                - application/json
+                        description: Create post
+                        parameters:
+                                - description: Post
+                                  in: body
+                                  name: post
+                                  required: true
+                                  schema:
+                                          $ref: '#/definitions/entities.PostRequest'
+                        responses:
+                                '201':
+                                        description: Created
+                                        schema:
+                                                $ref: '#/definitions/entities.PostResponse'
+                                '400':
+                                        description: Bad Request
+                                '409':
+                                        description: Conflict
+                                '500':
+                                        description: Internal Server Error
+                        security:
+                                - ApiKeyAuth: []
+                        summary: Create post
+                        tags:
+                                - Posts
+        /posts/{id}:
+                delete:
+                        description: Delete post
+                        parameters:
+                                - description: Post ID
+                                  in: path
+                                  name: id
+                                  required: true
+                                  type: integer
+                        produces:
+                                - application/json
+                        responses:
+                                '200':
+                                        description: OK
+                                        schema:
+                                                $ref: '#/definitions/entities.PostResponse'
+                                '400':
+                                        description: Bad Request
+                                '500':
+                                        description: Internal Server Error
+                        security:
+                                - ApiKeyAuth: []
+                        summary: Delete specified post
+                        tags:
+                                - Posts
+                put:
+                        description: Update post
+                        parameters:
+                                - description: Post ID
+                                  in: path
+                                  name: id
+                                  required: true
+                                  type: integer
+                                - description: Post
+                                  in: body
+                                  name: post
+                                  required: true
+                                  schema:
+                                          $ref: '#/definitions/entities.PostRequest'
+                        responses:
+                                '200':
+                                        description: OK
+                                        schema:
+                                                $ref: '#/definitions/entities.PostResponse'
+                                '400':
+                                        description: Bad Request
+                                '500':
+                                        description: Internal Server Error
+                        security:
+                                - ApiKeyAuth: []
+                        summary: Update post with new info
+                        tags:
+                                - Posts
+        /posts/{slug}:
+                get:
+                        description: Get post by slug
+                        parameters:
+                                - description: Post Slug
+                                  in: path
+                                  name: slug
+                                  required: true
+                                  type: string
+                        responses:
+                                '200':
+                                        description: OK
+                                        schema:
+                                                $ref: '#/definitions/entities.PostResponse'
+                                '400':
+                                        description: Bad Request
+                                '404':
+                                        description: Not Found
+                        summary: Get post
+                        tags:
+                                - Posts
+        /posts/t2s/{postSlug}:
+                get:
+                        description: Convert post to speech
+                        parameters:
+                                - description: Content
+                                  in: path
+                                  name: content
+                                  required: true
+                                  type: string
+                        responses:
+                                '200':
+                                        description: OK
+                                '400':
+                                        description: Bad Request
+                                '500':
+                                        description: Internal Server Error
+                        summary: Convert post to speech
+                        tags:
+                                - Posts
+        /reaction/drop:
+                delete:
+                        description: Delete a reaction
+                        parameters:
+                                - description: Delete reaction body
+                                  in: body
+                                  name: post
+                                  required: true
+                                  schema:
+                                          $ref: '#/definitions/entities.WriteReactionBody'
+                        produces:
+                                - application/json
+                        responses:
+                                '200':
+                                        description: OK
+                                        schema:
+                                                $ref: '#/definitions/entities.Reaction'
+                                '400':
+                                        description: Bad Request
+                                        schema:
+                                                type: string
+                                '404':
+                                        description: Not Found
+                                        schema:
+                                                type: string
+                                '409':
+                                        description: Conflict
+                                        schema:
+                                                type: string
+                                '422':
+                                        description: Unprocessable Entity
+                                        schema:
+                                                type: string
+                                '500':
+                                        description: Internal Server Error
+                                        schema:
+                                                type: string
+                        security:
+                                - ApiKeyAuth: []
+                        summary: Delete user reaction to a post
+                        tags:
+                                - Reaction
+        /reaction/react:
+                post:
+                        consumes:
+                                - application/json
+                        description: Create a reaction to an article
+                        parameters:
+                                - description: Create reaction body
+                                  in: body
+                                  name: post
+                                  required: true
+                                  schema:
+                                          $ref: '#/definitions/entities.WriteReactionBody'
+                        responses:
+                                '201':
+                                        description: Created
+                                        schema:
+                                                $ref: '#/definitions/entities.Reaction'
+                                '400':
+                                        description: Bad Request
+                                        schema:
+                                                type: string
+                                '409':
+                                        description: Conflict
+                                        schema:
+                                                type: string
+                                '422':
+                                        description: Unprocessable Entity
+                                        schema:
+                                                type: string
+                                '500':
+                                        description: Internal Server Error
+                                        schema:
+                                                type: string
+                        security:
+                                - ApiKeyAuth: []
+                        summary: React to a blog post
+                        tags:
+                                - Reaction
+        /user/{id}:
+                get:
+                        consumes:
+                                - application/json
+                        parameters:
+                                - description: User Id
+                                  in: path
+                                  name: id
+                                  required: true
+                                  type: string
+                        responses:
+                                '200':
+                                        description: OK
+                                        schema:
+                                                $ref: '#/definitions/entities.UserResponse'
+                        summary: find user profile
+                        tags:
+                                - User
+        /user/update:
+                put:
+                        consumes:
+                                - application/json
+                        description: Update UserInfo by Id from accessToken
+                        parameters:
+                                - description: Updated User
+                                  in: body
+                                  name: todo
+                                  required: true
+                                  schema:
+                                          $ref: '#/definitions/entities.UserReq'
+                        responses:
+                                '200':
+                                        description: OK
+                                        schema:
+                                                $ref: '#/definitions/entities.User'
+                        security:
+                                - ApiKeyAuth: []
+                        summary: Update user infor by token
+                        tags:
+                                - User
+securityDefinitions:
+        ApiKeyAuth:
+                description: Apply "bearer " before token in authorization
+                in: header
+                name: Authorization
+                type: apiKey
+swagger: '2.0'
