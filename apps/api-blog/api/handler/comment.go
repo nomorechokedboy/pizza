@@ -1,19 +1,28 @@
 package handler
 
 import (
-	"api-blog/pkg/common"
 	"api-blog/pkg/entities"
 	"api-blog/pkg/usecase"
+	"api-blog/src/notification"
+	notificationEntities "api-blog/src/notification/entities"
+	"context"
+	"fmt"
+	"log"
+	"time"
+
+	_ "api-blog/pkg/common"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/redis/go-redis/v9"
 )
 
 type CommentHandler struct {
 	usecase usecase.CommentUsecase
+	rdb     *redis.Client
 }
 
-func NewCommentHandler(usecase usecase.CommentUsecase) *CommentHandler {
-	return &CommentHandler{usecase: usecase}
+func NewCommentHandler(usecase usecase.CommentUsecase, rdb *redis.Client) *CommentHandler {
+	return &CommentHandler{usecase: usecase, rdb: rdb}
 }
 
 // @GetAllComments godoc
@@ -27,9 +36,10 @@ func NewCommentHandler(usecase usecase.CommentUsecase) *CommentHandler {
 // @Param  pageSize query int false "Page Size"
 // @Param sort query string false "Sort direction" Enums(asc, desc) default(desc)
 // @Param sortBy query string false "Sort by" Enums(id, user_id, parent_id) default(id)
-// @Success 200 {object} common.BasePaginationResponse[entities.CommentResponse]
+// @Success 200 {object} common.BasePaginationResponse[entities.Comment]
 // @Failure 404
 // @Failure 500
+// @Tags Comments
 // @Router /comments/ [get]
 func (handler *CommentHandler) GetAllComments(c *fiber.Ctx) error {
 	query := new(entities.CommentQuery)
@@ -38,34 +48,50 @@ func (handler *CommentHandler) GetAllComments(c *fiber.Ctx) error {
 		return err
 	}
 
-	comments, err := handler.usecase.GetAllComments(&entities.CommentQuery{
-		UserID:   query.UserID,
-		PostID:   query.PostID,
-		ParentID: query.ParentID,
-		BaseQuery: common.BaseQuery{
-			Page:     query.Page,
-			PageSize: query.PageSize,
-			Sort:     query.Sort,
-			SortBy:   query.SortBy,
-		},
-	})
+	// key := fmt.Sprintf(
+	// 	"comments-%d-page:%d-pageSize:%d-sort:%s-sortBy:%s-userID:%d",
+	// 	query.PostID,
+	// 	query.Page,
+	// 	query.PageSize,
+	// 	query.Sort,
+	// 	query.SortBy,
+	// 	query.UserID,
+	// )
+	// ctx := context.Background()
+	// ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	// defer cancel()
+	//
+	// commentsString, err := handler.rdb.Get(ctx, key).Result()
+	// if err == redis.Nil {
+	// 	comments, err := handler.usecase.GetAllComments(query)
+	// 	if err != nil {
+	// 		return fiber.NewError(fiber.StatusInternalServerError, "failed to get all comments")
+	// 	}
+	//
+	// 	commentsJSON, err := json.Marshal(comments)
+	// 	err = handler.rdb.Set(ctx, key, commentsJSON, time.Hour*5).Err()
+	// 	if err != nil {
+	// 		log.Println("There is some problem with redis")
+	// 	}
+	//
+	// 	return c.JSON(comments)
+	// } else if err != nil {
+	// 	return fiber.NewError(fiber.StatusInternalServerError, "Internal error")
+	// }
+	//
+	// cacheComments := new(common.BasePaginationResponse[entities.Comment])
+	// if err := json.Unmarshal([]byte(commentsString), cacheComments); err != nil {
+	// 	return fiber.NewError(fiber.StatusInternalServerError, "Internal error")
+	// }
 
+	// return c.JSON(cacheComments)
+
+	comments, err := handler.usecase.GetAllComments(query)
 	if err != nil {
-		return fiber.NewError(fiber.StatusNotFound, "failed to get all comments")
+		return fiber.NewError(fiber.StatusInternalServerError, "failed to get all comments")
 	}
 
-	commentRes := common.BasePaginationResponse[entities.CommentResponse]{
-		Items: []entities.CommentResponse{},
-	}
-	commentRes.Page = comments.Page
-	commentRes.PageSize = comments.PageSize
-	commentRes.Total = comments.Total
-
-	for _, comment := range comments.Items {
-		commentRes.Items = append(commentRes.Items, comment.ToResponse())
-	}
-
-	return c.Status(fiber.StatusOK).JSON(commentRes)
+	return c.JSON(comments)
 }
 
 // @CreateComment godoc
@@ -74,7 +100,7 @@ func (handler *CommentHandler) GetAllComments(c *fiber.Ctx) error {
 // @Tags Comments
 // @Accept json
 // @Param comment body entities.CommentRequest true "Comment"
-// @Success 201 {object} entities.CommentResponse
+// @Success 201 {object} entities.Comment
 // @Failure 400
 // @Failure 500
 // @Security ApiKeyAuth
@@ -88,12 +114,28 @@ func (handler *CommentHandler) CreateComment(c *fiber.Ctx) error {
 	}
 
 	comment, err := handler.usecase.CreateComment(authID, req)
-
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to create new comment")
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(comment.ToResponse())
+	go invalidateCommentCache(handler.rdb, int(req.PostID))
+
+	isOwner := authID == comment.Post.UserID
+	notifyRepo := c.Locals("notifyRepository").(notification.NotifyRepository)
+	if req.ParentID == nil && !isOwner {
+		notificationRequest := notificationEntities.NotificationRequest{
+			ActionType: "commented on your post",
+			ActorID:    authID,
+			EntityData: comment.Content,
+			// EntityDataID: comment.ID,
+			EntityID:   comment.ID,
+			EntityType: "comment",
+			NotifierID: comment.Post.UserID,
+		}
+		go notifyRepo.Notify(notificationRequest)
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(comment)
 }
 
 // @UpdateComment godoc
@@ -102,7 +144,7 @@ func (handler *CommentHandler) CreateComment(c *fiber.Ctx) error {
 // @Param id path int true "Comment ID"
 // @Param comment body handler.UpdateComment.commentRequest true "Comment"
 // @Tags Comments
-// @Success 200 {object} entities.CommentResponse
+// @Success 200 {object} entities.Comment
 // @Failure 400
 // @Failure 500
 // @Security ApiKeyAuth
@@ -113,7 +155,6 @@ func (handler *CommentHandler) UpdateComment(c *fiber.Ctx) error {
 	}
 
 	id, err := c.ParamsInt("id")
-
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid comment ID")
 	}
@@ -125,12 +166,13 @@ func (handler *CommentHandler) UpdateComment(c *fiber.Ctx) error {
 	}
 
 	comment, err := handler.usecase.UpdateComment(uint(id), req.Content)
-
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to update specfied comment")
 	}
 
-	return c.Status(fiber.StatusOK).JSON(comment.ToResponse())
+	go invalidateCommentCache(handler.rdb, int(comment.PostID))
+
+	return c.Status(fiber.StatusOK).JSON(comment)
 }
 
 // @DeleteComment godoc
@@ -139,23 +181,61 @@ func (handler *CommentHandler) UpdateComment(c *fiber.Ctx) error {
 // @Param id path int true "Comment ID"
 // @Tags Comments
 // @Produce json
-// @Success 200 {object} entities.CommentResponse
+// @Success 200 {object} entities.Comment
 // @Failure 400
 // @Failure 500
 // @security ApiKeyAuth
 // @Router /comments/{id} [delete]
 func (handler *CommentHandler) DeleteComment(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
-
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid comment ID")
 	}
 
 	comment, err := handler.usecase.DeleteComment(uint(id))
-
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "failed to delete specfied comment")
 	}
 
-	return c.Status(fiber.StatusOK).JSON(comment.ToResponse())
+	notifyRepo := c.Locals("notifyRepository").(notification.NotifyRepository)
+	isOwner := comment.UserID == comment.Post.UserID
+	if !isOwner {
+		req := notificationEntities.NotificationRequest{
+			ActorID:    comment.UserID,
+			ActionType: "commented on your post",
+			EntityData: comment.Content,
+			EntityType: "comment",
+			EntityID:   comment.ID,
+			NotifierID: comment.Post.UserID,
+		}
+		go notifyRepo.DeleteNotification(req)
+	}
+
+	go invalidateCommentCache(handler.rdb, int(comment.PostID))
+
+	return c.Status(fiber.StatusOK).JSON(comment)
+}
+
+func invalidateCommentCache(rdb *redis.Client, postID int) {
+	key := fmt.Sprintf("comments-%d*", postID)
+	invalidateCache(rdb, key)
+}
+
+func invalidateCache(rdb *redis.Client, key string) {
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+
+	pipe := rdb.Pipeline()
+	match := fmt.Sprintf(key)
+	iter := rdb.Scan(ctx, 0, match, 0).Iterator()
+	for iter.Next(ctx) {
+		pipe.Del(ctx, iter.Val())
+	}
+	if err := iter.Err(); err != nil {
+		log.Println("REDIS ERR: ", err)
+	}
+	if _, err := pipe.Exec(ctx); err != nil {
+		log.Println("REDIS ERR: ", err)
+	}
 }

@@ -119,7 +119,7 @@ definePageMeta({ layout: 'new', middleware: ['authn'] })
 				<div
 					class="hidden flex-1 bg-white max-w-1/2 border-l pt-10 overflow-auto preview rounded-r md:block"
 				>
-					<VueMarkdown
+					<Markdown
 						class="markdown"
 						:key="formData.content"
 						:source="formData.content"

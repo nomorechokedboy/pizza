@@ -46,6 +46,7 @@
 	},
 	"dependencies": {
 		"@codemirror/lang-markdown": "^6.1.0",
+		"@microsoft/fetch-event-source": "^2.0.1",
 		"@replit/codemirror-emacs": "^6.0.1",
 		"@replit/codemirror-vim": "^6.0.11",
 		"@resvg/resvg-js": "^2.4.1",
@@ -57,10 +58,16 @@
 		"axios": "^1.3.4",
 		"codemirror": "^6.0.1",
 		"dayjs": "^1.11.7",
+		"jwt-decode": "^3.1.2",
 		"markdown-vue": "^1.0.1",
+		"prismjs": "^1.29.0",
+		"rehype-prism": "^2.2.2",
+		"rehype-raw": "^6.1.1",
+		"remark-gfm": "^3.0.1",
 		"satori": "^0.4.7",
 		"ui-vue": "workspace:*",
 		"v-satori": "^0.1.9",
+		"vue-audio-visual": "^3.0.5",
 		"vue-codemirror": "^6.1.1"
 	}
 }

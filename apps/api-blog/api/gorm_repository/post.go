@@ -33,7 +33,8 @@ func (r *PostGormRepo) GetAllPosts(query *entities.PostQuery) (common.BasePagina
 
 		cond := entities.Post{UserID: query.UserID, ParentID: parentIDaddr, Published: true}
 
-		if err := r.db.Scopes(scopes.Pagination(r.db, entities.Post{}, query.BaseQuery, &res)).
+		if err := r.db.
+			Scopes(scopes.Pagination(r.db, entities.Post{}, query.BaseQuery, &res)).
 			Preload(clause.Associations).
 			Find(&posts, cond).
 			Error; err != nil {
@@ -51,6 +52,7 @@ func (r *PostGormRepo) GetAllPosts(query *entities.PostQuery) (common.BasePagina
 
 	for i, post := range res.Items {
 		res.Items[i].CommentCount = len(post.Comments)
+		res.Items[i].ReactionCount = uint(len(post.Reactions))
 	}
 
 	return res, nil
@@ -63,8 +65,14 @@ func (r *PostGormRepo) GetPostBySlug(slug string) (*entities.Post, error) {
 		Preload(clause.Associations).
 		Joins("JOIN slugs ON slugs.post_id = posts.id AND slugs.slug = ?", slug).
 		First(&post)
+	if res := r.db.
+		Preload(clause.Associations).
+		Find(&post.Reactions); res.Error != nil {
+		return nil, res.Error
+	}
 
 	post.CommentCount = len(post.Comments)
+	post.ReactionCount = uint(len(post.Reactions))
 
 	return &post, tx.Error
 }

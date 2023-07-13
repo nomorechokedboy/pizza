@@ -1,100 +1,125 @@
 <script lang="ts" setup>
-import { ActionIcon } from 'ui-vue'
+import { useElementVisibility } from '@vueuse/core'
+import { ActionIcon, Button } from 'ui-vue'
+import { EntitiesComment } from '~/codegen/api'
 import ChevronIcon from '~icons/mdi/chevron-up-down'
 import { CommentProps } from './Comment.vue'
 
-const source = `
-## Getting Started
+const appConfig = useRuntimeConfig()
+const { $blogApi } = useNuxtApp()
+const { data: userProfile, isLoading: isUserProfileLoading } = useUserProfile()
+const isAuth = useIsAuthenticated()
+const userAvatar = computed(computeUserAvatar)
+const formData = reactive({ content: '' })
+const isFormValid = computed(computeFormValidity)
+const slug = inject<string>('slug', 'no slug')
+const { data: postDetails } = usePostDetails(slug)
+const {
+	data: commentData,
+	isFetching,
+	isFetchingNextPage,
+	isLoading,
+	fetchNextPage,
+	hasNextPage,
+	refetch: refetchComments
+} = usePostComments()
+const comments = computed(computeComments)
+const loading = ref(false)
+const blankCommentProps: Omit<CommentProps, 'id'> = {
+	like: 0,
+	loading: true,
+	createdAt: '',
+	updated: false,
+	replies: [],
+	user: { avatarUrl: '', name: '', id: 1 },
+	content: ''
+}
+const target = ref(null)
+const targetIsVisible = useElementVisibility(target)
 
-First, run the development server:
+function computeUserAvatar() {
+	return userProfile.value?.avatar
+		? `${appConfig.public.mediaUrl}${userProfile.value?.avatar}`
+		: `${appConfig.public.dicebearMedia}${
+				userProfile.value?.name ||
+				'A6Blog&backgroundColor=000000'
+		  }`
+}
 
-\`\`\`bash
-yarn dev
-\`\`\`
+function computeFormValidity() {
+	return (
+		formData.content.length !== 0 &&
+		postDetails.value?.id !== undefined
+	)
+}
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying \`pages/index.js\`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in \`pages/api/hello.js\`.
-
-The \`pages/api\` directory is mapped to \`/api/*\`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_source=github.com&utm_medium=referral&utm_campaign=turborepo-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-`
-
-const comments: CommentProps[] = [
-	{
-		content: source,
-		createdAt: 'Mar 28',
-		updated: true,
-		like: 5,
+function commentToProps({
+	id,
+	content,
+	user,
+	createdAt,
+	updatedAt,
+	replies
+}: EntitiesComment): CommentProps {
+	const cProps: CommentProps = {
+		id: id || 0,
+		content: content || 'Error: No content',
 		user: {
-			name: 'Duong Le',
-			avatarUrl: 'https://res.cloudinary.com/practicaldev/image/fetch/s--5VEqFAA8--/c_fill,f_auto,fl_progressive,h_90,q_66,w_90/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/909049/9a19683f-1e9f-4933-bdba-e7ea2fe5e71c.gif'
+			id: user?.id!,
+			name: user?.fullName || 'Error no fullName',
+			avatarUrl:
+				!user?.avatar || user.avatar === ''
+					? `${appConfig.public.dicebearMedia}${
+							user?.fullName ||
+							'A6Blog'
+					  }`
+					: `${appConfig.public.mediaUrl}${user.avatar}`
 		},
-		replies: []
-	},
-	{
-		content: source,
-		createdAt: 'Mar 28',
-		updated: false,
-		like: 15,
-		user: {
-			name: 'Duong Le',
-			avatarUrl: 'https://res.cloudinary.com/practicaldev/image/fetch/s--5VEqFAA8--/c_fill,f_auto,fl_progressive,h_90,q_66,w_90/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/909049/9a19683f-1e9f-4933-bdba-e7ea2fe5e71c.gif'
-		},
-		replies: [
-			{
-				content: source,
-				createdAt: 'Mar 28',
-				updated: false,
-				like: 15,
-				user: {
-					name: 'Duong Le',
-					avatarUrl: 'https://res.cloudinary.com/practicaldev/image/fetch/s--5VEqFAA8--/c_fill,f_auto,fl_progressive,h_90,q_66,w_90/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/909049/9a19683f-1e9f-4933-bdba-e7ea2fe5e71c.gif'
-				},
-				replies: []
-			},
-			{
-				content: source,
-				createdAt: 'Mar 28',
-				updated: false,
-				like: 15,
-				user: {
-					name: 'Duong Le',
-					avatarUrl: 'https://res.cloudinary.com/practicaldev/image/fetch/s--5VEqFAA8--/c_fill,f_auto,fl_progressive,h_90,q_66,w_90/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/909049/9a19683f-1e9f-4933-bdba-e7ea2fe5e71c.gif'
-				},
-				replies: [
-					{
-						content: source,
-						createdAt: 'Mar 28',
-						updated: false,
-						like: 15,
-						user: {
-							name: 'Duong Le',
-							avatarUrl: 'https://res.cloudinary.com/practicaldev/image/fetch/s--5VEqFAA8--/c_fill,f_auto,fl_progressive,h_90,q_66,w_90/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/909049/9a19683f-1e9f-4933-bdba-e7ea2fe5e71c.gif'
-						},
-						replies: []
-					}
-				]
-			}
-		]
+		like: 0,
+		replies: replies?.map(commentToProps) || [],
+		updated: createdAt !== updatedAt,
+		createdAt: getCalendarTime(createdAt)
 	}
-]
+	return cProps
+}
+
+function computeComments() {
+	const comments: CommentProps[] = []
+	commentData.value?.pages.forEach((page) =>
+		page?.items?.forEach((c) => {
+			comments.push(commentToProps(c))
+		})
+	)
+
+	return comments
+}
+
+async function handleSubmit() {
+	if (!isFormValid) {
+		return
+	}
+
+	loading.value = true
+	try {
+		await $blogApi.comment.commentsPost({
+			content: formData.content,
+			postId: postDetails.value!.id
+		})
+		refetchComments()
+		formData.content = ''
+	} catch (e) {
+		notifyError(e)
+	} finally {
+		loading.value = false
+	}
+}
+watchEffect(() => {
+	const loading =
+		isFetching.value || isLoading.value || isFetchingNextPage.value
+	if (targetIsVisible.value && hasNextPage?.value && !loading) {
+		fetchNextPage()
+	}
+})
 </script>
 
 <template>
@@ -105,7 +130,9 @@ const comments: CommentProps[] = [
 		<header class="flex items-center justify-between">
 			<div class="flex items-center">
 				<h2 class="text-xl text-neutral-800 font-bold">
-					Top comments (0)
+					Top comments ({{
+						postDetails?.commentCount || 0
+					}})
 				</h2>
 				<ActionIcon
 					color="indigo"
@@ -120,11 +147,78 @@ const comments: CommentProps[] = [
 			</div>
 			<!-- <Button>Subscribe</Button> -->
 		</header>
+		<div class="flex flex-col gap-4">
+			<div class="flex gap-2">
+				<div class="w-full max-w-[32px]">
+					<Avatar
+						v-if="!isUserProfileLoading"
+						class="md:w-8"
+						width="24"
+						:src="userAvatar"
+					/>
+					<div
+						class="skeleton !rounded-full"
+						v-else
+					>
+						<div
+							class="w-6 h-6 md:!w-8 md:h-8"
+						/>
+					</div>
+				</div>
+				<form class="flex flex-col gap-4 flex-1">
+					<div
+						class="text-neutral-900 text-base shadow rounded-md flex-1 flex flex-col gap-4 px-3 pt-2 pb-4"
+					>
+						<main>
+							<RichTextEditor
+								v-model="
+									formData.content
+								"
+								placeholder="Your comment..."
+								reversed
+							/>
+						</main>
+					</div>
+					<div
+						class="flex items-center gap-3 justify-start"
+						v-if="isAuth"
+					>
+						<Button
+							type="submit"
+							@click.prevent="
+								handleSubmit
+							"
+							:disabled="!isFormValid"
+							:loading="loading"
+							>Comment</Button
+						>
+						<Button
+							color="indigo"
+							variant="subtle"
+							:disabled="
+								!isFormValid ||
+								loading
+							"
+							>Preview</Button
+						>
+					</div>
+				</form>
+			</div>
+		</div>
 		<Comment
-			v-for="(comment, i) in comments"
+			v-for="comment in comments"
 			v-bind="comment"
-			:key="i"
+			:key="`${comment.id}${comment.content}`"
 		/>
+		<template v-if="isFetching || isFetchingNextPage || isLoading">
+			<Comment
+				v-for="n in 5"
+				v-bind="blankCommentProps"
+				:id="n"
+				:key="n"
+			/>
+		</template>
+		<div ref="target" />
 		<!-- <nav class="flex items-center justify-center text-neutral-500 text-sm">
             <p>Code of conduct</p>
             <div class="py-2 px-3">

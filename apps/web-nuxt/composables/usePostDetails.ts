@@ -1,13 +1,32 @@
+import { QueryFunctionContext, useQuery } from '@tanstack/vue-query'
 import { EntitiesPostResponse } from '~/codegen/api'
-import { baseURL } from '~/constants'
 
-export function getPostDetails(slug: string): Promise<EntitiesPostResponse> {
-	return $fetch(`${baseURL}/api/v1/posts/${slug}`)
+export async function getPostDetails({
+	queryKey
+}: QueryFunctionContext<string[], any>) {
+	const { $blogApi } = useNuxtApp()
+	return $blogApi.post.postsSlugGet(queryKey[1]).then((resp) => resp.data)
 }
 
 export function usePostDetails(slug: string) {
+	return useQuery({
+		queryFn: getPostDetails,
+		queryKey: ['postDetails', slug]
+	})
+}
+
+export function getPostDetailsSSR(slug: string): Promise<EntitiesPostResponse> {
+	const appConfig = useRuntimeConfig()
+	return $fetch(`${appConfig.public.apiUrl}/api/v1/posts/${slug}`)
+}
+
+export function usePostDetailsSSR(slug: string) {
+	if (slug === '[object Object]') {
+		return { data: ref(null) }
+	}
+
 	function fetchPostDetails() {
-		return getPostDetails(slug)
+		return getPostDetailsSSR(slug)
 	}
 
 	return useAsyncData<EntitiesPostResponse>(

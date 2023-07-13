@@ -1,45 +1,68 @@
 package config
 
 import (
-	"github.com/kelseyhightower/envconfig"
+	"github.com/ilyakaznacheev/cleanenv"
 )
 
+type AuthConfig struct {
+	JWTRefreshToken     string `env:"JWT_REFRESH_SECRET"   env-default:"refresh-secret"`
+	JWTSecret           string `env:"JWT_SECRET"           env-default:"token-secret"`
+	TokenExpire         int    `env:"TOKEN_EXPIRE"         env-default:"15"`
+	RefreshTokenExpires int    `env:"REFRESH_TOKEN_EXPIRE" env-default:"720"`
+}
+
 type Config struct {
+	Env      string `env:"ENV" env-default:"dev"`
 	Database struct {
-		Port     string `envconfig:"DB_PORT" default:"5432"`
-		Host     string `envconfig:"DB_HOST" default:"localhost"`
-		Name     string `envconfig:"DB_NAME" default:"pizza"`
-		User     string `envconfig:"DB_USER" default:"postgres"`
-		Password string `envconfig:"DB_PASSWORD" default:"postgres"`
+		Port     string `env:"DB_PORT" env-default:"5432"`
+		Host     string `env:"DB_HOST" env-default:"localhost"`
+		Name     string `env:"DB_NAME" env-default:"pizza"`
+		User     string `env:"DB_USER" env-default:"postgres"`
+		Password string `env:"DB_PASSWORD" env-default:"postgres"`
 	}
 	Server struct {
-		Host string `envconfig:"HOST" default:""`
-		Port string `envconfig:"PORT" default:"8080"`
+		Host string `env:"HOST" env-default:""`
+		Port string `env:"PORT" env-default:"8080"`
 	}
-	AuthConfig struct {
-		JWTRefreshToken string `envconfig:"JWT_REFRESH_SECRET" default:"refresh-secret"`
-		JWTSecret       string `envconfig:"JWT_SECRET" default:"my-secret"`
-	}
+	AuthConfig
 	AuthEmail struct {
-		Email    string `envconfig:"EMAIL" default:"kristiannguyen276@gmail.com"`
-		Password string `envconfig:"EMAIL_PASSWORD" default:"figjbdfsggwhcvbr"`
+		Email    string `env:"EMAIL"`
+		Password string `env:"EMAIL_PASSWORD"`
 	}
 	AppAPI struct {
-		Link string `envconfig:"API_LINK" default:"Hello"`
+		Link string `env:"FE_URL" env-default:"https://pizza-web-nuxt.vercel.app"`
+	}
+	AudioAPI struct {
+		Link string `env:"AUDIO_LINK"`
+		Key  string `env:"AUDIO_KEY"`
 	}
 	Minio struct {
-		EndPoint        string `envconfig:"END_POINT" default:"localhost:9000"`
-		AccessKeyID     string `envconfig:"ACCESSKEYID" default:"admin"`
-		SecretAccessKey string `envconfig:"SECRET_ACCESS_KEY" default:"admin123"`
-		UseSSL          bool   `envconfig:"USESSL" default:"false"`
-		BucketName      string `envconfig:"BUCKET_NAME" default:"general"`
+		EndPoint        string `env:"END_POINT" env-default:"localhost:9000"`
+		AccessKeyID     string `env:"ACCESSKEYID" env-default:"admin"`
+		SecretAccessKey string `env:"SECRET_ACCESS_KEY" env-default:"admin123"`
+		UseSSL          bool   `env:"USESSL" env-default:"false"`
+		BucketName      string `env:"BUCKET_NAME" env-default:"general"`
 	}
+	Redis RedisConfig
+}
+
+type RedisConfig struct {
+	URI      string `env:"REDIS_URI"      env-default:"localhost:6379"`
+	Password string `env:"REDIS_PASSWORD" env-default:""`
+	DB       int    `env:"REDIS_DB"       env-default:"0"`
 }
 
 func LoadConfig() (*Config, error) {
-	cfg := new(Config)
-	if err := envconfig.Process("", cfg); err != nil {
+	config := Config{}
+	if err := cleanenv.ReadEnv(&config); err != nil {
 		return nil, err
 	}
-	return cfg, nil
+
+	if config.Env == "dev" {
+		if err := cleanenv.ReadConfig(".env", &config); err != nil {
+			return nil, err
+		}
+	}
+
+	return &config, nil
 }

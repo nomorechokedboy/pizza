@@ -1,14 +1,19 @@
 import axiosGlobal, { AxiosError, CreateAxiosDefaults } from 'axios'
-import { AuthApi, CommentsApi, PostsApi, UserApi } from '~~/codegen/api'
-import { baseURL } from '~~/constants'
+import { NotificationApi } from '~/codegen/noisy-boi'
+import {
+	AuthApi,
+	CommentsApi,
+	Configuration,
+	MediaApi,
+	PostsApi,
+	UserApi
+} from '~~/codegen/api'
 
 const configs: CreateAxiosDefaults = {
-	baseURL,
 	timeout: 5000,
 	headers: {
 		'Content-Type': 'application/json'
-	},
-	withCredentials: true
+	}
 }
 
 type BlogApi = {
@@ -16,37 +21,61 @@ type BlogApi = {
 	comment: CommentsApi
 	post: PostsApi
 	user: UserApi
+	notification: NotificationApi
+	media: MediaApi
+}
+
+function autoAttachTokenInterceptor(config: any) {
+	const customHeaders = {
+		Authorization: ''
+	}
+
+	const token = useAuthToken()
+	const accessToken = token.value
+
+	if (accessToken) customHeaders.Authorization = `Bearer ${accessToken}`
+
+	return {
+		...config,
+		headers: {
+			...customHeaders,
+			...config.headers
+		}
+	}
 }
 
 export default defineNuxtPlugin(() => {
 	const axios = axiosGlobal.create(configs)
-	axios.interceptors.request.use((config) => {
-		const customHeaders = {
-			Authorization: ''
-		}
+	const nuxtConfig = useRuntimeConfig()
 
-		const token = useAuthToken()
-		const accessToken = token.value.accessToken
+	axios.interceptors.request.use(autoAttachTokenInterceptor)
 
-		if (accessToken)
-			customHeaders.Authorization = `Bearer ${accessToken}`
-
-		return {
-			...config,
-			headers: {
-				...customHeaders,
-				...config.headers
-			}
-		}
+	const blogApiConfig = new Configuration({
+		baseOptions: { baseURL: nuxtConfig.public.apiUrl }
 	})
+	const notificationApiConfig = new Configuration({
+		baseOptions: { baseURL: nuxtConfig.public.notificationUrl }
+	})
+	const auth = new AuthApi(blogApiConfig, undefined, axios)
+	const comment = new CommentsApi(blogApiConfig, undefined, axios)
+	const post = new PostsApi(blogApiConfig, undefined, axios)
+	const user = new UserApi(blogApiConfig, undefined, axios)
+	const media = new MediaApi(blogApiConfig, undefined, axios)
+	const notification = new NotificationApi(
+		notificationApiConfig,
+		undefined,
+		axios
+	)
+	const blogApi: BlogApi = {
+		auth,
+		comment,
+		post,
+		user,
+		notification,
+		media
+	}
 
-	const auth = new AuthApi(undefined, undefined, axios)
-	const comment = new CommentsApi(undefined, undefined, axios)
-	const post = new PostsApi(undefined, undefined, axios)
-	const user = new UserApi(undefined, undefined, axios)
-	const blogApi: BlogApi = { auth, comment, post, user }
-
-	const createAxiosResponseInterceptor = () => {
+	function createAxiosResponseInterceptor() {
 		const interceptor = axios.interceptors.response.use(
 			(response) => response,
 			async (error) => {
@@ -69,17 +98,14 @@ export default defineNuxtPlugin(() => {
 
 				axios.interceptors.response.eject(interceptor)
 
-				const token = useAuthToken()
-				return auth
+				const refreshToken = useRefreshToken()
+				return blogApi.auth
 					.authRefreshTokenPost({
 						refresh_token:
-							token.value.refreshToken
+							refreshToken.value
 					})
 					.then((resp) => {
-						token.value.refreshToken =
-							resp.data.refresh_token
-						token.value.accessToken =
-							resp.data.token
+						onRefreshToken(resp)
 						error.response.config.headers[
 							'Authorization'
 						] = `Bearer ${resp.data.token}`
@@ -88,10 +114,7 @@ export default defineNuxtPlugin(() => {
 						)
 					})
 					.catch(async (e) => {
-						token.value.accessToken =
-							undefined
-						token.value.refreshToken =
-							undefined
+						onRefreshTokenError()
 						await navigateTo('/login')
 						return Promise.reject(e)
 					})

@@ -3,7 +3,6 @@ package util
 import (
 	"api-blog/api/config"
 	"fmt"
-	"log"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -18,6 +17,5 @@ func ConnectProstgrest(cfg *config.Config) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Println("connected")
 	return db, nil
 }

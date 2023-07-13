@@ -5,6 +5,8 @@ on:
                         - v*
                 branches:
                         - main
+                paths:
+                        - apps/api/**
         pull_request:
                 branches:
                         - dev
@@ -25,8 +27,9 @@ jobs:
                                   cache-dependency-path: apps/api/go.sum
                         - name: Run docker compose
                           run: |
-                                  mkdir -p data/minio data/postgresql
-                                  docker compose up minio-svc postgres -d
+                                  mkdir -p data/minio data/postgresql data/redis
+                                  touch apps/api-blog/.env
+                                  docker compose up minio-svc postgres redis -d
                         - name: Generate swagger docs
                           run: |
                                   cd apps/api

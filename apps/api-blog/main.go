@@ -2,24 +2,23 @@ package main
 
 import (
 	"api-blog/api/config"
-	"api-blog/api/gorm_repository"
-	"api-blog/api/handler"
-	"api-blog/api/middleware"
-	"api-blog/api/routes"
 	"api-blog/api/util"
 	_ "api-blog/docs"
 	"api-blog/pkg/entities"
-	"api-blog/pkg/usecase"
+	notificationEntities "api-blog/src/notification/entities"
+	"api-blog/src/server"
 	"fmt"
 	"log"
+	"time"
 
-	swagger "github.com/arsmn/fiber-swagger/v2"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/fiber/v2/middleware/monitor"
-	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/redis/go-redis/v9"
 )
+
+func failOnError(err error, msg string) {
+	if err != nil {
+		log.Panicf("%s: %s", msg, err)
+	}
+}
 
 // @title web Blog
 // @version 1.0
@@ -35,75 +34,47 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	//DB
+	// DB
 	db, err := util.ConnectProstgrest(cfg)
 	if err != nil {
 		panic("Cannot connect Database: %v")
 	}
-	db.AutoMigrate(&entities.User{})
-	db.AutoMigrate(&entities.Post{})
-	db.AutoMigrate(&entities.Slug{})
-	db.AutoMigrate(&entities.Comment{})
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Panic("Can't get db", err)
+	}
 
-	//Minio
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetConnMaxLifetime(time.Hour)
+
+	if err = db.
+		AutoMigrate(
+			&entities.User{},
+			&entities.Post{},
+			&entities.Slug{},
+			&entities.Comment{},
+			&entities.Reaction{},
+			&notificationEntities.NotificationObject{},
+			&notificationEntities.Notification{},
+			&notificationEntities.NotificationChange{},
+		); err != nil {
+		log.Panic("failed to migrate database: ", err)
+	}
+
+	// Minio
 	minioClient, err := util.ConnectMinio(cfg)
 	if err != nil {
 		panic("Fail to load Minio")
 	}
 
-	//middlerware
-
-	middle := middleware.NewJWTMiddleware(cfg.AuthConfig.JWTSecret)
-
-	//register usecase
-	authHandler := handler.NewAuthHanlder(cfg.AuthConfig.JWTSecret, cfg.AuthConfig.JWTRefreshToken)
-	//user
-	userRepo := gorm_repository.NewUserGormRepository(db)
-	userUC := usecase.NewUserUsecase(userRepo)
-	userHandler := handler.NewUserHandler(userUC, *cfg)
-
-	//Media
-	mediaHandler := handler.NewMediaHandler(*cfg, minioClient)
-
-	// slug
-	slugRepo := gorm_repository.NewSlugGormRepository(db)
-	slugUC := usecase.NewSlugUseCase(slugRepo)
-
-	//post
-	postRepo := gorm_repository.NewPostGormRepository(db)
-	postUC := usecase.NewPostUseCase(postRepo)
-	postHandler := handler.NewPostHandler(postUC, slugUC, userUC)
-
-	// comment
-	commentRepo := gorm_repository.NewCommentGormRepository(db)
-	commentUC := usecase.NewCommentUseCase(commentRepo)
-	commentHandler := handler.NewCommentHandler(commentUC)
-
-	//app
-	app := fiber.New()
-	app.Use(cors.New(cors.Config{
-		AllowCredentials: true,
-	}))
-	app.Use(logger.New())
-	app.Use(recover.New())
-	app.Get("/metrics", monitor.New(monitor.Config{Title: "Api Blog Metrics Page"}))
-	app.Get("/healthCheck", func(c *fiber.Ctx) error {
-		return c.SendString("Hello world")
-	})
-	app.Get("/docs/*", swagger.HandlerDefault)
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.Redirect("/docs/")
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     cfg.Redis.URI,
+		Password: cfg.Redis.Password,
+		DB:       cfg.Redis.DB,
 	})
 
-	api := app.Group("/api")
-	v1 := api.Group("/v1")
-	routes.UserRouter(v1, *userHandler, *middle)
-	routes.AuthRouter(v1, *authHandler, *userHandler, *middle)
-	routes.MediaRouter(v1, *mediaHandler, *middle)
-	routes.PostRouter(v1, *postHandler, *middle)
-	routes.CommentRouter(v1, *commentHandler, *middle)
-
+	app := server.New(cfg, db, minioClient, rdb)
 	port := fmt.Sprintf(":%v", cfg.Server.Port)
-	log.Printf("Server started on port %v", cfg.Server.Port)
 	app.Listen(port)
 }

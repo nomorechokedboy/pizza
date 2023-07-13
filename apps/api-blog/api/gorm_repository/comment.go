@@ -20,7 +20,9 @@ func NewCommentGormRepository(db *gorm.DB) repository.CommentRepository {
 	}
 }
 
-func (r *CommentGormRepo) GetAllComments(query *entities.CommentQuery) (common.BasePaginationResponse[entities.Comment], error) {
+func (r *CommentGormRepo) GetAllComments(
+	query *entities.CommentQuery,
+) (common.BasePaginationResponse[entities.Comment], error) {
 	var comments []entities.Comment
 	res := common.BasePaginationResponse[entities.Comment]{}
 
@@ -32,12 +34,30 @@ func (r *CommentGormRepo) GetAllComments(query *entities.CommentQuery) (common.B
 
 	cond := &entities.Comment{UserID: query.UserID, PostID: query.PostID, ParentID: parentIDaddr}
 
-	if err := r.db.Scopes(scopes.Pagination(r.db, entities.Comment{}, query.BaseQuery, &res)).
+	if err := r.db.Scopes(
+		scopes.Pagination(
+			r.db,
+			entities.Comment{},
+			query.BaseQuery,
+			&res,
+		),
+	).
+		Preload("Replies.User").
+		Preload("Replies.Replies").
 		Preload(clause.Associations).
 		Find(&comments, cond).Error; err != nil {
 		return res, err
 	}
-	res.Items = comments
+	commentFilter := []entities.Comment{}
+
+	for _, item := range comments {
+		item.ReactionCount = uint(len(item.Reactions))
+		if item.ParentID == nil {
+			commentFilter = append(commentFilter, item)
+		}
+	}
+
+	res.Items = commentFilter
 
 	return res, nil
 }
