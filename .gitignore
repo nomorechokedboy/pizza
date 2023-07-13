@@ -43,8 +43,6 @@ dist
 out/
 build
 
-# auto gen
-docs
-
 # rust
 target
+
